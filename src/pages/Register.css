@@ -1,0 +1,966 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* ── Base ────────────────────────────────────────────── */
+
+.rk {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fa;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  padding: 20px;
+}
+
+/* ── Logo ────────────────────────────────────────────── */
+
+.rk-logo-img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  margin: 0 auto 16px;
+  flex-shrink: 0;
+}
+
+.rk-step3-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  margin-bottom: 16px;
+}
+
+.rk-step3-logo--lg {
+  width: 96px;
+  height: 96px;
+  margin-bottom: 20px;
+}
+
+/* ── Card (steps 1 & 2) ──────────────────────────────── */
+
+.rk-card {
+  background: #fff;
+  border-radius: 28px;
+  padding: 40px 28px 32px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(47, 128, 237, 0.07),
+              0 4px 16px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Step wrapper (animation target) ──────────────────── */
+
+.rk-step {
+  width: 100%;
+}
+
+/* ── Header ───────────────────────────────────────────── */
+
+.rk-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.rk-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+.rk-sub {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+/* ── Step 0 — Account type ──────────────────────────── */
+
+.rk-step0-label {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 18px;
+}
+
+.rk-account-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.rk-account-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 18px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 18px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+  width: 100%;
+}
+
+.rk-account-card:hover {
+  border-color: #93c5fd;
+  background: #fafcff;
+}
+
+.rk-account-card--on {
+  border-color: #2f80ed;
+  background: #eff6ff;
+  box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.12);
+}
+
+.rk-account-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.rk-account-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.rk-account-desc {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.rk-account-info {
+  margin-top: 16px;
+  font-size: 12px;
+  color: #9ca3af;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ── Categories ───────────────────────────────────────── */
+
+.rk-cat-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 16px;
+  text-align: center;
+}
+
+.rk-cat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.rk-cat-chip {
+  padding: 10px 18px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  color: #374151;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.rk-cat-chip:hover {
+  border-color: #93c5fd;
+}
+
+.rk-cat-chip--on {
+  border-color: #2f80ed;
+  background: #eff6ff;
+  color: #1e40af;
+  font-weight: 600;
+}
+
+/* ── Verification step ─────────────────────────────────── */
+
+.rk-verify-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.rk-btn--verify {
+  flex: 1;
+  height: 48px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  border: none;
+  background: #2f80ed;
+  color: #fff;
+}
+
+.rk-btn--verify:hover {
+  background: #2563eb;
+}
+
+.rk-btn--verify:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rk-btn--resend {
+  flex: 1;
+  height: 48px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  border: 1.5px solid #2f80ed;
+  background: transparent;
+  color: #2f80ed;
+}
+
+.rk-btn--resend:hover {
+  background: rgba(47, 128, 237, 0.06);
+}
+
+.rk-input--success {
+  border-color: #16a34a;
+}
+
+.rk-input--success:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+}
+
+.rk-success {
+  font-size: 13px;
+  color: #16a34a;
+  margin-top: 5px;
+  padding-left: 2px;
+  font-weight: 600;
+}
+
+/* ── Coming Soon ───────────────────────────────────────── */
+
+.rk-coming-soon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.rk-coming-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.rk-coming-msg {
+  margin: 12px 0 0;
+  font-size: 15px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+/* ── Disabled button ───────────────────────────────────── */
+
+.rk-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Error centered ───────────────────────────────────── */
+
+.rk-err--center {
+  text-align: center;
+  margin-top: 12px;
+}
+
+/* ── Fields ───────────────────────────────────────────── */
+
+.rk-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.rk-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.rk-input {
+  width: 100%;
+  height: 50px;
+  padding: 0 16px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 14px;
+  font-size: 15px;
+  font-family: inherit;
+  color: #111827;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.rk-input::placeholder {
+  color: #9ca3af;
+}
+
+.rk-input:focus {
+  border-color: #2f80ed;
+  box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.12);
+}
+
+.rk-input--err {
+  border-color: #ef4444;
+}
+
+.rk-input--err:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.rk-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%239ca3af' d='M1.41 0L6 4.58 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.rk-select:valid {
+  color: #111827;
+}
+
+.rk-hint {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 5px;
+  padding-left: 2px;
+}
+
+.rk-err {
+  font-size: 12px;
+  color: #ef4444;
+  margin-top: 5px;
+  padding-left: 2px;
+}
+
+/* ── Checkbox ─────────────────────────────────────────── */
+
+.rk-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #6b7280;
+  cursor: pointer;
+  user-select: none;
+  margin-top: 2px;
+}
+
+.rk-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #2f80ed;
+  cursor: pointer;
+  margin: 0;
+}
+
+/* ── Progress ─────────────────────────────────────────── */
+
+.rk-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 24px 0 18px;
+  width: 100%;
+}
+
+.rk-progress-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.rk-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.rk-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  transition: background 0.3s;
+}
+
+.rk-dot--on {
+  background: #2f80ed;
+}
+
+/* ── Navigation ───────────────────────────────────────── */
+
+.rk-nav {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.rk-btn {
+  flex: 1;
+  height: 48px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, opacity 0.2s;
+  border: none;
+}
+
+.rk-btn:active {
+  transform: scale(0.97);
+}
+
+.rk-btn--primary {
+  background: #2f80ed;
+  color: #fff;
+}
+
+.rk-btn--primary:hover {
+  background: #2563eb;
+}
+
+.rk-btn--outline {
+  background: transparent;
+  color: #2f80ed;
+  border: 1.5px solid #2f80ed;
+}
+
+.rk-btn--outline:hover {
+  background: rgba(47, 128, 237, 0.06);
+}
+
+.rk-btn--wide {
+  flex: unset;
+  width: 70%;
+}
+
+/* ── Footer ───────────────────────────────────────────── */
+
+.rk-footer {
+  margin: 18px 0 0;
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.rk-link {
+  background: none;
+  border: none;
+  color: #2f80ed;
+  font-weight: 600;
+  font-size: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.rk-link:hover {
+  opacity: 0.75;
+}
+
+/* ══════════════════════════════════════════════════════════
+   BUSINESS-SPECIFIC COMPONENTS
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Selected categories as tags ──────────────────────── */
+
+.rk-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  justify-content: center;
+}
+
+.rk-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1e40af;
+}
+
+.rk-tag-remove {
+  background: none;
+  border: none;
+  font-size: 16px;
+  line-height: 1;
+  color: #1e40af;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.6;
+  font-family: inherit;
+}
+
+.rk-tag-remove:hover {
+  opacity: 1;
+}
+
+/* ── Field labels ─────────────────────────────────────── */
+
+.rk-field-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* ── Option group (delivery / tipo negocio) ──────────── */
+
+.rk-option-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rk-option-btn {
+  flex: 1;
+  min-width: 80px;
+  height: 44px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  color: #374151;
+  padding: 0 16px;
+}
+
+.rk-option-btn:hover {
+  border-color: #93c5fd;
+}
+
+.rk-option-btn--on {
+  border-color: #2f80ed;
+  background: #eff6ff;
+  color: #1e40af;
+  font-weight: 700;
+}
+
+/* ── Time range ───────────────────────────────────────── */
+
+.rk-time-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rk-time-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.rk-time-sep {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+  margin-top: 20px;
+}
+
+/* ── Map ──────────────────────────────────────────────── */
+
+.rk-map-label {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 8px 0 4px;
+}
+
+.rk-map-placeholder {
+  width: 100%;
+  height: 200px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1.5px solid #e5e7eb;
+}
+
+.rk-map-placeholder iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* ── Skip link ────────────────────────────────────────── */
+
+.rk-skip-link {
+  background: none;
+  border: none;
+  color: #2f80ed;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 8px 0;
+  text-decoration: underline;
+  text-align: center;
+  width: 100%;
+}
+
+.rk-skip-link:hover {
+  opacity: 0.75;
+}
+
+/* ── Ghost button (white outline on dark bg) ──────────── */
+
+.rk-btn--ghost {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+
+.rk-btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #fff;
+}
+
+/* ── Welcome note ─────────────────────────────────────── */
+
+.rk-welcome-note {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  max-width: 340px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   STEP 3 — Full background, overlay
+   ══════════════════════════════════════════════════════════ */
+
+.rk-step3 {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rk-step3-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+.rk-step3-overlay {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  text-align: center;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+  box-sizing: border-box;
+}
+
+.rk-step3-body {
+  max-width: 400px;
+}
+
+.rk-step3 .rk-step3-logo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.rk-step3-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.rk-step3-msg {
+  margin: 12px 0 0;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+  max-width: 340px;
+}
+
+.rk-success-msg {
+  font-size: 18px;
+  font-weight: 700;
+  color: #4ade80;
+  margin: 0;
+}
+
+.rk-step3-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.rk-step3-actions .rk-btn {
+  max-width: 320px;
+}
+
+.rk-step3 .rk-footer {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.rk-step3 .rk-link {
+  color: #fff;
+}
+
+/* ══════════════════════════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════════════════════════ */
+
+@keyframes rk-slide-fwd {
+  from {
+    transform: translateX(36px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes rk-slide-bwd {
+  from {
+    transform: translateX(-36px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.rk-fwd {
+  animation: rk-slide-fwd 0.3s ease-out;
+}
+
+.rk-bwd {
+  animation: rk-slide-bwd 0.3s ease-out;
+}
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Mobile (< 480px) ─────────────────────────────────── */
+
+@media (max-width: 479px) {
+  .rk {
+    padding: 0;
+    align-items: stretch;
+    background: #fff;
+  }
+
+  .rk-card {
+    border-radius: 0;
+    box-shadow: none;
+    padding: 48px 20px 32px;
+    max-width: 100%;
+    min-height: 100vh;
+    justify-content: center;
+  }
+
+  .rk-title {
+    font-size: 22px;
+  }
+
+  .rk-step3-title {
+    font-size: 24px;
+  }
+
+  .rk-step3-msg {
+    font-size: 14px;
+  }
+
+  .rk-nav {
+    flex-direction: column;
+  }
+
+  .rk-dots {
+    gap: 4px;
+  }
+
+  .rk-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .rk-btn--wide {
+    width: 100%;
+  }
+
+  .rk-step3-actions .rk-btn {
+    max-width: 100%;
+  }
+
+  /* Business-specific responsive */
+  .rk-option-group {
+    flex-direction: column;
+  }
+
+  .rk-option-btn {
+    min-width: 100%;
+  }
+
+  .rk-time-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rk-time-sep {
+    text-align: center;
+    margin-top: 0;
+  }
+
+  .rk-map-placeholder {
+    height: 160px;
+  }
+
+  .rk-tags {
+    justify-content: center;
+  }
+}
+
+/* ── Tablet (480px – 1024px) ──────────────────────────── */
+
+@media (min-width: 480px) and (max-width: 1024px) {
+  .rk-card {
+    max-width: 440px;
+    padding: 44px 32px 36px;
+  }
+
+  .rk-title {
+    font-size: 26px;
+  }
+
+  .rk-step3-title {
+    font-size: 30px;
+  }
+}
+
+/* ── Laptop (> 1024px) ────────────────────────────────── */
+
+@media (min-width: 1025px) {
+  .rk {
+    background: linear-gradient(135deg, #f5f7fa 0%, #eef2f6 100%);
+  }
+
+  .rk-card {
+    max-width: 420px;
+    padding: 48px 36px 36px;
+  }
+
+  .rk-title {
+    font-size: 26px;
+  }
+
+  .rk-sub {
+    font-size: 15px;
+  }
+
+  .rk-step3-body {
+    max-width: 480px;
+  }
+
+  .rk-step3-title {
+    font-size: 32px;
+  }
+
+  .rk-step3-msg {
+    font-size: 16px;
+    max-width: 400px;
+  }
+}
+
+/* ── Landscape phone ──────────────────────────────────── */
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .rk-card {
+    padding: 24px 20px;
+    min-height: auto;
+  }
+
+  .rk-logo-img,
+  .rk-step3-logo {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 10px;
+  }
+
+  .rk-header {
+    margin-bottom: 16px;
+  }
+
+  .rk-fields {
+    gap: 10px;
+  }
+
+  .rk-input {
+    height: 42px;
+  }
+
+  .rk-progress {
+    margin: 14px 0 12px;
+  }
+
+  .rk-step3-overlay {
+    padding: 16px;
+  }
+}
