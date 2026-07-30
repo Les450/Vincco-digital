@@ -986,7 +986,7 @@ export default function Register() {
 
   const renderBusinessWelcome = () => (
     <div className="rk-step3">
-      <div className="rk-step3-bg" style={{ backgroundImage: 'url(/images/register-negocio.jpg)' }} />
+      <div className="rk-step3-bg" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/register-negocio.jpg)` }} />
       <div className="rk-step3-overlay">
         <img src={VINCCO_LOGO} alt="VINCCO" className="rk-step3-logo" />
         <div className={`rk-step3-body ${animClass}`} key={`sw${direction}`}>
@@ -1039,7 +1039,7 @@ export default function Register() {
 
   const renderProveedorWelcome = () => (
     <div className="rk-step3">
-      <div className="rk-step3-bg" style={{ backgroundImage: 'url(/images/register-proveedor.jpg)' }} />
+      <div className="rk-step3-bg" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/register-provedores.jpg)` }} />
       <div className="rk-step3-overlay">
         <img src={VINCCO_LOGO} alt="VINCCO" className="rk-step3-logo rk-step3-logo--lg" />
         <div className={`rk-step3-body ${animClass}`} key={`sp${direction}`}>
@@ -1092,7 +1092,7 @@ export default function Register() {
 
   const renderConfirmation = () => (
     <div className="rk-step3">
-      <div className="rk-step3-bg" style={{ backgroundImage: 'url(/images/register-negocio.jpg)' }} />
+      <div className="rk-step3-bg" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/register-negocio.jpg)` }} />
       <div className="rk-step3-overlay">
         <img src={VINCCO_LOGO} alt="VINCCO" className="rk-step3-logo rk-step3-logo--lg" />
         <div className={`rk-step3-body ${animClass}`} key={`s3${direction}`}>
