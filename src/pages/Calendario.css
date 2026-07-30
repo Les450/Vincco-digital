@@ -1,0 +1,492 @@
+/* ── Calendario ───────────────────────────────────────── */
+
+.cal {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: linear-gradient(180deg, #002e43 0%, #003f5a 30%, #3f6f84 100%);
+  min-height: 100vh;
+  padding: 20px 20px 100px;
+  color: #0b1b26;
+}
+
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.cal-header h2 {
+  margin: 0;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.cal-hoy-btn {
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 13px;
+  font-family: inherit;
+  padding: 8px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cal-hoy-btn:hover {
+  background: #fea02f;
+  border-color: #fea02f;
+  color: #002e43;
+}
+
+/* ── Filters ──────────────────────────────────────────── */
+
+.cal-filtros {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 12px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.cal-filtros::-webkit-scrollbar {
+  display: none;
+}
+
+.cal-filtro-btn {
+  flex-shrink: 0;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.cal-filtro-btn:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+}
+
+.cal-filtro-btn--activo {
+  background: #003f5a;
+  border-color: #003f5a;
+  color: #ffffff;
+}
+
+.cal-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.cal-leyenda-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.cal-leyenda-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Month navigation ─────────────────────────────────── */
+
+.cal-mes-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+
+.cal-mes-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cal-mes-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.cal-mes-titulo {
+  min-width: 160px;
+  text-align: center;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  text-transform: capitalize;
+}
+
+/* ── Grid ─────────────────────────────────────────────── */
+
+.cal-grid-wrapper {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 16px;
+  box-shadow: 0 20px 50px rgba(0, 24, 36, 0.28);
+  overflow: hidden;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.cal-grid--next {
+  opacity: 0;
+  transform: translateX(12px);
+}
+
+.cal-grid--prev {
+  opacity: 0;
+  transform: translateX(-12px);
+}
+
+.cal-dia-nombre {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 6px 0 10px;
+}
+
+.cal-dia {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: #0b1b26;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cal-dia:hover {
+  background: #f4f8fb;
+}
+
+.cal-dia--vacio {
+  cursor: default;
+  pointer-events: none;
+}
+
+.cal-dia-num {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cal-dia--hoy {
+  background: #e6eff4;
+}
+
+.cal-dia--hoy .cal-dia-num {
+  color: #003f5a;
+  font-weight: 800;
+}
+
+.cal-dia--seleccionado {
+  background: #003f5a;
+}
+
+.cal-dia--seleccionado .cal-dia-num {
+  color: #ffffff;
+}
+
+.cal-dia--con-eventos .cal-dia-num {
+  font-weight: 700;
+}
+
+.cal-dia-dots {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 6px;
+}
+
+.cal-dia-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.cal-dia-mas {
+  font-size: 8px;
+  font-weight: 700;
+  color: #64798a;
+}
+
+.cal-dia--seleccionado .cal-dia-mas {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ── Detail sheet ─────────────────────────────────────── */
+
+.cal-detalle-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 24, 36, 0.5);
+  z-index: 2000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 20px;
+  animation: cal-fade-in 0.2s ease;
+}
+
+@keyframes cal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.cal-detalle {
+  background: #ffffff;
+  border-radius: 24px 24px 0 0;
+  width: 100%;
+  max-width: 520px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 24px;
+  animation: cal-slide-up 0.3s ease;
+}
+
+@keyframes cal-slide-up {
+  from { transform: translateY(80px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.cal-detalle-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.cal-detalle-fecha {
+  display: block;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #0b1b26;
+  text-transform: capitalize;
+}
+
+.cal-detalle-conteo {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: #64798a;
+  font-weight: 600;
+}
+
+.cal-detalle-cerrar {
+  background: #f4f8fb;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  font-size: 16px;
+  color: #64798a;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.cal-detalle-cerrar:hover {
+  background: #e4eaef;
+  color: #0b1b26;
+}
+
+.cal-detalle-vacio {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64798a;
+}
+
+.cal-detalle-vacio-icono {
+  display: block;
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.cal-detalle-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cal-evento {
+  display: flex;
+  gap: 12px;
+  background: #f4f8fb;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e4eaef;
+}
+
+.cal-evento--vencido {
+  opacity: 0.65;
+}
+
+.cal-evento-barra {
+  width: 4px;
+  flex-shrink: 0;
+}
+
+.cal-evento-icono {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  margin: 14px 0 14px 0;
+}
+
+.cal-evento-contenido {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 14px 14px 0;
+}
+
+.cal-evento-titulo {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0b1b26;
+  margin-bottom: 3px;
+}
+
+.cal-evento-descripcion {
+  font-size: 12px;
+  color: #64798a;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.cal-evento-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.cal-evento-categoria {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.cal-evento-hora {
+  font-size: 11px;
+  color: #64798a;
+  font-weight: 600;
+}
+
+.cal-evento-estado {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.cal-evento-estado--pendiente {
+  background: #fef3c7;
+  color: #8f5a00;
+}
+
+.cal-evento-estado--completado {
+  background: #dcfce7;
+  color: #17693f;
+}
+
+.cal-evento-estado--vencido {
+  background: #fef2f2;
+  color: #b3261e;
+}
+
+.cal-evento-btn {
+  border: none;
+  background: #c05900;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cal-evento-btn:hover {
+  background: #a34b00;
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .cal {
+    padding: 16px 16px 100px;
+  }
+
+  .cal-grid-wrapper {
+    padding: 10px;
+    border-radius: 20px;
+  }
+
+  .cal-dia-num {
+    font-size: 12px;
+  }
+
+  .cal-evento-icono {
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+    margin: 10px 0 10px 0;
+  }
+
+  .cal-evento-contenido {
+    padding: 10px 10px 10px 0;
+  }
+}

@@ -5,7 +5,7 @@ function useTabs() {
   const { userType } = useStore()
   const esSocio = userType === 'negocio' || userType === 'proveedor'
 
-  return [
+  const tabs = [
     {
       label: 'Inicio',
       path: '/home',
@@ -27,7 +27,7 @@ function useTabs() {
     },
     {
       label: userType === 'negocio' ? 'Panel negocio' : esSocio ? 'Panel socio' : 'Recompensas',
-      path: userType === 'negocio' ? '/panel-negocio' : '/recompensas',
+      path: userType === 'negocio' ? '/panel-negocio' : esSocio ? '/recompensas' : '/puntos',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -67,6 +67,8 @@ function useTabs() {
       ),
     },
   ]
+
+  return userType === 'usuario' ? tabs.filter(t => t.label !== 'Publicaciones') : tabs
 }
 
 export default function BottomNav() {

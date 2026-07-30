@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom'
 import BottomNav from '../components/BottomNav'
 import Landing from '../pages/Landing'
 import Register from '../pages/Register'
@@ -8,6 +8,11 @@ import MisPuntos from '../pages/Mispuntos'
 import Dashboard from '../pages/Dashboard'
 import PanelSocio from '../pages/PanelSocio'
 import PanelNegocio from '../pages/PanelNegocio'
+import Notificaciones from '../pages/Notificaciones'
+import Calendario from '../pages/Calendario'
+import Favoritos from '../pages/Favoritos'
+import NegociosAsociados from '../pages/NegociosAsociados'
+import { DemoAiAssistatBasic } from '../components/ui/demo'
 
 function AppContent() {
   const location = useLocation()
@@ -49,9 +54,8 @@ function AppContent() {
           </div>
         } />
         <Route path="/favoritos" element={
-          <div style={{ paddingBottom: '70px', padding: '40px 20px', textAlign: 'center', color: '#64748b', fontFamily: 'Segoe UI, sans-serif' }}>
-            <h2 style={{ color: '#0f172a' }}>Favoritos</h2>
-            <p>Próximamente</p>
+          <div style={{ paddingBottom: '70px' }}>
+            <Favoritos />
           </div>
         } />
         <Route path="/recompensas" element={
@@ -70,17 +74,21 @@ function AppContent() {
           </div>
         } />
         <Route path="/calendario" element={
-          <div style={{ paddingBottom: '70px', padding: '40px 20px', textAlign: 'center', color: '#64748b', fontFamily: 'Segoe UI, sans-serif' }}>
-            <h2 style={{ color: '#0f172a' }}>Calendario</h2>
-            <p>Próximamente</p>
+          <div style={{ paddingBottom: '70px' }}>
+            <Calendario />
           </div>
         } />
         <Route path="/notificaciones" element={
-          <div style={{ paddingBottom: '70px', padding: '40px 20px', textAlign: 'center', color: '#64748b', fontFamily: 'Segoe UI, sans-serif' }}>
-            <h2 style={{ color: '#0f172a' }}>Notificaciones</h2>
-            <p>Próximamente</p>
+          <div style={{ paddingBottom: '70px' }}>
+            <Notificaciones />
           </div>
         } />
+        <Route path="/negocios-asociados" element={
+          <div style={{ paddingBottom: '70px' }}>
+            <NegociosAsociados />
+          </div>
+        } />
+        <Route path="/_demo-travel-signin" element={<DemoAiAssistatBasic />} />
       </Routes>
       {!hideNav && <BottomNav />}
     </>
@@ -89,8 +97,8 @@ function AppContent() {
 
 export default function AppRouter() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <AppContent />
-    </BrowserRouter>
+    </HashRouter>
   )
 }

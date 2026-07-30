@@ -1,22 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
-/* ── Base ────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 .rk {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f7fa;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% -10%, rgba(63, 111, 132, 0.2), transparent),
+    radial-gradient(ellipse 60% 50% at 25% 60%, rgba(0, 122, 123, 0.12), transparent),
+    radial-gradient(ellipse 50% 40% at 75% 80%, rgba(0, 46, 67, 0.25), transparent),
+    linear-gradient(145deg, #00131e 0%, #002032 25%, #00334d 55%, #002e43 100%);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   padding: 20px;
+  position: relative;
 }
 
-/* ── Logo ────────────────────────────────────────────── */
-
 .rk-logo-img {
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
   object-fit: contain;
   margin: 0 auto 16px;
   flex-shrink: 0;
@@ -30,45 +31,42 @@
 }
 
 .rk-step3-logo--lg {
-  width: 96px;
-  height: 96px;
+  width: 80px;
+  height: 80px;
   margin-bottom: 20px;
 }
 
-/* ── Card (steps 1 & 2) ──────────────────────────────── */
-
 .rk-card {
-  background: #fff;
+  background: #ffffff;
   border-radius: 28px;
-  padding: 40px 28px 32px;
+  padding: 36px 28px 30px;
   width: 100%;
-  max-width: 400px;
-  box-shadow: 0 20px 60px rgba(47, 128, 237, 0.07),
-              0 4px 16px rgba(0, 0, 0, 0.03);
+  max-width: 420px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 30px 80px rgba(0, 18, 28, 0.45),
+    0 4px 16px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* ── Step wrapper (animation target) ──────────────────── */
-
 .rk-step {
   width: 100%;
 }
 
-/* ── Header ───────────────────────────────────────────── */
-
 .rk-header {
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 26px;
 }
 
 .rk-title {
   margin: 0;
-  font-size: 24px;
-  font-weight: 800;
-  color: #111827;
+  font-size: 22px;
+  font-weight: 700;
+  color: #002e43;
   letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .rk-sub {
@@ -78,12 +76,10 @@
   font-weight: 400;
 }
 
-/* ── Step 0 — Account type ──────────────────────────── */
-
 .rk-step0-label {
   text-align: center;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: #374151;
   margin: 0 0 18px;
 }
@@ -101,40 +97,50 @@
   align-items: center;
   gap: 4px;
   padding: 18px 16px;
-  border: 2px solid #e5e7eb;
-  border-radius: 18px;
-  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 14px;
+  background: #ffffff;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
   font-family: inherit;
   width: 100%;
 }
 
 .rk-account-card:hover {
-  border-color: #93c5fd;
-  background: #fafcff;
+  border-color: #003f5a;
+  background: #f4f8fb;
 }
 
 .rk-account-card--on {
-  border-color: #2f80ed;
-  background: #eff6ff;
-  box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.12);
+  border-color: #003f5a;
+  background: #003f5a;
+  box-shadow: 0 2px 8px rgba(0, 63, 90, 0.2);
+}
+
+.rk-account-card--on .rk-account-label,
+.rk-account-card--on .rk-account-desc,
+.rk-account-card--on .rk-account-icon {
+  color: #ffffff;
 }
 
 .rk-account-icon {
   font-size: 28px;
   line-height: 1;
+  color: #6b7280;
+  transition: color 0.25s;
 }
 
 .rk-account-label {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   color: #111827;
+  transition: color 0.25s;
 }
 
 .rk-account-desc {
   font-size: 12px;
-  color: #6b7280;
+  color: #9ca3af;
+  transition: color 0.25s;
 }
 
 .rk-account-info {
@@ -145,11 +151,9 @@
   line-height: 1.5;
 }
 
-/* ── Categories ───────────────────────────────────────── */
-
 .rk-cat-label {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: #374151;
   margin: 0 0 16px;
   text-align: center;
@@ -166,27 +170,26 @@
   padding: 10px 18px;
   border: 1.5px solid #e5e7eb;
   border-radius: 999px;
-  background: #fff;
+  background: #ffffff;
   font-size: 14px;
   font-weight: 500;
   font-family: inherit;
   color: #374151;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  transition: border-color 0.25s, background 0.25s, color 0.25s;
 }
 
 .rk-cat-chip:hover {
-  border-color: #93c5fd;
+  border-color: #003f5a;
+  color: #003f5a;
 }
 
 .rk-cat-chip--on {
-  border-color: #2f80ed;
-  background: #eff6ff;
-  color: #1e40af;
-  font-weight: 600;
+  border-color: #003f5a;
+  background: #003f5a;
+  color: #ffffff;
+  font-weight: 500;
 }
-
-/* ── Verification step ─────────────────────────────────── */
 
 .rk-verify-actions {
   display: flex;
@@ -197,19 +200,19 @@
 .rk-btn--verify {
   flex: 1;
   height: 48px;
-  border-radius: 999px;
+  border-radius: 12px;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
+  transition: background 0.25s, transform 0.2s;
   border: none;
-  background: #2f80ed;
-  color: #fff;
+  background: #003f5a;
+  color: #ffffff;
 }
 
 .rk-btn--verify:hover {
-  background: #2563eb;
+  background: #00344c;
 }
 
 .rk-btn--verify:disabled {
@@ -220,39 +223,39 @@
 .rk-btn--resend {
   flex: 1;
   height: 48px;
-  border-radius: 999px;
+  border-radius: 12px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
-  border: 1.5px solid #2f80ed;
+  transition: background 0.25s, border-color 0.25s;
+  border: 1.5px solid #007a7b;
   background: transparent;
-  color: #2f80ed;
+  color: #007a7b;
 }
 
 .rk-btn--resend:hover {
-  background: rgba(47, 128, 237, 0.06);
+  background: rgba(0, 122, 123, 0.06);
+  border-color: #005c5e;
+  color: #005c5e;
 }
 
 .rk-input--success {
-  border-color: #16a34a;
+  border-color: #17693f;
 }
 
 .rk-input--success:focus {
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+  border-color: #17693f;
+  box-shadow: 0 0 0 3px rgba(23, 105, 63, 0.12);
 }
 
 .rk-success {
   font-size: 13px;
-  color: #16a34a;
+  color: #17693f;
   margin-top: 5px;
   padding-left: 2px;
-  font-weight: 600;
+  font-weight: 500;
 }
-
-/* ── Coming Soon ───────────────────────────────────────── */
 
 .rk-coming-soon {
   display: flex;
@@ -265,7 +268,7 @@
 .rk-coming-title {
   margin: 0;
   font-size: 24px;
-  font-weight: 800;
+  font-weight: 700;
   color: #111827;
 }
 
@@ -276,21 +279,15 @@
   line-height: 1.6;
 }
 
-/* ── Disabled button ───────────────────────────────────── */
-
 .rk-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* ── Error centered ───────────────────────────────────── */
-
 .rk-err--center {
   text-align: center;
   margin-top: 12px;
 }
-
-/* ── Fields ───────────────────────────────────────────── */
 
 .rk-fields {
   display: flex;
@@ -309,32 +306,34 @@
   height: 50px;
   padding: 0 16px;
   border: 1.5px solid #e5e7eb;
-  border-radius: 14px;
+  border-radius: 12px;
   font-size: 15px;
   font-family: inherit;
   color: #111827;
-  background: #fff;
+  background: #f8f9fb;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
   box-sizing: border-box;
 }
 
 .rk-input::placeholder {
-  color: #9ca3af;
+  color: #b0b7c3;
 }
 
 .rk-input:focus {
-  border-color: #2f80ed;
-  box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.12);
+  border-color: #003f5a;
+  box-shadow: 0 0 0 3px rgba(0, 63, 90, 0.12);
+  background: #ffffff;
 }
 
 .rk-input--err {
-  border-color: #ef4444;
+  border-color: #b3261e;
 }
 
 .rk-input--err:focus {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+  border-color: #b3261e;
+  box-shadow: 0 0 0 3px rgba(179, 38, 30, 0.12);
+  background: #ffffff;
 }
 
 .rk-select {
@@ -360,12 +359,10 @@
 
 .rk-err {
   font-size: 12px;
-  color: #ef4444;
+  color: #b3261e;
   margin-top: 5px;
   padding-left: 2px;
 }
-
-/* ── Checkbox ─────────────────────────────────────────── */
 
 .rk-checkbox {
   display: flex;
@@ -381,25 +378,23 @@
 .rk-checkbox input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: #2f80ed;
+  accent-color: #003f5a;
   cursor: pointer;
   margin: 0;
 }
-
-/* ── Progress ─────────────────────────────────────────── */
 
 .rk-progress {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin: 24px 0 18px;
+  margin: 22px 0 18px;
   width: 100%;
 }
 
 .rk-progress-text {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: #6b7280;
 }
 
@@ -417,10 +412,8 @@
 }
 
 .rk-dot--on {
-  background: #2f80ed;
+  background: #003f5a;
 }
-
-/* ── Navigation ───────────────────────────────────────── */
 
 .rk-nav {
   display: flex;
@@ -431,12 +424,12 @@
 .rk-btn {
   flex: 1;
   height: 48px;
-  border-radius: 999px;
+  border-radius: 12px;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s, opacity 0.2s;
+  transition: background 0.25s, transform 0.2s, opacity 0.2s;
   border: none;
 }
 
@@ -445,30 +438,30 @@
 }
 
 .rk-btn--primary {
-  background: #2f80ed;
-  color: #fff;
+  background: #003f5a;
+  color: #ffffff;
 }
 
 .rk-btn--primary:hover {
-  background: #2563eb;
+  background: #00344c;
 }
 
 .rk-btn--outline {
   background: transparent;
-  color: #2f80ed;
-  border: 1.5px solid #2f80ed;
+  color: #007a7b;
+  border: 1.5px solid #007a7b;
 }
 
 .rk-btn--outline:hover {
-  background: rgba(47, 128, 237, 0.06);
+  background: rgba(0, 122, 123, 0.06);
+  border-color: #005c5e;
+  color: #005c5e;
 }
 
 .rk-btn--wide {
   flex: unset;
   width: 70%;
 }
-
-/* ── Footer ───────────────────────────────────────────── */
 
 .rk-footer {
   margin: 18px 0 0;
@@ -480,24 +473,19 @@
 .rk-link {
   background: none;
   border: none;
-  color: #2f80ed;
-  font-weight: 600;
+  color: #007a7b;
+  font-weight: 500;
   font-size: inherit;
   font-family: inherit;
   cursor: pointer;
   padding: 0;
   text-decoration: underline;
+  transition: color 0.2s;
 }
 
 .rk-link:hover {
-  opacity: 0.75;
+  color: #003f5a;
 }
-
-/* ══════════════════════════════════════════════════════════
-   BUSINESS-SPECIFIC COMPONENTS
-   ══════════════════════════════════════════════════════════ */
-
-/* ── Selected categories as tags ──────────────────────── */
 
 .rk-tags {
   display: flex;
@@ -512,12 +500,12 @@
   align-items: center;
   gap: 6px;
   padding: 6px 14px;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  background: #eef3f7;
+  border: 1px solid #cddae3;
   border-radius: 999px;
   font-size: 13px;
   font-weight: 500;
-  color: #1e40af;
+  color: #003f5a;
 }
 
 .rk-tag-remove {
@@ -525,7 +513,7 @@
   border: none;
   font-size: 16px;
   line-height: 1;
-  color: #1e40af;
+  color: #003f5a;
   cursor: pointer;
   padding: 0;
   opacity: 0.6;
@@ -536,17 +524,13 @@
   opacity: 1;
 }
 
-/* ── Field labels ─────────────────────────────────────── */
-
 .rk-field-label {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: #374151;
   margin-bottom: 8px;
   display: block;
 }
-
-/* ── Option group (delivery / tipo negocio) ──────────── */
 
 .rk-option-group {
   display: flex;
@@ -558,30 +542,29 @@
   flex: 1;
   min-width: 80px;
   height: 44px;
-  border-radius: 999px;
+  border-radius: 10px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   font-family: inherit;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  transition: border-color 0.25s, background 0.25s, color 0.25s;
   border: 1.5px solid #e5e7eb;
-  background: #fff;
+  background: #ffffff;
   color: #374151;
   padding: 0 16px;
 }
 
 .rk-option-btn:hover {
-  border-color: #93c5fd;
+  border-color: #003f5a;
+  color: #003f5a;
 }
 
 .rk-option-btn--on {
-  border-color: #2f80ed;
-  background: #eff6ff;
-  color: #1e40af;
-  font-weight: 700;
+  border-color: #003f5a;
+  background: #003f5a;
+  color: #ffffff;
+  font-weight: 500;
 }
-
-/* ── Time range ───────────────────────────────────────── */
 
 .rk-time-group {
   display: flex;
@@ -602,8 +585,6 @@
   margin-top: 20px;
 }
 
-/* ── Map ──────────────────────────────────────────────── */
-
 .rk-map-label {
   font-size: 13px;
   color: #6b7280;
@@ -613,7 +594,7 @@
 .rk-map-placeholder {
   width: 100%;
   height: 200px;
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
   border: 1.5px solid #e5e7eb;
 }
@@ -624,39 +605,34 @@
   border: none;
 }
 
-/* ── Skip link ────────────────────────────────────────── */
-
 .rk-skip-link {
   background: none;
   border: none;
-  color: #2f80ed;
+  color: #007a7b;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   font-family: inherit;
   cursor: pointer;
   padding: 8px 0;
   text-decoration: underline;
   text-align: center;
   width: 100%;
+  transition: color 0.2s;
 }
 
 .rk-skip-link:hover {
-  opacity: 0.75;
+  color: #003f5a;
 }
-
-/* ── Ghost button (white outline on dark bg) ──────────── */
 
 .rk-btn--ghost {
   border-color: rgba(255, 255, 255, 0.5);
-  color: #fff;
+  color: #ffffff;
 }
 
 .rk-btn--ghost:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #ffffff;
 }
-
-/* ── Welcome note ─────────────────────────────────────── */
 
 .rk-welcome-note {
   margin: 12px 0 0;
@@ -665,10 +641,6 @@
   line-height: 1.6;
   max-width: 340px;
 }
-
-/* ══════════════════════════════════════════════════════════
-   STEP 3 — Full background, overlay
-   ══════════════════════════════════════════════════════════ */
 
 .rk-step3 {
   position: fixed;
@@ -700,8 +672,9 @@
   text-align: center;
   background: linear-gradient(
     180deg,
-    rgba(0, 0, 0, 0.15) 0%,
-    rgba(0, 0, 0, 0.55) 100%
+    rgba(0, 24, 36, 0.2) 0%,
+    rgba(0, 40, 59, 0.6) 65%,
+    rgba(0, 40, 59, 0.85) 100%
   );
   box-sizing: border-box;
 }
@@ -719,9 +692,10 @@
 .rk-step3-title {
   margin: 0;
   font-size: 28px;
-  font-weight: 800;
-  color: #fff;
+  font-weight: 700;
+  color: #ffffff;
   letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .rk-step3-msg {
@@ -737,6 +711,10 @@
   font-weight: 700;
   color: #4ade80;
   margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .rk-step3-actions {
@@ -758,12 +736,12 @@
 }
 
 .rk-step3 .rk-link {
-  color: #fff;
+  color: #ffffff;
 }
 
-/* ══════════════════════════════════════════════════════════
-   ANIMATIONS
-   ══════════════════════════════════════════════════════════ */
+.rk-step3 .rk-link:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
 
 @keyframes rk-slide-fwd {
   from {
@@ -795,17 +773,11 @@
   animation: rk-slide-bwd 0.3s ease-out;
 }
 
-/* ══════════════════════════════════════════════════════════
-   RESPONSIVE
-   ══════════════════════════════════════════════════════════ */
-
-/* ── Mobile (< 480px) ─────────────────────────────────── */
-
 @media (max-width: 479px) {
   .rk {
     padding: 0;
     align-items: stretch;
-    background: #fff;
+    background: #ffffff;
   }
 
   .rk-card {
@@ -818,7 +790,7 @@
   }
 
   .rk-title {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .rk-step3-title {
@@ -850,7 +822,6 @@
     max-width: 100%;
   }
 
-  /* Business-specific responsive */
   .rk-option-group {
     flex-direction: column;
   }
@@ -878,16 +849,14 @@
   }
 }
 
-/* ── Tablet (480px – 1024px) ──────────────────────────── */
-
 @media (min-width: 480px) and (max-width: 1024px) {
   .rk-card {
     max-width: 440px;
-    padding: 44px 32px 36px;
+    padding: 40px 32px 34px;
   }
 
   .rk-title {
-    font-size: 26px;
+    font-size: 24px;
   }
 
   .rk-step3-title {
@@ -895,20 +864,14 @@
   }
 }
 
-/* ── Laptop (> 1024px) ────────────────────────────────── */
-
 @media (min-width: 1025px) {
-  .rk {
-    background: linear-gradient(135deg, #f5f7fa 0%, #eef2f6 100%);
-  }
-
   .rk-card {
     max-width: 420px;
-    padding: 48px 36px 36px;
+    padding: 44px 36px 36px;
   }
 
   .rk-title {
-    font-size: 26px;
+    font-size: 24px;
   }
 
   .rk-sub {
@@ -928,8 +891,6 @@
     max-width: 400px;
   }
 }
-
-/* ── Landscape phone ──────────────────────────────────── */
 
 @media (max-height: 500px) and (orientation: landscape) {
   .rk-card {

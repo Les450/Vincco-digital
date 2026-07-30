@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useStore from '../store/puntos_usestore'
+import { motion } from 'framer-motion'
+import Icon from '../components/icons/Icon'
 import './Register.css'
 
 const VINCCO_LOGO = "/assets/logos/vincco-logo.png"
@@ -18,9 +20,9 @@ const INITIAL_FORM = {
 }
 
 const ACCOUNT_TYPES = [
-  { id: 'usuario', label: 'Usuario', icon: '👤', desc: 'Compra y acumula puntos' },
-  { id: 'negocio', label: 'Negocio', icon: '🏪', desc: 'Registra tu comercio' },
-  { id: 'proveedor', label: 'Proveedor', icon: '📦', desc: 'Ofrece tus productos' },
+  { id: 'usuario', label: 'Usuario', icon: 'user', desc: 'Compra y acumula puntos' },
+  { id: 'negocio', label: 'Negocio', icon: 'store', desc: 'Registra tu comercio' },
+  { id: 'proveedor', label: 'Proveedor', icon: 'package', desc: 'Ofrece tus productos' },
 ]
 
 const SEXO_OPTIONS = ['', 'Masculino', 'Femenino', 'Otro']
@@ -334,7 +336,7 @@ export default function Register() {
             onClick={() => { setAccountType(type.id); if (errors.accountType) setErrors((prev) => ({ ...prev, accountType: '' })) }}
             type="button"
           >
-            <span className="rk-account-icon">{type.icon}</span>
+            <span className="rk-account-icon"><Icon name={type.icon} size={24} /></span>
             <span className="rk-account-label">{type.label}</span>
             <span className="rk-account-desc">{type.desc}</span>
           </button>
@@ -407,7 +409,7 @@ export default function Register() {
                 disabled={isVerified}
               />
               {errors.verification && <span className="rk-err">{errors.verification}</span>}
-              {isVerified && <span className="rk-success">✓ Código verificado correctamente</span>}
+              {isVerified && <span className="rk-success"><Icon name="check" size={14} /> Código verificado correctamente</span>}
             </div>
             <div className="rk-verify-actions">
               <button
@@ -676,7 +678,7 @@ export default function Register() {
                 disabled={isVerified}
               />
               {errors.verification && <span className="rk-err">{errors.verification}</span>}
-              {isVerified && <span className="rk-success">✓ Código verificado correctamente</span>}
+              {isVerified && <span className="rk-success"><Icon name="check" size={14} /> Código verificado correctamente</span>}
             </div>
             <div className="rk-verify-actions">
               <button
@@ -836,7 +838,7 @@ export default function Register() {
                   return (
                     <span key={id} className="rk-tag">
                       {cat?.label}
-                      <button className="rk-tag-remove" onClick={() => toggleBusinessCategory(id)} type="button">×</button>
+                      <button className="rk-tag-remove" onClick={() => toggleBusinessCategory(id)} type="button"><Icon name="x" size={12} /></button>
                     </span>
                   )
                 })}
@@ -999,7 +1001,7 @@ export default function Register() {
         </div>
         <div className="rk-step3-actions">
           {verificationSent ? (
-            <p className="rk-success-msg">✓ Solicitud enviada</p>
+            <p className="rk-success-msg"><Icon name="check-circle" size={16} /> Solicitud enviada</p>
           ) : (
             <button
               className="rk-btn rk-btn--primary rk-btn--wide"
@@ -1052,7 +1054,7 @@ export default function Register() {
         </div>
         <div className="rk-step3-actions">
           {verificationSent ? (
-            <p className="rk-success-msg">✓ Solicitud enviada</p>
+            <p className="rk-success-msg"><Icon name="check-circle" size={16} /> Solicitud enviada</p>
           ) : (
             <button
               className="rk-btn rk-btn--primary rk-btn--wide"
@@ -1121,9 +1123,19 @@ export default function Register() {
   )
 
   return (
-    <div className="rk">
+    <motion.div
+      className="rk"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
+    >
       {step === 0 ? (
-        <div className="rk-card">
+        <motion.div
+          className="rk-card"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.05 }}
+        >
           <img src={VINCCO_LOGO} alt="VINCCO" className="rk-logo-img" />
           <div className={`rk-step ${animClass}`} key={`s${direction}${step}`}>
             {renderStep0()}
@@ -1153,11 +1165,16 @@ export default function Register() {
               Inicia sesión
             </button>
           </p>
-        </div>
+        </motion.div>
       ) : (isNegocio || isProveedor) && step === BUSINESS_TOTAL_STEPS - 1 ? (
         isProveedor ? renderProveedorWelcome() : renderBusinessWelcome()
       ) : isNegocio || isProveedor ? (
-        <div className="rk-card">
+        <motion.div
+          className="rk-card"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.05 }}
+        >
           <img src={VINCCO_LOGO} alt="VINCCO" className="rk-logo-img" />
           <div className={`rk-step ${animClass}`} key={`s${direction}${step}`}>
             {renderNegocioStep()}
@@ -1192,11 +1209,16 @@ export default function Register() {
               Inicia sesión
             </button>
           </p>
-        </div>
+        </motion.div>
       ) : step === 7 ? (
         renderConfirmation()
       ) : (
-        <div className="rk-card">
+        <motion.div
+          className="rk-card"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.05 }}
+        >
           <img src={VINCCO_LOGO} alt="VINCCO" className="rk-logo-img" />
           <div className={`rk-step ${animClass}`} key={`s${direction}${step}`}>
             {renderUsuarioStep()}
@@ -1233,8 +1255,8 @@ export default function Register() {
               Inicia sesión
             </button>
           </p>
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   )
 }

@@ -1,11 +1,52 @@
 /* Base app styles */
 :root {
+  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Sora', var(--font-family);
+
+  /* ── Vincco brand — manual de identidad v2.1 ─────────────── */
+  --navy-950: #001d2a;
+  --navy-900: #002e43;
+  --navy-800: #003f5a;
+  --navy-700: #00374e;
+  --navy-600: #3f6f84;
+  --navy-500: #7a9caa;
+
+  --orange-500: #dd6600;
+  --orange-600: #c05900;
+  --orange-700: #a34b00;
+
+  --gold-400: #feb862;
+  --gold-500: #fea02f;
+  --gold-600: #de8b27;
+
+  --teal-500: #3f9c9c;
+  --teal-600: #007a7b;
+  --teal-700: #005c5e;
+
+  --ok: #17693f;
+  --err: #b3261e;
+  --warn: #8f5a00;
+
+  --ink-900: #0b1b26;
+  --slate-600: #4d6273;
+  --slate-400: #7f93a3;
+  --slate-200: #e3eaef;
+
+  --surface: #ffffff;
+  --surface-alt: #f4f8fb;
+  --line: rgba(0, 63, 90, 0.12);
+  --line-strong: rgba(0, 63, 90, 0.22);
+
+  --shadow-navy: 0 24px 60px rgba(0, 32, 46, 0.22);
+  --shadow-card: 0 2px 14px rgba(0, 42, 61, 0.07);
+  --shadow-card-lg: 0 10px 34px rgba(0, 42, 61, 0.10);
+
   color-scheme: light;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-family);
   font-size: 16px;
   line-height: 1.6;
-  color: #111827;
-  background-color: #f8fafc;
+  color: var(--ink-900);
+  background-color: var(--navy-800);
 }
 
 * {
@@ -20,8 +61,8 @@ body,
 
 body {
   margin: 0;
-  background: #f8fafc;
-  color: #111827;
+  background: var(--navy-800);
+  color: var(--ink-900);
   text-rendering: optimizeLegibility;
 }
 
@@ -300,7 +341,7 @@ section {
   justify-content: space-between;
   gap: 1rem;
   width: min(1200px, calc(100% - 2rem));
-  marg
+  margin: 0 auto;
 }
 
 .brand-title,
@@ -354,9 +395,10 @@ section {
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
-  background: #0d9488;
+  background: var(--navy-900);
   border-radius: 20px 20px 0 0;
   padding: 8px 4px 12px;
+  box-shadow: 0 -12px 30px rgba(0, 24, 36, 0.28);
   z-index: 1000;
 }
 
@@ -370,13 +412,13 @@ section {
   background: none;
   border: none;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.55);
   padding: 4px 0;
   transition: color 0.2s;
 }
 
 .bottom-nav-btn--active {
-  color: #fff;
+  color: var(--orange-500);
 }
 
 .bottom-nav-icon {
