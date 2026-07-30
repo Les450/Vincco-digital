@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/Vincco-digital/static/css/main.745a9f41.css",
-    "main.js": "/Vincco-digital/static/js/main.5ce2ba24.js",
+    "main.js": "/Vincco-digital/static/js/main.88de7d33.js",
     "static/js/453.ef3d2843.chunk.js": "/Vincco-digital/static/js/453.ef3d2843.chunk.js",
     "index.html": "/Vincco-digital/index.html",
     "main.745a9f41.css.map": "/Vincco-digital/static/css/main.745a9f41.css.map",
-    "main.5ce2ba24.js.map": "/Vincco-digital/static/js/main.5ce2ba24.js.map",
+    "main.88de7d33.js.map": "/Vincco-digital/static/js/main.88de7d33.js.map",
     "453.ef3d2843.chunk.js.map": "/Vincco-digital/static/js/453.ef3d2843.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.745a9f41.css",
-    "static/js/main.5ce2ba24.js"
+    "static/js/main.88de7d33.js"
   ]
 }
