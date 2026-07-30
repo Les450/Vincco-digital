@@ -20,7 +20,7 @@ export default function Navbar() {
       <nav className="vc-navbar">
         <Link to="/home" className="vc-navbar-logo">
           <img
-            src="/assets/logos/vincco-logo.png"
+            src={`${process.env.PUBLIC_URL}/assets/logos/vincco-logo.png`}
             alt="Vincco"
             className="vc-navbar-logo-img"
           />

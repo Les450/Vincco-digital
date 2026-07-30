@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Sidebar from './Sidebar'
 import Icon from './icons/Icon'
 
-const VINCCO_LOGO = "/assets/logos/vincco-logo.png"
+const VINCCO_LOGO = `${process.env.PUBLIC_URL}/assets/logos/vincco-logo.png`
 
 const GOLD = '#ffc26b'
 const GOLD_LIGHT = '#ffd28c'

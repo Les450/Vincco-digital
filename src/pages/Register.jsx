@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import Icon from '../components/icons/Icon'
 import './Register.css'
 
-const VINCCO_LOGO = "/assets/logos/vincco-logo.png"
+const VINCCO_LOGO = `${process.env.PUBLIC_URL}/assets/logos/vincco-logo.png`
 
 const INITIAL_FORM = {
   nombre: '',

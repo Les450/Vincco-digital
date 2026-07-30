@@ -4,7 +4,7 @@ import useStore from '../store/puntos_usestore'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff, ArrowRight } from 'lucide-react'
 
-const VINCCO_LOGO = "/assets/logos/vincco-logo.png"
+const VINCCO_LOGO = `${process.env.PUBLIC_URL}/assets/logos/vincco-logo.png`
 
 // Rutas animadas + puntos que dibujan el "mapa" de la red Vincco
 const ROUTES = [

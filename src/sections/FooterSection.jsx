@@ -8,7 +8,7 @@ export default function FooterSection() {
           <div className="vc-footer-brand">
             <div className="vc-footer-logo">
               <img
-                src="/assets/logos/vincco-logo.png"
+                src={`${process.env.PUBLIC_URL}/assets/logos/vincco-logo.png`}
                 alt="Vincco"
                 className="vc-footer-logo-img"
               />
