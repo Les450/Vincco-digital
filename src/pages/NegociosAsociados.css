@@ -162,6 +162,7 @@
 }
 
 .na-card {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -174,15 +175,25 @@
   cursor: pointer;
   text-align: left;
   font-family: inherit;
-  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+  transition: background 0.15s;
 }
 
 .na-card:hover {
-  transform: translateY(-1px);
   background: rgba(255, 255, 255, 0.16);
 }
 
+.na-card-highlight {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 10px 24px rgba(0, 20, 25, 0.35);
+}
+
 .na-card-icono {
+  position: relative;
+  z-index: 1;
   flex-shrink: 0;
   width: 40px;
   height: 40px;
@@ -199,6 +210,8 @@
 }
 
 .na-card-info {
+  position: relative;
+  z-index: 1;
   flex: 1;
   min-width: 0;
   display: flex;
@@ -222,16 +235,15 @@
 }
 
 .na-card-flecha {
+  position: relative;
+  z-index: 1;
   flex-shrink: 0;
   color: rgba(255, 255, 255, 0.5);
   transition: transform 0.15s;
 }
 
-.na-card--activa,
-.na-card--activa:hover {
-  background: #ffffff;
+.na-card--activa {
   border-color: #ffffff;
-  box-shadow: 0 10px 24px rgba(0, 20, 25, 0.35);
 }
 
 .na-card--activa .na-card-nombre {
@@ -291,14 +303,6 @@
   filter: saturate(0.85);
   box-shadow: 0 14px 30px rgba(0, 20, 30, 0.3);
   pointer-events: none;
-}
-
-.na-stack-ghost--izq {
-  transform: translateX(-34px) scale(0.96);
-}
-
-.na-stack-ghost--der {
-  transform: translateX(34px) scale(0.96);
 }
 
 .na-stack-ghost .na-detalle-img {

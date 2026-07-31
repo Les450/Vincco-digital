@@ -46,14 +46,36 @@ function MediaNegocio({ negocio, size = 56 }) {
   )
 }
 
+const VARIANTES_ITEM_LISTA = {
+  oculto: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0 },
+}
+
+const VARIANTES_DETALLE = {
+  entrar: (dir) => ({ opacity: 0, x: dir * 36, scale: 0.98 }),
+  centro: { opacity: 1, x: 0, scale: 1 },
+  salir: (dir) => ({ opacity: 0, x: -dir * 36, scale: 0.98 }),
+}
+
 function TarjetaNegocio({ negocio, activo, onSeleccionar }) {
   const icono = CAT_ICONOS[negocio.categoria] || 'store'
   return (
-    <button
+    <motion.button
       type="button"
       className={`na-card ${activo ? 'na-card--activa' : ''}`}
       onClick={() => onSeleccionar(negocio.id)}
+      variants={VARIANTES_ITEM_LISTA}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: 'spring', stiffness: 500, damping: 32 }}
     >
+      {activo && (
+        <motion.span
+          layoutId="na-pill-activa"
+          className="na-card-highlight"
+          transition={{ type: 'spring', stiffness: 480, damping: 38 }}
+        />
+      )}
       <span
         className="na-card-icono"
         style={{ background: `linear-gradient(135deg, ${negocio.color}, ${negocio.color}cc)` }}
@@ -67,7 +89,7 @@ function TarjetaNegocio({ negocio, activo, onSeleccionar }) {
         <span className="na-card-categoria">{negocio.categoria}</span>
       </span>
       <Icon name="arrow-right" size={15} className="na-card-flecha" />
-    </button>
+    </motion.button>
   )
 }
 
@@ -81,6 +103,7 @@ export default function NegociosAsociados() {
   const [mostrarFormulario, setMostrarFormulario] = useState(false)
   const [form, setForm] = useState(FORM_VACIO)
   const [notifEnviada, setNotifEnviada] = useState(false)
+  const [direccion, setDireccion] = useState(1)
   const fileInputRef = useRef(null)
 
   useEffect(() => {
@@ -109,6 +132,8 @@ export default function NegociosAsociados() {
   const siguiente = totalNegocios > 1 ? negociosAsociados[(idxSeleccionado + 1) % totalNegocios] : null
 
   const handleSeleccionar = (id) => {
+    const nuevoIdx = negociosAsociados.findIndex((n) => n.id === id)
+    setDireccion(nuevoIdx >= idxSeleccionado ? 1 : -1)
     setSeleccionadoId(id)
     setVistaDetalleMobile(true)
     setNotifEnviada(false)
@@ -193,7 +218,12 @@ export default function NegociosAsociados() {
               />
             </div>
 
-            <div className="na-lista">
+            <motion.div
+              className="na-lista"
+              initial="oculto"
+              animate="visible"
+              variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
+            >
               {filtrados.length === 0 ? (
                 <p className="na-lista-sin-resultados">No encontramos negocios con ese nombre.</p>
               ) : (
@@ -201,17 +231,21 @@ export default function NegociosAsociados() {
                   <TarjetaNegocio key={n.id} negocio={n} activo={n.id === seleccionadoId} onSeleccionar={handleSeleccionar} />
                 ))
               )}
-            </div>
+            </motion.div>
           </div>
 
           <div className="na-col-detalle">
+            <AnimatePresence mode="wait" custom={direccion}>
             {seleccionado && (
               <motion.div
                 key={seleccionado.id}
                 className="na-detalle"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                custom={direccion}
+                variants={VARIANTES_DETALLE}
+                initial="entrar"
+                animate="centro"
+                exit="salir"
+                transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
               >
                 <button className="na-detalle-volver" onClick={() => setVistaDetalleMobile(false)} type="button">
                   <Icon name="arrow-left" size={16} /> Negocios asociados
@@ -219,41 +253,57 @@ export default function NegociosAsociados() {
 
                 <div className="na-detalle-stack">
                   {siguiente && (
-                    <div
-                      className="na-stack-ghost na-stack-ghost--der"
+                    <motion.div
+                      className="na-stack-ghost"
                       aria-hidden="true"
+                      initial={{ opacity: 0, x: 60, scale: 0.9 }}
+                      animate={{ opacity: 0.55, x: 34, scale: 0.96 }}
+                      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
                       style={!siguiente.imagen ? { background: `linear-gradient(135deg, ${siguiente.color}, ${siguiente.color}cc)` } : undefined}
                     >
                       {siguiente.imagen && <img src={siguiente.imagen} alt="" className="na-detalle-img" />}
-                    </div>
+                    </motion.div>
                   )}
                   {anterior && (
-                    <div
-                      className="na-stack-ghost na-stack-ghost--izq"
+                    <motion.div
+                      className="na-stack-ghost"
                       aria-hidden="true"
+                      initial={{ opacity: 0, x: -60, scale: 0.9 }}
+                      animate={{ opacity: 0.55, x: -34, scale: 0.96 }}
+                      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
                       style={!anterior.imagen ? { background: `linear-gradient(135deg, ${anterior.color}, ${anterior.color}cc)` } : undefined}
                     >
                       {anterior.imagen && <img src={anterior.imagen} alt="" className="na-detalle-img" />}
-                    </div>
+                    </motion.div>
                   )}
 
                   <div className="na-detalle-media">
                     <MediaNegocio negocio={seleccionado} />
                     <div className="na-detalle-media-scrim" />
 
-                    <div className="na-detalle-media-top">
+                    <motion.div
+                      className="na-detalle-media-top"
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: 0.12 }}
+                    >
                       <span className={`na-chip-estado na-chip-estado--${seleccionado.estado.toLowerCase()}`}>
                         <span className="na-chip-dot" />
                         {seleccionado.estado}
                       </span>
-                    </div>
+                    </motion.div>
 
-                    <div className="na-detalle-media-bottom">
+                    <motion.div
+                      className="na-detalle-media-bottom"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: 0.18 }}
+                    >
                       <span className="na-chip-indice">
                         {idxSeleccionado + 1} · {seleccionado.categoria.toUpperCase()}
                       </span>
                       <p className="na-detalle-media-caption">{seleccionado.descripcion}</p>
-                    </div>
+                    </motion.div>
                   </div>
                 </div>
 
@@ -327,6 +377,7 @@ export default function NegociosAsociados() {
                 </div>
               </motion.div>
             )}
+            </AnimatePresence>
           </div>
         </div>
       )}
