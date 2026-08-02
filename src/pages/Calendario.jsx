@@ -35,7 +35,8 @@ function formatearFecha(iso) {
 
 export default function Calendario() {
   const navigate = useNavigate()
-  const { eventosCalendario, userType } = useStore()
+  const eventosCalendario = useStore((s) => s.eventosCalendario)
+  const userType = useStore((s) => s.userType)
   const [mesActual, setMesActual] = useState(() => new Date().getMonth())
   const [anioActual, setAnioActual] = useState(() => new Date().getFullYear())
   const [filtro, setFiltro] = useState('todas')

@@ -5,6 +5,7 @@ import CarouselAnuncios from '../components/CarouselAnuncios'
 import useStore from '../store/puntos_usestore'
 import useLikes from '../hooks/useLikes'
 import Icon from '../components/icons/Icon'
+import { COLORES_HOME } from '../styles/colores'
 import {
   categorias,
   promociones,
@@ -30,31 +31,9 @@ function useLocalData(key, fallback) {
   return data
 }
 
-const C = {
-  primary: '#003f5a',
-  primaryLight: '#e6eff4',
-  primaryDark: '#002e43',
-  bg: '#003f5a',
-  subtleBg: '#f4f8fb',
-  card: '#ffffff',
-  textDark: '#0b1b26',
-  textBody: '#3d5164',
-  textMuted: '#64798a',
-  border: '#e4eaef',
-  orange: '#c05900',
-  orangeDark: '#a34b00',
-  accent: '#007a7b',
-  accentDark: '#005c5e',
-  accentLight: '#e3f3f3',
-  greenBg: '#ecfdf5',
-  greenText: '#166534',
-  gold: '#fea02f',
-  goldDark: '#de8b27',
-  goldLight: '#fff3de',
-  onDark: '#ffffff',
-  onDarkMuted: 'rgba(255,255,255,0.72)',
-  onDarkFaint: 'rgba(255,255,255,0.5)',
-}
+// Los hex vivian escritos aca y repetidos en Mispuntos.jsx.
+// Ahora salen de un solo lugar; los valores son identicos.
+const C = COLORES_HOME
 
 const cardStyle = {
   backgroundColor: C.card,
@@ -821,7 +800,8 @@ function SeccionDestacadas() {
 }
 
 export default function Home() {
-  const { usuario, userType } = useStore()
+  const usuario = useStore((s) => s.usuario)
+  const userType = useStore((s) => s.userType)
 
   return (
     <div style={{
@@ -842,6 +822,12 @@ export default function Home() {
           .home-grid-2 { grid-template-columns: 1fr !important; }
           .home-grid-3 { grid-template-columns: 1fr !important; }
           .home-two-col { grid-template-columns: 1fr !important; }
+        }
+        /* Tablet: faltaba este tramo. Las de 3 columnas quedaban
+           demasiado angostas entre 601px y 1024px. */
+        @media (min-width: 601px) and (max-width: 1024px) {
+          .home-grid-3 { grid-template-columns: 1fr 1fr !important; }
+          .home-two-col { grid-template-columns: 1fr 1fr !important; }
         }
       `}</style>
 

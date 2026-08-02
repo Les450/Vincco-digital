@@ -19,6 +19,10 @@
   --gold-500: #fea02f;
   --gold-600: #de8b27;
 
+  /* Azul claro del panel de chips del carrusel de negocios */
+  --brand-sky: #62b2fe;
+  --brand-sky-dark: #3f97ea;
+
   --teal-500: #3f9c9c;
   --teal-600: #007a7b;
   --teal-700: #005c5e;
@@ -40,6 +44,18 @@
   --shadow-navy: 0 24px 60px rgba(0, 32, 46, 0.22);
   --shadow-card: 0 2px 14px rgba(0, 42, 61, 0.07);
   --shadow-card-lg: 0 10px 34px rgba(0, 42, 61, 0.10);
+
+  /* ── Layout responsive ───────────────────────────────────
+     Breakpoints del proyecto (usar siempre estos):
+       movil   -> hasta 480px
+       tablet  -> 481px a 1024px
+       laptop  -> 1025px en adelante
+     Como CSS no permite variables dentro de @media, los valores
+     estan documentados aqui pero se escriben literales abajo.   */
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --nav-height: 62px;
+  --nav-space: calc(var(--nav-height) + var(--safe-bottom) + 12px);
+  --shell-width: min(1200px, calc(100% - 2rem));
 
   color-scheme: light;
   font-family: var(--font-family);
@@ -64,6 +80,41 @@ body {
   background: var(--navy-800);
   color: var(--ink-900);
   text-rendering: optimizeLegibility;
+  /* Evita el scroll horizontal por elementos decorativos que se salen */
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Espacio reservado para la barra inferior fija.
+   Reemplaza el paddingBottom: 70px que estaba repetido en el router. */
+/* Pantalla de espera mientras se descarga el codigo de una ruta.
+   Usa el mismo navy de las paginas para que no haya flash blanco. */
+.route-fallback {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #002e43 0%, #003f5a 30%, #3f6f84 100%);
+}
+
+.page-shell {
+  padding-bottom: var(--nav-space);
+}
+
+/* Las paginas de adentro usan min-height: 100vh. Sumado al padding
+   del shell daba 100vh + 74px, o sea scroll de mas en pantallas
+   con poco contenido. Se les descuenta el alto del nav.
+   El !important es porque varias lo declaran con style inline. */
+.page-shell > * {
+  min-height: calc(100vh - var(--nav-space)) !important;
+}
+
+/* En tablet/laptop la barra flota separada del borde, hace falta mas aire */
+@media (min-width: 768px) {
+  .page-shell {
+    padding-bottom: calc(var(--nav-height) + 32px);
+  }
+
+  .page-shell > * {
+    min-height: calc(100vh - var(--nav-height) - 32px) !important;
+  }
 }
 
 img,
@@ -97,14 +148,34 @@ button {
     linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
 }
 
-main {
-  width: min(1200px, calc(100% - 2rem));
+main,
+.main {
+  width: var(--shell-width);
   margin: 0 auto;
   padding: 2rem 0 4rem;
 }
 
 section {
   padding: 4rem 0;
+}
+
+/* Tablet: menos aire vertical para no desperdiciar pantalla */
+@media (max-width: 1024px) {
+  section {
+    padding: 3rem 0;
+  }
+}
+
+/* Movil */
+@media (max-width: 480px) {
+  section {
+    padding: 2.25rem 0;
+  }
+
+  main,
+  .main {
+    padding: 1.25rem 0 2.5rem;
+  }
 }
 
 .section-header {
@@ -187,6 +258,18 @@ section {
     align-items: center;
   }
 
+  /* Tablet: 2 columnas. Tres quedan demasiado apretadas aca. */
+  .impact-grid,
+  .features-grid,
+  .categories-grid,
+  .impact-stats-grid,
+  .testimonial-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Laptop: recien aca pasan a 3 columnas */
+@media (min-width: 1025px) {
   .impact-grid,
   .features-grid,
   .categories-grid,
@@ -397,7 +480,8 @@ section {
   align-items: flex-start;
   background: var(--navy-900);
   border-radius: 20px 20px 0 0;
-  padding: 8px 4px 12px;
+  /* La safe-area evita que la barra de gestos del iPhone tape los botones */
+  padding: 8px 4px calc(12px + var(--safe-bottom));
   box-shadow: 0 -12px 30px rgba(0, 24, 36, 0.28);
   z-index: 1000;
 }
@@ -407,14 +491,17 @@ section {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  flex: 1;
-  max-width: 64px;
+  /* min-width: 0 permite que el boton se encoja sin desbordar el flex */
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 96px;
   background: none;
   border: none;
   cursor: pointer;
   color: rgba(255, 255, 255, 0.55);
-  padding: 4px 0;
+  padding: 4px 2px;
   transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .bottom-nav-btn--active {
@@ -427,17 +514,660 @@ section {
   justify-content: center;
   width: 24px;
   height: 24px;
+  flex-shrink: 0;
 }
 
 .bottom-nav-label {
   font-size: 10px;
   font-weight: 500;
-  white-space: nowrap;
   line-height: 1.2;
+  /* Si aun asi no entra, se corta con puntos suspensivos en vez de desbordar */
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-@media (max-width: 400px) {
+/* Movil chico: los labels ya vienen cortos desde BottomNav.jsx,
+   solo bajamos un punto el tamano */
+@media (max-width: 380px) {
   .bottom-nav-label {
     font-size: 9px;
+  }
+
+  .bottom-nav {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+}
+
+/* Tablet y laptop: la barra flota centrada en vez de estirarse
+   de borde a borde, que dejaba los iconos demasiado separados */
+@media (min-width: 768px) {
+  .bottom-nav {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: min(600px, calc(100% - 2rem));
+    bottom: 16px;
+    border-radius: 22px;
+    padding: 10px 8px calc(10px + var(--safe-bottom));
+    justify-content: space-between;
+    box-shadow: 0 18px 40px rgba(0, 24, 36, 0.32);
+  }
+
+  .bottom-nav-label {
+    font-size: 11px;
+  }
+}
+
+/* ── Carrusel de negocios asociados ────────────────────────
+   Usado por NegociosCarousel.jsx.
+   Movil: chips arriba, tarjeta abajo (columna).
+   Tablet/laptop: chips a la izquierda, tarjeta a la derecha. */
+
+/* Ocupa todo el ancho y todo el alto libre de la pagina.
+   .na es flex column, asi que flex:1 estira el carrusel. */
+.ncar {
+  width: 100%;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Fondo claro propio: despega el carrusel del degradado navy
+   de la pagina para que resalte como bloque independiente */
+.ncar-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: #f7fafc;
+  box-shadow: 0 30px 70px rgba(0, 20, 32, 0.32);
+}
+
+/* ── Columna de chips ── */
+.ncar-chips-col {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 20px;
+  background: var(--brand-sky);
+}
+
+/* ── Buscador ── */
+.ncar-search {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  padding: 0 16px;
+  margin-bottom: 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ncar-search-icono {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.ncar-search input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 0;
+  border: none;
+  background: none;
+  outline: none;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.ncar-search input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.ncar-chips-zona {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-height: 280px;
+}
+
+.ncar-sin-resultados {
+  margin: 0;
+  padding: 0 12px;
+  text-align: center;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Degradados que difuminan los chips al entrar y salir */
+.ncar-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 56px;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.ncar-fade--top {
+  top: 0;
+  background: linear-gradient(to bottom, var(--brand-sky), rgba(98, 178, 254, 0.7), transparent);
+}
+
+.ncar-fade--bottom {
+  bottom: 0;
+  background: linear-gradient(to top, var(--brand-sky), rgba(98, 178, 254, 0.7), transparent);
+}
+
+.ncar-chips-pista {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.ncar-chip-wrap {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.ncar-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 100%;
+  padding: 13px 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.4s, color 0.4s, border-color 0.4s;
+}
+
+.ncar-chip:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+}
+
+.ncar-chip--activo {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: var(--brand-sky-dark);
+  box-shadow: 0 6px 18px rgba(0, 40, 70, 0.14);
+}
+
+.ncar-chip-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: currentColor;
+}
+
+.ncar-chip-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+/* ── Columna de tarjetas ── */
+.ncar-cards-col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  padding: 28px 20px;
+  background: #f7fafc;
+}
+
+.ncar-cards-pista {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 4 / 5;
+}
+
+.ncar-card {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 26px;
+  border: 5px solid var(--surface);
+  background: var(--surface);
+  transform-origin: center;
+}
+
+.ncar-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter 0.6s;
+}
+
+.ncar-card-img--placeholder {
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.ncar-card-img--inactiva {
+  filter: grayscale(1) brightness(0.75) blur(2px);
+}
+
+.ncar-card-estado {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+  transition: opacity 0.3s;
+}
+
+.ncar-card-estado--oculto {
+  opacity: 0;
+}
+
+.ncar-card-punto {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 10px #ffffff;
+}
+
+/* El estado del negocio viene del store: Activo o Pendiente */
+.ncar-card-punto--activo {
+  background: #4ade80;
+  box-shadow: 0 0 10px #4ade80;
+}
+
+.ncar-card-punto--pendiente {
+  background: var(--gold-500);
+  box-shadow: 0 0 10px var(--gold-500);
+}
+
+.ncar-card-info {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 28px 24px 24px;
+  padding-top: 90px;
+  background: linear-gradient(to top, rgba(0, 20, 30, 0.92), rgba(0, 20, 30, 0.4) 55%, transparent);
+  pointer-events: none;
+}
+
+.ncar-card-badge {
+  width: fit-content;
+  max-width: 100%;
+  margin-bottom: 10px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-900);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-shadow: var(--shadow-card);
+}
+
+.ncar-card-nombre {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #ffffff;
+  /* Corta a 3 lineas para que descripciones largas no tapen la imagen */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Panel de datos y acciones del negocio activo ── */
+.ncar-panel {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Encabezado del panel: nombre del negocio + boton de editar */
+.ncar-panel-encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.ncar-panel-titulo {
+  min-width: 0;
+}
+
+.ncar-panel-categoria {
+  margin: 0 0 3px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-sky-dark);
+}
+
+.ncar-panel-titulo h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--ink-900);
+  word-break: break-word;
+}
+
+.ncar-btn-editar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  padding: 9px 15px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--navy-800);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.ncar-btn-editar:hover {
+  background: var(--brand-sky);
+  border-color: var(--brand-sky);
+  color: #ffffff;
+}
+
+.ncar-panel-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.ncar-panel-meta-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--slate-600);
+}
+
+.ncar-panel-meta-item svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--brand-sky-dark);
+}
+
+.ncar-panel-meta-item span {
+  min-width: 0;
+  word-break: break-word;
+}
+
+.ncar-panel-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ncar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  padding: 13px 18px;
+  border: none;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.ncar-btn-contenido {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+}
+
+.ncar-btn--whatsapp {
+  background: #25d366;
+  color: #05341a;
+}
+
+.ncar-btn--whatsapp:hover {
+  background: #1fbb59;
+}
+
+.ncar-btn--whatsapp[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ncar-btn--notificar {
+  background: var(--orange-500);
+  color: #ffffff;
+}
+
+.ncar-btn--notificar:hover {
+  background: var(--orange-600);
+}
+
+/* Tablet: las dos columnas se ponen lado a lado */
+@media (min-width: 768px) {
+  .ncar-shell {
+    flex-direction: row;
+    border-radius: 36px;
+    /* Piso, por si la ventana es muy baja. El alto real
+       lo da flex:1 estirandose en la pagina. */
+    min-height: 480px;
+  }
+
+  .ncar-chips-col {
+    width: 38%;
+    flex-shrink: 0;
+    justify-content: center;
+    padding: 28px;
+  }
+
+  .ncar-chips-zona {
+    justify-content: flex-start;
+  }
+
+  .ncar-chips-pista {
+    justify-content: flex-start;
+  }
+
+  .ncar-chip-wrap {
+    justify-content: flex-start;
+  }
+
+  .ncar-chip {
+    font-size: 15px;
+    padding: 14px 26px;
+  }
+
+  .ncar-cards-col {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    gap: 26px;
+    padding: 36px 32px;
+  }
+
+  /* Se dimensiona por altura de viewport para que crezca con la
+     pantalla, con un tope para que no se desborde */
+  .ncar-cards-pista {
+    max-width: min(360px, calc((100vh - 340px) * 0.8));
+  }
+
+  .ncar-panel-titulo h2 {
+    font-size: 22px;
+  }
+}
+
+/* Laptop: bloque bastante mas grande. La tarjeta va al lado de los
+   datos en vez de encima, y todo sube de tamano. */
+@media (min-width: 1025px) {
+  .ncar-shell {
+    min-height: 560px;
+    border-radius: 44px;
+  }
+
+  .ncar-chips-col {
+    width: 36%;
+    padding: 40px;
+  }
+
+  .ncar-chip {
+    font-size: 16px;
+    padding: 16px 30px;
+    gap: 14px;
+  }
+
+  .ncar-cards-col {
+    flex-direction: row;
+    align-items: center;
+    gap: 40px;
+    padding: 48px 44px;
+  }
+
+  .ncar-cards-pista {
+    max-width: min(420px, calc((100vh - 300px) * 0.8));
+  }
+
+  .ncar-panel {
+    max-width: 520px;
+    flex: 1;
+    min-width: 0;
+    gap: 20px;
+  }
+
+  .ncar-panel-titulo h2 {
+    font-size: 27px;
+  }
+
+  .ncar-panel-meta-item {
+    font-size: 14.5px;
+    gap: 12px;
+  }
+
+  .ncar-panel-acciones {
+    flex-direction: row;
+  }
+
+  .ncar-btn {
+    padding: 15px 20px;
+    font-size: 14.5px;
+  }
+
+  .ncar-card-nombre {
+    font-size: 21px;
+  }
+}
+
+/* Pantallas grandes: se aprovecha todavia mas el ancho */
+@media (min-width: 1440px) {
+  .ncar-cards-pista {
+    max-width: min(470px, calc((100vh - 300px) * 0.8));
+  }
+
+  .ncar-chip {
+    font-size: 17px;
+  }
+
+  .ncar-cards-col {
+    gap: 56px;
+    padding: 56px;
+  }
+}
+
+/* Movil chico: chips mas compactos para que entren los nombres largos */
+@media (max-width: 400px) {
+  .ncar-chip {
+    padding: 11px 18px;
+    font-size: 13px;
+    gap: 9px;
+  }
+
+  .ncar-cards-col {
+    padding: 24px 16px;
+  }
+
+  .ncar-cards-pista {
+    max-width: 250px;
+  }
+
+  .ncar-panel-titulo h2 {
+    font-size: 18px;
+  }
+
+  .ncar-btn-editar span {
+    display: none;
+  }
+
+  .ncar-btn-editar {
+    padding: 9px;
   }
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, Navigate } from 'react-router-dom'
 import useStore from '../store/puntos_usestore'
 import Icon from '../components/icons/Icon'
 import PublicacionesPanel from '../components/panel/PublicacionesPanel'
@@ -218,7 +218,8 @@ function SeccionPlaceholder({ id, label }) {
 export default function PanelSocio() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { userType, usuario } = useStore()
+  const userType = useStore((s) => s.userType)
+  const usuario = useStore((s) => s.usuario)
   const seccionInicial = location.pathname === '/publicaciones' ? 'publicaciones' : 'publicaciones'
   const [seccionActiva, setSeccionActiva] = useState(seccionInicial)
 
@@ -230,9 +231,11 @@ export default function PanelSocio() {
 
   const esSocio = userType === 'negocio' || userType === 'proveedor'
 
+  // Navegar dentro del render es un efecto secundario que React
+  // desaconseja. <Navigate> hace la redireccion de forma declarativa
+  // y replace evita ensuciar el historial del navegador.
   if (!esSocio) {
-    navigate('/home')
-    return null
+    return <Navigate to="/home" replace />
   }
 
   const nombreTipo = userType === 'negocio' ? 'Negocio' : 'Proveedor'

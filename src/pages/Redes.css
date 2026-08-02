@@ -1,0 +1,580 @@
+/* ── Redes sociales ───────────────────────────────────────
+   Breakpoints del proyecto: movil <=480, tablet 481-1024,
+   laptop >=1025. Paleta Vincco. */
+
+.rds {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: linear-gradient(180deg, #002e43 0%, #003f5a 30%, #3f6f84 100%);
+  min-height: 100vh;
+  color: #0b1b26;
+}
+
+/* El encabezado con boton volver + titulo se reemplazo por
+   HeroBannerRedes.jsx, que trae su propio CSS embebido.
+   Va como hermano de .rds-body (igual que HeroBanner en Home.jsx),
+   no como hijo, para que ocupe todo el ancho sin el padding
+   de las secciones de abajo. */
+
+.rds-body {
+  padding: 20px 20px 24px;
+}
+
+/* ── Secciones ────────────────────────────────────────── */
+
+.rds-seccion {
+  max-width: 1100px;
+  margin: 0 auto 28px;
+}
+
+.rds-seccion-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.rds-seccion-head h2 {
+  margin: 0 0 3px;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.rds-seccion-head p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.rds-contador {
+  flex-shrink: 0;
+  padding: 5px 13px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.rds-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.rds-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(254, 184, 98, 0.3);
+  background: rgba(254, 184, 98, 0.1);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #feb862;
+}
+
+.rds-aviso svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── Tarjeta de red propia ────────────────────────────── */
+
+.red-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.red-card--activa {
+  border-color: rgba(255, 255, 255, 0.26);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.red-card-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.red-card-icono {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+}
+
+.red-card-titulo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.red-card-nombre {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.red-card-valor {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.7);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.red-card-sin {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.red-card-check {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  color: #4ade80;
+}
+
+.red-card-acciones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.red-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border: none;
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, filter 0.2s;
+}
+
+.red-btn--conectar {
+  flex: 1;
+  color: #ffffff;
+}
+
+.red-btn--conectar:hover {
+  filter: brightness(1.12);
+}
+
+.red-btn--ver {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+
+.red-btn--ver:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.red-btn--editar {
+  background: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.red-btn--editar:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.red-btn--quitar {
+  padding: 9px 11px;
+  background: rgba(179, 38, 30, 0.18);
+  color: #ff9f97;
+}
+
+.red-btn--quitar:hover {
+  background: rgba(179, 38, 30, 0.3);
+}
+
+/* ── Redes oficiales de Vincco ────────────────────────── */
+
+.rds-oficial {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 15px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.rds-oficial:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-lg);
+}
+
+.rds-oficial-icono {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+}
+
+.rds-oficial-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.rds-oficial-nombre {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-900);
+}
+
+.rds-oficial-usuario {
+  font-size: 12px;
+  color: var(--slate-400);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rds-oficial-seguidores {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--slate-600);
+}
+
+.rds-oficial-flecha {
+  flex-shrink: 0;
+  color: var(--slate-400);
+}
+
+/* ── Invitación ───────────────────────────────────────── */
+
+.rds-invitacion {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow-card-lg);
+}
+
+.rds-codigo-label,
+.rds-compartir-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--slate-400);
+}
+
+.rds-codigo-fila {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 6px 6px 16px;
+  border-radius: 14px;
+  border: 1.5px dashed var(--line-strong);
+  background: var(--surface-alt);
+}
+
+.rds-codigo-valor {
+  flex: 1;
+  min-width: 0;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--navy-800);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rds-codigo-copiar {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 11px;
+  background: var(--navy-800);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.rds-codigo-copiar:hover {
+  filter: brightness(1.2);
+}
+
+.rds-copiar-contenido {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rds-compartir-botones {
+  display: flex;
+  gap: 10px;
+}
+
+.rds-compartir-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 13px;
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 700;
+  transition: filter 0.2s;
+}
+
+.rds-compartir-btn:hover {
+  filter: brightness(1.12);
+}
+
+/* ── Modal ────────────────────────────────────────────── */
+
+.rds-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 20, 30, 0.55);
+}
+
+.rds-modal {
+  width: 100%;
+  max-width: 440px;
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.rds-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.rds-modal-icono {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+}
+
+.rds-modal-header h3 {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink-900);
+}
+
+.rds-modal-cerrar {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--surface-alt);
+  color: var(--slate-600);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.rds-modal-cerrar:hover {
+  background: var(--slate-200);
+}
+
+.rds-modal-form {
+  padding: 20px;
+}
+
+.rds-modal-form label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink-900);
+}
+
+.rds-modal-form input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ink-900);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.rds-modal-form input:focus {
+  border-color: var(--navy-800);
+  box-shadow: 0 0 0 3px rgba(0, 63, 90, 0.12);
+}
+
+.rds-modal-ayuda {
+  margin: 9px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--slate-400);
+}
+
+.rds-modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.rds-btn-secundario,
+.rds-btn-primario {
+  padding: 11px 22px;
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, filter 0.15s;
+}
+
+.rds-btn-secundario {
+  background: var(--surface-alt);
+  color: var(--slate-600);
+}
+
+.rds-btn-secundario:hover {
+  background: var(--slate-200);
+}
+
+.rds-btn-primario {
+  background: linear-gradient(135deg, var(--orange-500), var(--orange-600));
+  color: #ffffff;
+}
+
+.rds-btn-primario:hover {
+  filter: brightness(1.1);
+}
+
+/* ── Tablet (481px a 1024px) ──────────────────────────── */
+
+@media (min-width: 481px) {
+  .rds-body {
+    padding: 28px 24px 32px;
+  }
+
+  .rds-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rds-invitacion {
+    grid-template-columns: 1fr 1fr;
+    align-items: end;
+    padding: 24px;
+  }
+}
+
+/* ── Laptop (1025px en adelante) ──────────────────────── */
+
+@media (min-width: 1025px) {
+  .rds-body {
+    padding: 36px 40px 40px;
+  }
+
+  .rds-seccion {
+    margin-bottom: 36px;
+  }
+
+  .rds-seccion-head h2 {
+    font-size: 19px;
+  }
+
+  .rds-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* Las oficiales son filas horizontales con usuario y seguidores,
+     necesitan mas ancho que las tarjetas de conectar */
+  .rds-grid--oficial {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rds-codigo-valor {
+    font-size: 19px;
+  }
+}
+
+/* ── Movil chico ──────────────────────────────────────── */
+
+@media (max-width: 380px) {
+  .rds-body {
+    padding: 16px 14px 24px;
+  }
+
+  .red-card {
+    padding: 14px;
+  }
+
+  .rds-codigo-fila {
+    padding-left: 12px;
+  }
+
+  .rds-codigo-valor {
+    font-size: 15px;
+  }
+
+  .rds-compartir-botones {
+    flex-direction: column;
+  }
+}

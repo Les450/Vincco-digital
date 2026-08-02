@@ -1228,6 +1228,15 @@
   margin: 0;
 }
 
+/* Laptop chica / tablet horizontal: 5 columnas con gap de 40px
+   dejaban los enlaces demasiado angostos */
+@media (min-width: 901px) and (max-width: 1100px) {
+  .vc-footer-grid {
+    grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr;
+    gap: 24px;
+  }
+}
+
 @media (max-width: 900px) {
   .vc-footer-grid {
     grid-template-columns: 1fr 1fr;
@@ -1241,6 +1250,7 @@
 @media (max-width: 480px) {
   .vc-footer-grid {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
 }
 

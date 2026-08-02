@@ -428,7 +428,8 @@ function InventarioSection() {
 
 export default function PanelNegocio() {
   const navigate = useNavigate()
-  const { userType, usuario } = useStore()
+  const userType = useStore((s) => s.userType)
+  const usuario = useStore((s) => s.usuario)
   const [tabActiva, setTabActiva] = useState('publicaciones')
 
   const esNegocio = userType === 'negocio'

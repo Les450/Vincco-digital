@@ -2,7 +2,9 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import useStore from '../store/puntos_usestore'
 
 function useTabs() {
-  const { userType } = useStore()
+  // Selector: solo re-renderiza cuando cambia userType, no ante
+  // cualquier cambio del store (notificaciones, puntos, etc.)
+  const userType = useStore((s) => s.userType)
   const esSocio = userType === 'negocio' || userType === 'proveedor'
 
   const tabs = [
@@ -26,7 +28,7 @@ function useTabs() {
       ),
     },
     {
-      label: userType === 'negocio' ? 'Panel negocio' : esSocio ? 'Panel socio' : 'Recompensas',
+      label: userType === 'negocio' ? 'Panel' : esSocio ? 'Panel' : 'Premios',
       path: userType === 'negocio' ? '/panel-negocio' : esSocio ? '/recompensas' : '/puntos',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -35,7 +37,8 @@ function useTabs() {
       ),
     },
     {
-      label: 'Publicaciones',
+      id: 'publicaciones',
+      label: 'Publicar',
       path: '/publicaciones',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -57,7 +60,8 @@ function useTabs() {
       ),
     },
     {
-      label: 'Notificaciones',
+      id: 'notificaciones',
+      label: 'Avisos',
       path: '/notificaciones',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -68,7 +72,9 @@ function useTabs() {
     },
   ]
 
-  return userType === 'usuario' ? tabs.filter(t => t.label !== 'Publicaciones') : tabs
+  // Se filtra por id, no por label: los textos son cortos para que entren
+  // en pantallas de 360px y pueden cambiar sin romper esta logica.
+  return userType === 'usuario' ? tabs.filter(t => t.id !== 'publicaciones') : tabs
 }
 
 export default function BottomNav() {

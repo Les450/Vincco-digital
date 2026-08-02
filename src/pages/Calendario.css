@@ -4,7 +4,9 @@
   font-family: 'Inter', 'Segoe UI', sans-serif;
   background: linear-gradient(180deg, #002e43 0%, #003f5a 30%, #3f6f84 100%);
   min-height: 100vh;
-  padding: 20px 20px 100px;
+  /* El espacio para la barra inferior lo reserva .page-shell (App.css),
+     que ademas contempla la safe-area del celular. */
+  padding: 20px 20px 24px;
   color: #0b1b26;
 }
 
@@ -467,7 +469,7 @@
 
 @media (max-width: 480px) {
   .cal {
-    padding: 16px 16px 100px;
+    padding: 16px 16px 24px;
   }
 
   .cal-grid-wrapper {
@@ -488,5 +490,46 @@
 
   .cal-evento-contenido {
     padding: 10px 10px 10px 0;
+  }
+}
+
+/* Tablet y laptop: el calendario ocupaba todo el ancho de la pantalla
+   y las celdas quedaban enormes. Se centra con ancho maximo. */
+@media (min-width: 768px) {
+  .cal {
+    padding: 32px 24px 32px;
+  }
+
+  .cal-header,
+  .cal-filtros,
+  .cal-leyenda,
+  .cal-mes-nav,
+  .cal-grid-wrapper {
+    width: 100%;
+    max-width: 860px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cal-grid-wrapper {
+    padding: 20px;
+  }
+
+  .cal-grid {
+    gap: 6px;
+  }
+}
+
+/* Movil muy chico: el titulo del mes con min-width 160px
+   apretaba las flechas de navegacion */
+@media (max-width: 360px) {
+  .cal-mes-titulo {
+    min-width: 0;
+    flex: 1;
+    font-size: 15px;
+  }
+
+  .cal {
+    padding: 16px 12px 24px;
   }
 }

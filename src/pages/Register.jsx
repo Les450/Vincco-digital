@@ -92,7 +92,7 @@ const TIPO_NEGOCIO_OPTIONS = ['Físico', 'Delivery', 'Freelancer']
 
 export default function Register() {
   const navigate = useNavigate()
-  const { setUserType } = useStore()
+  const setUserType = useStore((s) => s.setUserType)
   const [step, setStep] = useState(0)
   const [direction, setDirection] = useState('forward')
   const [formData, setFormData] = useState(INITIAL_FORM)

@@ -2,24 +2,11 @@ import { useState, useEffect } from 'react'
 import useStore from '../store/puntos_usestore'
 import Icon from '../components/icons/Icon'
 import { recompensas, niveles, consejosPuntos, negociosFavoritos } from '../data/data_falso'
+import { COLORES_PUNTOS } from '../styles/colores'
 
-const C = {
-  navy900: '#002e43',
-  navy800: '#003f5a',
-  navy600: '#3f6f84',
-  orange: '#dd6600',
-  orangeDark: '#c05900',
-  gold: '#fea02f',
-  goldDark: '#de8b27',
-  teal: '#007a7b',
-  ink: '#0b1b26',
-  textBody: '#3d5164',
-  textMuted: '#64798a',
-  border: '#e4eaef',
-  card: '#ffffff',
-  subtleBg: '#f4f8fb',
-  surface: '#ffffff',
-}
+// Los hex vivian escritos aca y repetidos en Home.jsx.
+// Ahora salen de un solo lugar; los valores son identicos.
+const C = COLORES_PUNTOS
 
 const cardStyle = {
   backgroundColor: C.card,
@@ -314,7 +301,7 @@ function CarouselAnunciosNegocios() {
 }
 
 export default function MisPuntos() {
-  const { usuario } = useStore()
+  const usuario = useStore((s) => s.usuario)
   const nivel = nivelActual(usuario.puntos)
   const sigNivel = siguienteNivel(usuario.puntos)
   const progresoNivel = sigNivel
@@ -327,11 +314,19 @@ export default function MisPuntos() {
       background: 'linear-gradient(180deg, #002e43 0%, #003f5a 38%, #3f6f84 100%)',
       minHeight: '100vh',
       fontFamily: "'Inter', 'Segoe UI', sans-serif",
-      paddingBottom: 100,
+      // El espacio de la barra inferior lo reserva .page-shell (App.css)
+      paddingBottom: 24,
     }}>
       <style>{`
+        /* El !important es necesario porque los grid van con style inline,
+           que gana en especificidad sobre una clase */
         @media (max-width: 480px) {
           .mp-grid-2 { grid-template-columns: 1fr !important; }
+          .mp-grid-4 { grid-template-columns: 1fr 1fr !important; }
+        }
+        /* Tablet: faltaba este tramo, quedaban 3 y 4 columnas apretadas */
+        @media (min-width: 481px) and (max-width: 1024px) {
+          .mp-grid-2 { grid-template-columns: 1fr 1fr !important; }
           .mp-grid-4 { grid-template-columns: 1fr 1fr !important; }
         }
       `}</style>
@@ -499,11 +494,12 @@ export default function MisPuntos() {
           }}>
             <p style={eyebrowStyle}>GANÁ PUNTOS</p>
           </div>
-          <div style={{
+          {/* className va como prop del div, no dentro de style:
+              estaba adentro y por eso las media queries no aplicaban */}
+          <div className="mp-grid-4" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
             gap: 12,
-            className: 'mp-grid-4',
           }}>
             {consejosPuntos.map((c) => (
               <div key={c.id} style={{
@@ -579,11 +575,10 @@ export default function MisPuntos() {
             </span>
           </div>
 
-          <div style={{
+          <div className="mp-grid-2" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
             gap: 14,
-            className: 'mp-grid-2',
           }}>
             {recompensas.map((r) => (
               <RecompensaCard key={r.id} r={r} puntos={usuario.puntos} />

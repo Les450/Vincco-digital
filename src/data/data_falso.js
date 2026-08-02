@@ -112,6 +112,252 @@ export const negociosAsociados = [
   { id: 5, nombre: "Restaurante La Terraza", categoria: "Restaurante", propietario: "Roberto Sánchez", whatsapp: "+505 8855 6677", correo: "laterraza.restaurante@gmail.com", direccion: "Salida hacia El Rama, km 1", municipio: "Nueva Guinea", departamento: "RACCS", descripcion: "Comida típica nicaragüense y platillos a la carta.", imagen: null, estado: "Activo", color: "#dd6600" },
 ]
 
+/* ── Centro de ayuda ──────────────────────────────────────── */
+
+export const canalesSoporte = [
+  {
+    id: 'chat',
+    icono: 'message-circle',
+    titulo: 'Chat en vivo',
+    descripcion: 'Habla con un agente en tiempo real para resolver tu problema al instante.',
+    disponibilidad: 'Disponible 8AM - 6PM',
+    accion: 'Iniciar chat',
+    color: '#003f5a',
+  },
+  {
+    id: 'correo',
+    icono: 'mail',
+    titulo: 'Correo electrónico',
+    descripcion: 'Envía tu consulta detallada y recibirás respuesta en máximo 24 horas.',
+    disponibilidad: 'Respuesta en 24h',
+    accion: 'Enviar correo',
+    color: '#005c5e',
+    href: 'mailto:soporte@vincco.local',
+  },
+  {
+    id: 'whatsapp',
+    icono: 'smartphone',
+    titulo: 'WhatsApp',
+    descripcion: 'Mensaje instantáneo con nuestro equipo de soporte disponible.',
+    disponibilidad: 'Disponible 8AM - 8PM',
+    accion: 'Enviar mensaje',
+    color: '#007a7b',
+    href: 'https://wa.me/50557178100',
+  },
+  {
+    id: 'llamada',
+    icono: 'phone',
+    titulo: 'Llamada telefónica',
+    descripcion: 'Habla directamente con nuestro equipo de atención al cliente.',
+    disponibilidad: 'Disponible 8AM - 6PM',
+    accion: 'Llamar ahora',
+    color: '#c05900',
+    href: 'tel:+50557178100',
+  },
+]
+
+export const rolesAyuda = [
+  { id: 'usuarios', label: 'Usuarios', icono: 'users' },
+  { id: 'comercios', label: 'Comercios', icono: 'store' },
+  { id: 'proveedores', label: 'Proveedores', icono: 'truck' },
+]
+
+export const preguntasFrecuentes = {
+  usuarios: [
+    {
+      id: 'u1',
+      categoria: 'Cuenta',
+      pregunta: '¿Cómo creo mi cuenta en Vincco?',
+      respuesta: 'Descarga la app o entra desde la web, toca "Registrarme" y elige el perfil de Usuario. Solo necesitas tu nombre, un correo y un número de teléfono. La verificación llega por WhatsApp en menos de un minuto.',
+    },
+    {
+      id: 'u2',
+      categoria: 'Puntos',
+      pregunta: '¿Cómo gano puntos en cada compra?',
+      respuesta: 'Cada comercio afiliado tiene su propia tasa de puntos. Al pagar, muestra tu código de Vincco y el comercio lo registra. Los puntos aparecen en tu cuenta al instante y puedes verlos en la sección Mis Puntos.',
+    },
+    {
+      id: 'u3',
+      categoria: 'Puntos',
+      pregunta: '¿Cómo canjeo mis puntos?',
+      respuesta: 'Entra a Mis Puntos, elige la recompensa que quieras y toca Canjear. Se genera un código que mostrás en el comercio. Las recompensas no tienen fecha de vencimiento mientras el comercio siga activo en la plataforma.',
+    },
+    {
+      id: 'u4',
+      categoria: 'Puntos',
+      pregunta: '¿Mis puntos se vencen?',
+      respuesta: 'Los puntos se mantienen activos mientras uses tu cuenta al menos una vez cada 12 meses. Si pasa más de un año sin actividad, te avisamos por notificación antes de cualquier ajuste.',
+    },
+    {
+      id: 'u5',
+      categoria: 'Seguridad',
+      pregunta: '¿Es segura mi información personal?',
+      respuesta: 'Sí. Tus datos viajan cifrados y solo compartimos con los comercios la información mínima para validar tu compra. Nunca vendemos tu información a terceros y podés pedir que se elimine tu cuenta cuando quieras.',
+    },
+    {
+      id: 'u6',
+      categoria: 'Cuenta',
+      pregunta: 'Olvidé mi contraseña, ¿qué hago?',
+      respuesta: 'En la pantalla de inicio de sesión toca "Olvidé mi contraseña" y te enviamos un código al número registrado. Si ya no tenés acceso a ese número, escribinos por cualquiera de los canales de soporte.',
+    },
+  ],
+  comercios: [
+    {
+      id: 'c1',
+      categoria: 'Registro',
+      pregunta: '¿Qué necesito para afiliar mi negocio?',
+      respuesta: 'Registrate eligiendo el perfil de Comercio. Pedimos el nombre del negocio, la dirección, un número de WhatsApp y la categoría. No necesitás estar formalizado para empezar, pero sí para acceder al ranking mensual.',
+    },
+    {
+      id: 'c2',
+      categoria: 'Puntos',
+      pregunta: '¿Cómo defino cuántos puntos doy por compra?',
+      respuesta: 'Desde tu Panel de Negocio, en la sección de configuración de puntos, establecés cuántos puntos entregás por cada compra o por monto gastado. Podés cambiarlo cuando quieras y aplica desde la siguiente venta.',
+    },
+    {
+      id: 'c3',
+      categoria: 'Inventario',
+      pregunta: '¿Cómo funcionan las alertas de stock?',
+      respuesta: 'En Inventario cargás tus productos y definís un stock mínimo para cada uno. Cuando la cantidad baja de ese número, Vincco te manda una notificación para que puedas cotizar con tus proveedores a tiempo.',
+    },
+    {
+      id: 'c4',
+      categoria: 'Proveedores',
+      pregunta: '¿Puedo cotizar con proveedores desde la app?',
+      respuesta: 'Sí. En el directorio de proveedores elegís uno y le enviás una solicitud de cotización con los productos que necesitás. El proveedor responde desde su panel y te llega la respuesta como notificación.',
+    },
+    {
+      id: 'c5',
+      categoria: 'Publicaciones',
+      pregunta: '¿Cómo publico una promoción?',
+      respuesta: 'Desde Publicaciones creás una promoción con imagen, descripción y vigencia. Aparece en el inicio de los usuarios cercanos a tu negocio y en tu perfil dentro del directorio.',
+    },
+    {
+      id: 'c6',
+      categoria: 'Costos',
+      pregunta: '¿Tiene algún costo estar en Vincco?',
+      respuesta: 'El registro y las herramientas básicas de gestión son gratuitas. Más adelante habrá planes con funciones adicionales, pero siempre vas a poder seguir usando la versión gratuita.',
+    },
+  ],
+  proveedores: [
+    {
+      id: 'p1',
+      categoria: 'Registro',
+      pregunta: '¿Cómo me registro como proveedor?',
+      respuesta: 'Elegí el perfil de Proveedor al registrarte. Vas a necesitar el nombre de la empresa, las categorías de productos que distribuís y la zona de cobertura. Un miembro del equipo valida tu perfil antes de publicarlo.',
+    },
+    {
+      id: 'p2',
+      categoria: 'Negocios',
+      pregunta: '¿Qué son los negocios asociados?',
+      respuesta: 'Son los comercios a los que ya abastecés. Los agregás desde el menú, en Negocios Asociados, y con su consentimiento podés mostrarlos públicamente en tu perfil como respaldo de tu trayectoria.',
+    },
+    {
+      id: 'p3',
+      categoria: 'Cotizaciones',
+      pregunta: '¿Cómo respondo una cotización?',
+      respuesta: 'Cuando un comercio te solicita una cotización te llega una notificación. Desde tu panel ves los productos pedidos, cargás precios y disponibilidad, y enviás la respuesta. El comercio la recibe al instante.',
+    },
+    {
+      id: 'p4',
+      categoria: 'Reputación',
+      pregunta: '¿Cómo construyo mi reputación en la plataforma?',
+      respuesta: 'Tu posición en el ranking mensual depende de las reseñas de los comercios que abastecés, la rapidez con que respondés cotizaciones y la cantidad de negocios asociados verificados.',
+    },
+    {
+      id: 'p5',
+      categoria: 'Negocios',
+      pregunta: '¿Puedo editar la información de un negocio asociado?',
+      respuesta: 'Sí. En Negocios Asociados seleccioná el negocio y tocá el botón Editar. Podés actualizar contacto, dirección, descripción e imagen. Los cambios se guardan al instante.',
+    },
+    {
+      id: 'p6',
+      categoria: 'Cobertura',
+      pregunta: '¿Puedo atender más de un municipio?',
+      respuesta: 'Sí. En tu perfil definís todas las zonas donde distribuís. Los comercios de esos municipios te van a ver en su directorio de proveedores cercanos.',
+    },
+  ],
+}
+
+export const articulosAyuda = [
+  {
+    id: 'a1',
+    icono: 'star',
+    rol: 'Usuarios',
+    minutos: 5,
+    titulo: 'Cómo maximizar tus puntos Vincco',
+    resumen: 'Estrategias y consejos para acumular puntos más rápido y aprovechar al máximo tu membresía.',
+    color: '#fea02f',
+  },
+  {
+    id: 'a2',
+    icono: 'store',
+    rol: 'Comercios',
+    minutos: 12,
+    titulo: 'Guía completa para comerciantes',
+    resumen: 'Todo lo que necesitás saber para gestionar tu comercio en Vincco y aumentar tus ventas.',
+    color: '#007a7b',
+  },
+  {
+    id: 'a3',
+    icono: 'package',
+    rol: 'Comercios',
+    minutos: 8,
+    titulo: 'Conectar tu inventario automáticamente',
+    resumen: 'Sincronizá tu inventario en tiempo real y mantené tu stock siempre actualizado.',
+    color: '#003f5a',
+  },
+  {
+    id: 'a4',
+    icono: 'megaphone',
+    rol: 'Comercios',
+    minutos: 6,
+    titulo: 'Crear promociones efectivas',
+    resumen: 'Tips para diseñar ofertas que atraigan clientes y aumenten tu conversión.',
+    color: '#c05900',
+  },
+  {
+    id: 'a5',
+    icono: 'file-text',
+    rol: 'Proveedores',
+    minutos: 7,
+    titulo: 'Cómo cotizar en Vincco',
+    resumen: 'Proceso paso a paso para responder cotizaciones y cerrar negocios con comercios.',
+    color: '#005c5e',
+  },
+  {
+    id: 'a6',
+    icono: 'award',
+    rol: 'Proveedores',
+    minutos: 6,
+    titulo: 'Construir tu reputación',
+    resumen: 'Estrategias para obtener reseñas positivas y aumentar tu credibilidad en la plataforma.',
+    color: '#8f5a00',
+  },
+]
+
+/* ── Redes sociales ───────────────────────────────────────── */
+
+// Cuentas oficiales de Vincco. Cambiar por las reales antes de publicar.
+export const redesVincco = [
+  { id: 'facebook', usuario: 'vinccolocal', url: 'https://facebook.com/vinccolocal', seguidores: '2.4k' },
+  { id: 'instagram', usuario: 'vinccolocal', url: 'https://instagram.com/vinccolocal', seguidores: '1.8k' },
+  { id: 'whatsapp', usuario: '+505 5717 8100', url: 'https://wa.me/50557178100', seguidores: 'Canal' },
+  { id: 'tiktok', usuario: 'vinccolocal', url: 'https://tiktok.com/@vinccolocal', seguidores: '960' },
+  { id: 'youtube', usuario: 'vinccolocal', url: 'https://youtube.com/@vinccolocal', seguidores: '340' },
+  { id: 'threads', usuario: 'vinccolocal', url: 'https://threads.net/@vinccolocal', seguidores: '210' },
+]
+
+export const tiposConsulta = [
+  'Problema técnico',
+  'Puntos y recompensas',
+  'Mi cuenta',
+  'Comercios',
+  'Proveedores',
+  'Alianzas',
+  'Otro',
+]
+
 export const destacadas = [
   { id: 1, titulo: "Boutique Alma", descripcion: "Colección de temporada con los looks más pedidos por nuestras clientas.", categoria: "Ropa", likes: 128 },
   { id: 2, titulo: "Café del Barrio", descripcion: "El café de origen nicaragüense favorito del barrio, ahora con nueva carta.", categoria: "Cafetería", likes: 96 },

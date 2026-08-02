@@ -4,7 +4,9 @@
   font-family: 'Inter', 'Segoe UI', sans-serif;
   background: linear-gradient(180deg, #002e43 0%, #003f5a 30%, #3f6f84 100%);
   min-height: 100vh;
-  padding: 20px 20px 100px;
+  /* El espacio para la barra inferior lo reserva .page-shell (App.css),
+     que ademas contempla la safe-area del celular. */
+  padding: 20px 20px 24px;
   color: #0b1b26;
 }
 
@@ -300,7 +302,7 @@
 
 @media (max-width: 480px) {
   .fav {
-    padding: 16px 16px 100px;
+    padding: 16px 16px 24px;
   }
 
   .fav-card {
@@ -321,5 +323,44 @@
   .fav-card-perfil {
     padding: 7px 12px;
     font-size: 11px;
+  }
+}
+
+/* Tablet: la lista era una sola columna que se estiraba a lo ancho
+   de la pantalla. Se centra y se aprovecha el espacio en dos columnas. */
+@media (min-width: 768px) {
+  .fav {
+    padding: 32px 24px 32px;
+  }
+
+  .fav-header,
+  .fav-categorias,
+  .fav-lista,
+  .fav-vacio {
+    width: 100%;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .fav-lista {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    align-items: start;
+  }
+}
+
+/* Laptop: tres columnas y un poco mas de ancho util */
+@media (min-width: 1200px) {
+  .fav-header,
+  .fav-categorias,
+  .fav-lista,
+  .fav-vacio {
+    max-width: 1200px;
+  }
+
+  .fav-lista {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

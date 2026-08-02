@@ -139,7 +139,8 @@ function DotMap() {
 
 export default function Landing() {
   const navigate = useNavigate()
-  const { setLoggedIn, setUserType } = useStore()
+  const setLoggedIn = useStore((s) => s.setLoggedIn)
+  const setUserType = useStore((s) => s.setUserType)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [userType, setUserTypeLocal] = useState('usuario')
@@ -177,7 +178,7 @@ export default function Landing() {
                 transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
                 className="mb-6"
               >
-                <img src={VINCCO_LOGO} alt="VINCCO" className="w-16 h-16 object-contain rounded-full shadow-lg shadow-[#003f5a]/20 bg-white p-2" />
+                <img src={VINCCO_LOGO} alt="VINCCO" className="w-16 h-16 object-contain rounded-full shadow-lg shadow-[#003f5a]/20 bg-[#003f5a] p-2.5" />
               </motion.div>
               <motion.h2
                 initial={{ opacity: 0, y: -20 }}
@@ -207,7 +208,7 @@ export default function Landing() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
           >
-            <img src={VINCCO_LOGO} alt="VINCCO" className="w-[52px] h-[52px] object-contain block mx-auto" />
+            <img src={VINCCO_LOGO} alt="VINCCO" className="w-[52px] h-[52px] object-contain block mx-auto rounded-full bg-[#003f5a] p-2 shadow-md shadow-[#003f5a]/20" />
           </motion.div>
 
           <motion.p

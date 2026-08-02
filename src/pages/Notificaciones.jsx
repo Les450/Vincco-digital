@@ -27,7 +27,10 @@ function formatearFecha(iso) {
 
 export default function Notificaciones() {
   const navigate = useNavigate()
-  const { notificaciones, userType, marcarNotificacionLeida, marcarTodasLeidas } = useStore()
+  const notificaciones = useStore((s) => s.notificaciones)
+  const userType = useStore((s) => s.userType)
+  const marcarNotificacionLeida = useStore((s) => s.marcarNotificacionLeida)
+  const marcarTodasLeidas = useStore((s) => s.marcarTodasLeidas)
   const [filtro, setFiltro] = useState('todas')
 
   const notificacionesFiltradas = useMemo(() => {

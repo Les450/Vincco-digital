@@ -131,7 +131,15 @@ function DotGridBackground() {
       }
     }
 
-    dots.forEach((dot, index) => {
+    // Se agrupan los puntos por color en vez de hacer
+    // beginPath + fillStyle + fill uno por uno. Con ~1800 puntos eso
+    // eran 1800 cambios de estado del contexto por frame; agrupados
+    // bajan a unas pocas decenas. El resultado dibujado es el mismo.
+    const porColor = new Map()
+
+    for (let index = 0; index < dots.length; index++) {
+      const dot = dots[index]
+
       dot.currentOpacity += dot.opacitySpeed
       if (dot.currentOpacity >= dot.targetOpacity || dot.currentOpacity <= BASE_OPACITY_MIN) {
         dot.opacitySpeed = -dot.opacitySpeed
@@ -153,10 +161,23 @@ function DotGridBackground() {
 
       const opacity = Math.min(1, dot.currentOpacity + interaction * OPACITY_BOOST)
       const radius = BASE_RADIUS + interaction * RADIUS_BOOST
+      const color = `rgba(255,194,107,${opacity.toFixed(3)})`
 
+      const grupo = porColor.get(color)
+      if (grupo) grupo.push(dot.x, dot.y, radius)
+      else porColor.set(color, [dot.x, dot.y, radius])
+    }
+
+    porColor.forEach((coords, color) => {
+      ctx.fillStyle = color
       ctx.beginPath()
-      ctx.fillStyle = `rgba(255,194,107,${opacity.toFixed(3)})`
-      ctx.arc(dot.x, dot.y, radius, 0, Math.PI * 2)
+      for (let i = 0; i < coords.length; i += 3) {
+        const x = coords[i]
+        const y = coords[i + 1]
+        const r = coords[i + 2]
+        ctx.moveTo(x + r, y)
+        ctx.arc(x, y, r, 0, Math.PI * 2)
+      }
       ctx.fill()
     })
 
@@ -164,19 +185,60 @@ function DotGridBackground() {
   }, [])
 
   useEffect(() => {
+    const canvas = canvasRef.current
     handleResize()
+
     const handleLeave = () => { mousePositionRef.current = { x: null, y: null } }
+
+    // ── Control de reproduccion ────────────────────────────
+    // Antes el requestAnimationFrame corria siempre: seguia dibujando
+    // ~1800 puntos a 60fps aunque el hero estuviera fuera de pantalla
+    // o la pestana estuviera en segundo plano. Ahora solo corre
+    // cuando el canvas se ve y la pestana esta activa.
+    let visibleEnPantalla = true
+    let pestanaActiva = !document.hidden
+
+    const parar = () => {
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current)
+        animationFrameId.current = null
+      }
+    }
+
+    const sincronizar = () => {
+      const deberiaCorrer = visibleEnPantalla && pestanaActiva
+      if (deberiaCorrer && !animationFrameId.current) {
+        animationFrameId.current = requestAnimationFrame(animate)
+      } else if (!deberiaCorrer) {
+        parar()
+      }
+    }
+
+    const observer = typeof IntersectionObserver !== 'undefined'
+      ? new IntersectionObserver(
+        ([entrada]) => { visibleEnPantalla = entrada.isIntersecting; sincronizar() },
+        { threshold: 0 }
+      )
+      : null
+
+    if (observer && canvas) observer.observe(canvas)
+
+    const handleVisibilidad = () => { pestanaActiva = !document.hidden; sincronizar() }
 
     window.addEventListener('resize', handleResize)
     window.addEventListener('mousemove', handleMouseMove, { passive: true })
     document.documentElement.addEventListener('mouseleave', handleLeave)
-    animationFrameId.current = requestAnimationFrame(animate)
+    document.addEventListener('visibilitychange', handleVisibilidad)
+
+    sincronizar()
 
     return () => {
       window.removeEventListener('resize', handleResize)
       window.removeEventListener('mousemove', handleMouseMove)
       document.documentElement.removeEventListener('mouseleave', handleLeave)
-      if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current)
+      document.removeEventListener('visibilitychange', handleVisibilidad)
+      if (observer) observer.disconnect()
+      parar()
     }
   }, [handleResize, handleMouseMove, animate])
 

@@ -1,22 +1,11 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import useStore from '../store/puntos_usestore'
 import Icon from '../components/icons/Icon'
+import NegociosCarousel from '../components/NegociosCarousel'
 import { categoriasNegocioAsociado } from '../data/data_falso'
 import './NegociosAsociados.css'
-
-const CAT_ICONOS = {
-  'Pulpería': 'store',
-  'Ferretería': 'tool',
-  'Farmacia': 'heart',
-  'Boutique': 'shirt',
-  'Restaurante': 'utensils',
-  'Cafetería': 'coffee',
-  'Agroservicio': 'package',
-  'Tecnología': 'laptop',
-  'Otro': 'store',
-}
 
 const COLORES_NUEVO = ['#007a7b', '#c05900', '#005c5e', '#a34b00', '#dd6600', '#003f5a']
 
@@ -30,91 +19,22 @@ function soloDigitos(valor) {
   return (valor || '').replace(/\D/g, '')
 }
 
-function MediaNegocio({ negocio, size = 56 }) {
-  const icono = CAT_ICONOS[negocio.categoria] || 'store'
-  if (negocio.imagen) {
-    return <img src={negocio.imagen} alt={negocio.nombre} className="na-detalle-img" />
-  }
-  return (
-    <div
-      className="na-detalle-img na-detalle-img--placeholder"
-      style={{ background: `linear-gradient(135deg, ${negocio.color} 0%, ${negocio.color}cc 100%)` }}
-    >
-      <div className="na-detalle-img-patron" />
-      <Icon name={icono} size={size} style={{ color: '#ffffff' }} />
-    </div>
-  )
-}
-
-const VARIANTES_ITEM_LISTA = {
-  oculto: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0 },
-}
-
-const VARIANTES_DETALLE = {
-  entrar: (dir) => ({ opacity: 0, x: dir * 36, scale: 0.98 }),
-  centro: { opacity: 1, x: 0, scale: 1 },
-  salir: (dir) => ({ opacity: 0, x: -dir * 36, scale: 0.98 }),
-}
-
-function TarjetaNegocio({ negocio, activo, onSeleccionar }) {
-  const icono = CAT_ICONOS[negocio.categoria] || 'store'
-  return (
-    <motion.button
-      type="button"
-      className={`na-card ${activo ? 'na-card--activa' : ''}`}
-      onClick={() => onSeleccionar(negocio.id)}
-      variants={VARIANTES_ITEM_LISTA}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.97 }}
-      transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-    >
-      {activo && (
-        <motion.span
-          layoutId="na-pill-activa"
-          className="na-card-highlight"
-          transition={{ type: 'spring', stiffness: 480, damping: 38 }}
-        />
-      )}
-      <span
-        className="na-card-icono"
-        style={{ background: `linear-gradient(135deg, ${negocio.color}, ${negocio.color}cc)` }}
-      >
-        {negocio.imagen
-          ? <img src={negocio.imagen} alt="" />
-          : <Icon name={icono} size={19} style={{ color: '#ffffff' }} />}
-      </span>
-      <span className="na-card-info">
-        <span className="na-card-nombre">{negocio.nombre}</span>
-        <span className="na-card-categoria">{negocio.categoria}</span>
-      </span>
-      <Icon name="arrow-right" size={15} className="na-card-flecha" />
-    </motion.button>
-  )
-}
-
 export default function NegociosAsociados() {
   const navigate = useNavigate()
-  const { userType, negociosAsociados, agregarNegocioAsociado, enviarNotificacionCompra } = useStore()
+  const userType = useStore((s) => s.userType)
+  const negociosAsociados = useStore((s) => s.negociosAsociados)
+  const agregarNegocioAsociado = useStore((s) => s.agregarNegocioAsociado)
+  const editarNegocioAsociado = useStore((s) => s.editarNegocioAsociado)
+  const enviarNotificacionCompra = useStore((s) => s.enviarNotificacionCompra)
 
   const [busqueda, setBusqueda] = useState('')
   const [seleccionadoId, setSeleccionadoId] = useState(negociosAsociados[0]?.id ?? null)
-  const [vistaDetalleMobile, setVistaDetalleMobile] = useState(false)
   const [mostrarFormulario, setMostrarFormulario] = useState(false)
   const [form, setForm] = useState(FORM_VACIO)
+  // Cuando es null el modal agrega; cuando trae un id, edita ese negocio
+  const [editandoId, setEditandoId] = useState(null)
   const [notifEnviada, setNotifEnviada] = useState(false)
-  const [direccion, setDireccion] = useState(1)
   const fileInputRef = useRef(null)
-
-  useEffect(() => {
-    if (negociosAsociados.length === 0) {
-      setSeleccionadoId(null)
-      return
-    }
-    if (!negociosAsociados.some((n) => n.id === seleccionadoId)) {
-      setSeleccionadoId(negociosAsociados[0].id)
-    }
-  }, [negociosAsociados, seleccionadoId])
 
   const filtrados = useMemo(() => {
     const texto = busqueda.trim().toLowerCase()
@@ -124,18 +44,20 @@ export default function NegociosAsociados() {
     )
   }, [negociosAsociados, busqueda])
 
+  // El carrusel solo muestra los negocios filtrados, asi que el seleccionado
+  // tiene que existir dentro de esa lista. Si al buscar desaparece,
+  // se pasa al primero de los resultados.
+  useEffect(() => {
+    if (filtrados.length === 0) return
+    if (!filtrados.some((n) => n.id === seleccionadoId)) {
+      setSeleccionadoId(filtrados[0].id)
+    }
+  }, [filtrados, seleccionadoId])
+
   const seleccionado = negociosAsociados.find((n) => n.id === seleccionadoId) || null
 
-  const totalNegocios = negociosAsociados.length
-  const idxSeleccionado = negociosAsociados.findIndex((n) => n.id === seleccionadoId)
-  const anterior = totalNegocios > 1 ? negociosAsociados[(idxSeleccionado - 1 + totalNegocios) % totalNegocios] : null
-  const siguiente = totalNegocios > 1 ? negociosAsociados[(idxSeleccionado + 1) % totalNegocios] : null
-
   const handleSeleccionar = (id) => {
-    const nuevoIdx = negociosAsociados.findIndex((n) => n.id === id)
-    setDireccion(nuevoIdx >= idxSeleccionado ? 1 : -1)
     setSeleccionadoId(id)
-    setVistaDetalleMobile(true)
     setNotifEnviada(false)
   }
 
@@ -147,19 +69,52 @@ export default function NegociosAsociados() {
     reader.readAsDataURL(file)
   }
 
+  const abrirAgregar = () => {
+    setEditandoId(null)
+    setForm(FORM_VACIO)
+    setMostrarFormulario(true)
+  }
+
+  // Precarga el formulario con los datos del negocio para editarlos
+  const abrirEditar = (negocio) => {
+    setEditandoId(negocio.id)
+    setForm({
+      nombre: negocio.nombre || '',
+      categoria: negocio.categoria || categoriasNegocioAsociado[0],
+      propietario: negocio.propietario || '',
+      whatsapp: negocio.whatsapp || '',
+      correo: negocio.correo || '',
+      direccion: negocio.direccion || '',
+      municipio: negocio.municipio || '',
+      departamento: negocio.departamento || '',
+      descripcion: negocio.descripcion || '',
+      imagen: negocio.imagen || null,
+    })
+    setMostrarFormulario(true)
+  }
+
   const cerrarFormulario = () => {
     setMostrarFormulario(false)
+    setEditandoId(null)
     setForm(FORM_VACIO)
   }
 
   const handleGuardar = (e) => {
     e.preventDefault()
     if (!form.nombre.trim() || !form.whatsapp.trim()) return
-    const color = COLORES_NUEVO[negociosAsociados.length % COLORES_NUEVO.length]
-    const id = agregarNegocioAsociado({ ...form, color })
+
+    if (editandoId) {
+      editarNegocioAsociado(editandoId, form)
+      setSeleccionadoId(editandoId)
+    } else {
+      const color = COLORES_NUEVO[negociosAsociados.length % COLORES_NUEVO.length]
+      setSeleccionadoId(agregarNegocioAsociado({ ...form, color }))
+    }
+
     cerrarFormulario()
-    setSeleccionadoId(id)
-    setVistaDetalleMobile(true)
+    // Se limpia la busqueda para que el negocio guardado
+    // no quede filtrado fuera del carrusel
+    setBusqueda('')
   }
 
   const handleEnviarNotificacion = () => {
@@ -175,9 +130,11 @@ export default function NegociosAsociados() {
 
   const hayNegocios = negociosAsociados.length > 0
 
+  // Navegar dentro del render es un efecto secundario que React
+  // desaconseja. <Navigate> hace la redireccion de forma declarativa
+  // y replace evita ensuciar el historial del navegador.
   if (userType !== 'proveedor') {
-    navigate('/home')
-    return null
+    return <Navigate to="/home" replace />
   }
 
   return (
@@ -190,7 +147,7 @@ export default function NegociosAsociados() {
           <h1>Negocios Asociados</h1>
           <p>Administra los negocios con los que trabajas</p>
         </div>
-        <button className="na-btn-agregar" onClick={() => setMostrarFormulario(true)} type="button">
+        <button className="na-btn-agregar" onClick={abrirAgregar} type="button">
           + Agregar negocio
         </button>
       </div>
@@ -200,186 +157,25 @@ export default function NegociosAsociados() {
           <div className="na-vacio-icono"><Icon name="store" size={30} /></div>
           <h3>Aún no tienes negocios asociados.</h3>
           <p>Agrega tus primeros negocios para comenzar a gestionar tus relaciones comerciales desde Vincco.</p>
-          <button className="na-vacio-btn" onClick={() => setMostrarFormulario(true)} type="button">
+          <button className="na-vacio-btn" onClick={abrirAgregar} type="button">
             + Agregar negocio
           </button>
         </div>
       ) : (
-        <div className={`na-layout ${vistaDetalleMobile ? 'na-layout--detalle-mobile' : ''}`}>
-          <div className="na-col-lista">
-            <div className="na-search">
-              <Icon name="search" size={18} className="na-search-icono" />
-              <input
-                type="text"
-                placeholder="Buscar negocio asociado..."
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-                aria-label="Buscar negocio asociado"
-              />
-            </div>
-
-            <motion.div
-              className="na-lista"
-              initial="oculto"
-              animate="visible"
-              variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
-            >
-              {filtrados.length === 0 ? (
-                <p className="na-lista-sin-resultados">No encontramos negocios con ese nombre.</p>
-              ) : (
-                filtrados.map((n) => (
-                  <TarjetaNegocio key={n.id} negocio={n} activo={n.id === seleccionadoId} onSeleccionar={handleSeleccionar} />
-                ))
-              )}
-            </motion.div>
-          </div>
-
-          <div className="na-col-detalle">
-            <AnimatePresence mode="wait" custom={direccion}>
-            {seleccionado && (
-              <motion.div
-                key={seleccionado.id}
-                className="na-detalle"
-                custom={direccion}
-                variants={VARIANTES_DETALLE}
-                initial="entrar"
-                animate="centro"
-                exit="salir"
-                transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <button className="na-detalle-volver" onClick={() => setVistaDetalleMobile(false)} type="button">
-                  <Icon name="arrow-left" size={16} /> Negocios asociados
-                </button>
-
-                <div className="na-detalle-stack">
-                  {siguiente && (
-                    <motion.div
-                      className="na-stack-ghost"
-                      aria-hidden="true"
-                      initial={{ opacity: 0, x: 60, scale: 0.9 }}
-                      animate={{ opacity: 0.55, x: 34, scale: 0.96 }}
-                      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
-                      style={!siguiente.imagen ? { background: `linear-gradient(135deg, ${siguiente.color}, ${siguiente.color}cc)` } : undefined}
-                    >
-                      {siguiente.imagen && <img src={siguiente.imagen} alt="" className="na-detalle-img" />}
-                    </motion.div>
-                  )}
-                  {anterior && (
-                    <motion.div
-                      className="na-stack-ghost"
-                      aria-hidden="true"
-                      initial={{ opacity: 0, x: -60, scale: 0.9 }}
-                      animate={{ opacity: 0.55, x: -34, scale: 0.96 }}
-                      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
-                      style={!anterior.imagen ? { background: `linear-gradient(135deg, ${anterior.color}, ${anterior.color}cc)` } : undefined}
-                    >
-                      {anterior.imagen && <img src={anterior.imagen} alt="" className="na-detalle-img" />}
-                    </motion.div>
-                  )}
-
-                  <div className="na-detalle-media">
-                    <MediaNegocio negocio={seleccionado} />
-                    <div className="na-detalle-media-scrim" />
-
-                    <motion.div
-                      className="na-detalle-media-top"
-                      initial={{ opacity: 0, y: -8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: 0.12 }}
-                    >
-                      <span className={`na-chip-estado na-chip-estado--${seleccionado.estado.toLowerCase()}`}>
-                        <span className="na-chip-dot" />
-                        {seleccionado.estado}
-                      </span>
-                    </motion.div>
-
-                    <motion.div
-                      className="na-detalle-media-bottom"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: 0.18 }}
-                    >
-                      <span className="na-chip-indice">
-                        {idxSeleccionado + 1} · {seleccionado.categoria.toUpperCase()}
-                      </span>
-                      <p className="na-detalle-media-caption">{seleccionado.descripcion}</p>
-                    </motion.div>
-                  </div>
-                </div>
-
-                <div className="na-detalle-body">
-                  <p className="na-detalle-categoria">{seleccionado.categoria}</p>
-                  <h2 className="na-detalle-nombre">{seleccionado.nombre}</h2>
-
-                  <div className="na-detalle-meta">
-                    <div className="na-detalle-meta-item">
-                      <Icon name="map-pin" size={15} />
-                      <span>{seleccionado.direccion}, {seleccionado.municipio}, {seleccionado.departamento}</span>
-                    </div>
-                    <div className="na-detalle-meta-item">
-                      <Icon name="user" size={15} />
-                      <span>{seleccionado.propietario}</span>
-                    </div>
-                    <div className="na-detalle-meta-item">
-                      <Icon name="mail" size={15} />
-                      <span>{seleccionado.correo}</span>
-                    </div>
-                    <div className="na-detalle-meta-item">
-                      <Icon name="message-circle" size={15} />
-                      <span>{seleccionado.whatsapp}</span>
-                    </div>
-                  </div>
-
-                  <p className="na-detalle-descripcion">{seleccionado.descripcion}</p>
-
-                  <div className="na-detalle-acciones">
-                    <a
-                      className="na-btn na-btn-whatsapp"
-                      href={whatsappHref || undefined}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-disabled={!whatsappHref}
-                      onClick={(e) => { if (!whatsappHref) e.preventDefault() }}
-                    >
-                      <Icon name="message-circle" size={17} /> Contactar por WhatsApp
-                    </a>
-                    <motion.button
-                      className="na-btn na-btn-notificar"
-                      onClick={handleEnviarNotificacion}
-                      type="button"
-                      whileTap={{ scale: 0.97 }}
-                    >
-                      <AnimatePresence mode="wait" initial={false}>
-                        {notifEnviada ? (
-                          <motion.span
-                            key="ok"
-                            className="na-btn-contenido"
-                            initial={{ opacity: 0, y: 4 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -4 }}
-                          >
-                            <Icon name="check-circle" size={17} /> Notificación enviada
-                          </motion.span>
-                        ) : (
-                          <motion.span
-                            key="enviar"
-                            className="na-btn-contenido"
-                            initial={{ opacity: 0, y: 4 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -4 }}
-                          >
-                            <Icon name="bell" size={17} /> Enviar notificación de compra
-                          </motion.span>
-                        )}
-                      </AnimatePresence>
-                    </motion.button>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-            </AnimatePresence>
-          </div>
-        </div>
+        <NegociosCarousel
+          negocios={filtrados}
+          seleccionadoId={seleccionadoId}
+          onSeleccionar={handleSeleccionar}
+          busqueda={busqueda}
+          onBusquedaChange={setBusqueda}
+          whatsappHref={whatsappHref}
+          notifEnviada={notifEnviada}
+          onNotificar={handleEnviarNotificacion}
+          onEditar={abrirEditar}
+          // Se frena la rotacion automatica mientras el usuario busca
+          // o tiene el formulario abierto
+          pausado={mostrarFormulario || busqueda.trim().length > 0}
+        />
       )}
 
       <AnimatePresence>
@@ -400,7 +196,7 @@ export default function NegociosAsociados() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="na-modal-header">
-                <h3>Agregar negocio asociado</h3>
+                <h3>{editandoId ? 'Editar negocio asociado' : 'Agregar negocio asociado'}</h3>
                 <button className="na-modal-cerrar" onClick={cerrarFormulario} type="button" aria-label="Cerrar">
                   <Icon name="x" size={16} />
                 </button>
@@ -482,7 +278,9 @@ export default function NegociosAsociados() {
 
                 <div className="na-form-acciones">
                   <button type="button" className="na-btn-secundario" onClick={cerrarFormulario}>Cancelar</button>
-                  <button type="submit" className="na-btn-primario">Guardar negocio</button>
+                  <button type="submit" className="na-btn-primario">
+                    {editandoId ? 'Guardar cambios' : 'Guardar negocio'}
+                  </button>
                 </div>
               </form>
             </motion.div>

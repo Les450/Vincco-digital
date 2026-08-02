@@ -1,11 +1,23 @@
 /* ── Negocios Asociados (Panel de Proveedor) ──────────────────── */
 
+/* NOTA: el layout de lista + detalle (.na-layout, .na-col-lista,
+   .na-col-detalle, .na-search, .na-lista, .na-card, .na-detalle,
+   .na-stack-ghost, .na-chip-*, .na-btn-whatsapp / .na-btn-notificar)
+   se elimino al reemplazar esa vista por NegociosCarousel.
+   Esos estilos viven ahora en App.css bajo el prefijo .ncar- */
+
 .na {
   font-family: 'Inter', 'Segoe UI', sans-serif;
   background: linear-gradient(180deg, #002e43 0%, #003f5a 30%, #3f6f84 100%);
   min-height: 100vh;
-  padding: 20px 20px 100px;
+  /* El espacio para la barra inferior lo reserva .page-shell (App.css),
+     que ademas contempla la safe-area del celular. */
+  padding: 20px 20px 24px;
   color: #0b1b26;
+  /* Columna flex para que el carrusel ocupe todo el alto
+     que queda libre debajo del header, en vez de flotar centrado */
+  display: flex;
+  flex-direction: column;
 }
 
 /* ── Header ───────────────────────────────────────────── */
@@ -15,6 +27,8 @@
   align-items: center;
   gap: 14px;
   margin-bottom: 20px;
+  /* No se encoge cuando el carrusel se estira con flex:1 */
+  flex-shrink: 0;
 }
 
 .na-header-btn {
@@ -75,464 +89,6 @@
   box-shadow: 0 6px 18px rgba(192, 89, 0, 0.45);
 }
 
-/* ── Layout de dos columnas ───────────────────────────── */
-
-.na-layout {
-  display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 22px;
-  align-items: start;
-}
-
-.na-col-lista {
-  background: linear-gradient(165deg, #0f8a8b 0%, #0b6e6f 55%, #054142 100%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 28px;
-  padding: 20px;
-  box-shadow: 0 20px 40px rgba(0, 24, 30, 0.35);
-}
-
-.na-col-detalle {
-  min-width: 0;
-}
-
-/* ── Búsqueda ─────────────────────────────────────────── */
-
-.na-search {
-  position: relative;
-  margin-bottom: 14px;
-}
-
-.na-search-icono {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #64798a;
-  pointer-events: none;
-}
-
-.na-search input {
-  width: 100%;
-  box-sizing: border-box;
-  border: 1.5px solid #e4eaef;
-  background: #ffffff;
-  border-radius: 999px;
-  padding: 13px 16px 13px 46px;
-  font-size: 13.5px;
-  color: #0b1b26;
-  outline: none;
-  font-family: inherit;
-  transition: box-shadow 0.2s;
-}
-
-.na-search input::placeholder {
-  color: #94a3b8;
-}
-
-.na-search input:focus {
-  box-shadow: 0 0 0 3px rgba(255, 194, 107, 0.35);
-}
-
-/* ── Lista de negocios ────────────────────────────────── */
-
-.na-lista {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: calc(100vh - 220px);
-  overflow-y: auto;
-  padding-right: 2px;
-}
-
-.na-lista::-webkit-scrollbar {
-  width: 5px;
-}
-
-.na-lista::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 999px;
-}
-
-.na-lista-sin-resultados {
-  margin: 18px 4px;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.6);
-  text-align: center;
-}
-
-.na-card {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  box-sizing: border-box;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 999px;
-  padding: 10px 14px 10px 10px;
-  cursor: pointer;
-  text-align: left;
-  font-family: inherit;
-  transition: background 0.15s;
-}
-
-.na-card:hover {
-  background: rgba(255, 255, 255, 0.16);
-}
-
-.na-card-highlight {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: #ffffff;
-  border-radius: 999px;
-  box-shadow: 0 10px 24px rgba(0, 20, 25, 0.35);
-}
-
-.na-card-icono {
-  position: relative;
-  z-index: 1;
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-}
-
-.na-card-icono img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.na-card-info {
-  position: relative;
-  z-index: 1;
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.na-card-nombre {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: #ffffff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.na-card-categoria {
-  font-size: 11.5px;
-  color: rgba(255, 255, 255, 0.65);
-  font-weight: 600;
-}
-
-.na-card-flecha {
-  position: relative;
-  z-index: 1;
-  flex-shrink: 0;
-  color: rgba(255, 255, 255, 0.5);
-  transition: transform 0.15s;
-}
-
-.na-card--activa {
-  border-color: #ffffff;
-}
-
-.na-card--activa .na-card-nombre {
-  color: #0b1b26;
-}
-
-.na-card--activa .na-card-categoria {
-  color: #64798a;
-}
-
-.na-card--activa .na-card-flecha {
-  color: #c05900;
-  transform: translateX(2px);
-}
-
-/* ── Detalle del negocio ──────────────────────────────── */
-
-.na-detalle {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.na-detalle-volver {
-  display: none;
-  align-items: center;
-  gap: 8px;
-  align-self: flex-start;
-  border: none;
-  background: rgba(255, 255, 255, 0.92);
-  color: #003f5a;
-  font-weight: 700;
-  font-size: 13px;
-  font-family: inherit;
-  padding: 9px 16px;
-  border-radius: 999px;
-  cursor: pointer;
-}
-
-/* ── Stack de tarjetas (carrusel apilado) ─────────────── */
-
-.na-detalle-stack {
-  position: relative;
-  height: 264px;
-}
-
-.na-stack-ghost {
-  position: absolute;
-  top: 8px;
-  bottom: 8px;
-  left: 26px;
-  right: 26px;
-  border-radius: 22px;
-  overflow: hidden;
-  z-index: 0;
-  opacity: 0.55;
-  filter: saturate(0.85);
-  box-shadow: 0 14px 30px rgba(0, 20, 30, 0.3);
-  pointer-events: none;
-}
-
-.na-stack-ghost .na-detalle-img {
-  width: 100%;
-  height: 100%;
-}
-
-.na-detalle-media {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 26px;
-  right: 26px;
-  z-index: 1;
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 18px 40px rgba(0, 20, 30, 0.35);
-}
-
-.na-detalle-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.na-detalle-img--placeholder {
-  position: relative;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-}
-
-.na-detalle-img-patron {
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.16) 1.5px, transparent 1.5px);
-  background-size: 20px 20px;
-  opacity: 0.6;
-}
-
-.na-detalle-media-scrim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 42%, rgba(4, 14, 20, 0.8) 100%);
-  pointer-events: none;
-}
-
-.na-detalle-media-top {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  z-index: 2;
-}
-
-.na-chip-estado {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: rgba(11, 27, 38, 0.55);
-  backdrop-filter: blur(6px);
-  color: #ffffff;
-  padding: 6px 13px 6px 10px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.na-chip-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #33e0a1;
-  flex-shrink: 0;
-}
-
-.na-chip-estado--pendiente .na-chip-dot {
-  background: #ffc26b;
-}
-
-.na-chip-estado--inactivo .na-chip-dot {
-  background: #94a3b8;
-}
-
-.na-detalle-media-bottom {
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 14px;
-  z-index: 2;
-}
-
-.na-chip-indice {
-  display: inline-block;
-  background: #ffffff;
-  color: #0b1b26;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  padding: 5px 12px;
-  border-radius: 999px;
-  margin-bottom: 8px;
-}
-
-.na-detalle-media-caption {
-  margin: 0;
-  color: #ffffff;
-  font-size: 14px;
-  line-height: 1.45;
-  font-weight: 600;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
-}
-
-.na-detalle-body {
-  background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 8px 30px rgba(0, 24, 36, 0.25);
-  padding: 22px 26px 26px;
-}
-
-.na-detalle-categoria {
-  margin: 0 0 4px;
-  font-size: 11.5px;
-  color: #64798a;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-weight: 700;
-}
-
-.na-detalle-nombre {
-  margin: 0 0 16px;
-  font-family: 'Sora', 'Inter', sans-serif;
-  font-size: 24px;
-  font-weight: 700;
-  color: #0b1b26;
-}
-
-.na-detalle-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-bottom: 16px;
-  margin-bottom: 16px;
-  border-bottom: 1px solid #e4eaef;
-}
-
-.na-detalle-meta-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 13.5px;
-  color: #3d5164;
-  line-height: 1.5;
-}
-
-.na-detalle-meta-item svg {
-  flex-shrink: 0;
-  margin-top: 2px;
-  color: #007a7b;
-}
-
-.na-detalle-descripcion {
-  margin: 0 0 22px;
-  font-size: 14px;
-  color: #3d5164;
-  line-height: 1.7;
-}
-
-.na-detalle-acciones {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.na-btn {
-  flex: 1 1 220px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border: none;
-  border-radius: 14px;
-  padding: 14px 18px;
-  font-weight: 700;
-  font-size: 14px;
-  font-family: inherit;
-  cursor: pointer;
-  text-decoration: none;
-  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
-}
-
-.na-btn-contenido {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.na-btn-whatsapp {
-  background: linear-gradient(135deg, #1a9974, #0d7a5c);
-  color: #ffffff;
-  box-shadow: 0 4px 14px rgba(13, 122, 92, 0.3);
-}
-
-.na-btn-whatsapp:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(13, 122, 92, 0.4);
-}
-
-.na-btn-whatsapp[aria-disabled="true"] {
-  opacity: 0.5;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-.na-btn-notificar {
-  background: #ffffff;
-  color: #007a7b;
-  border: 1.5px solid #007a7b;
-}
-
-.na-btn-notificar:hover {
-  background: #e3f3f3;
-}
-
 /* ── Estado vacío ─────────────────────────────────────── */
 
 .na-vacio {
@@ -586,7 +142,7 @@
   transform: translateY(-1px);
 }
 
-/* ── Modal: agregar negocio ───────────────────────────── */
+/* ── Modal: agregar / editar negocio ──────────────────── */
 
 .na-modal-overlay {
   position: fixed;
@@ -785,20 +341,11 @@
   box-shadow: 0 6px 18px rgba(192, 89, 0, 0.4);
 }
 
-/* ── Responsive: tablet ───────────────────────────────── */
-
-@media (max-width: 1024px) {
-  .na-layout {
-    grid-template-columns: 300px 1fr;
-    gap: 16px;
-  }
-}
-
-/* ── Responsive: mobile (lista/detalle apilados) ──────── */
+/* ── Responsive: mobile ───────────────────────────────── */
 
 @media (max-width: 860px) {
   .na {
-    padding: 16px 16px 100px;
+    padding: 16px 16px 24px;
   }
 
   .na-header-info h1 {
@@ -817,48 +364,6 @@
     white-space: normal;
     padding: 12px 14px;
     font-size: 13px;
-  }
-
-  .na-layout {
-    display: block;
-  }
-
-  .na-col-lista,
-  .na-col-detalle {
-    display: none;
-  }
-
-  .na-layout:not(.na-layout--detalle-mobile) .na-col-lista {
-    display: block;
-  }
-
-  .na-layout--detalle-mobile .na-col-detalle {
-    display: block;
-  }
-
-  .na-lista {
-    max-height: none;
-  }
-
-  .na-detalle-volver {
-    display: inline-flex;
-  }
-
-  .na-detalle-stack {
-    height: 220px;
-  }
-
-  .na-detalle-body {
-    padding: 20px 18px 22px;
-  }
-
-  .na-detalle-acciones {
-    flex-direction: column;
-  }
-
-  .na-btn {
-    flex: 1 1 auto;
-    width: 100%;
   }
 
   .na-form-row {

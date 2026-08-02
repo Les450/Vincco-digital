@@ -130,6 +130,15 @@ const useStore = create((set) => ({
   isLoggedIn: false,
   userType: 'usuario',
   negociosAsociados: negociosAsociadosIniciales,
+  // Redes que el comercio o proveedor conecto a su perfil.
+  // La clave es el id de la red y el valor es el usuario o telefono.
+  redesNegocio: {
+    whatsapp: '+505 8855 6677',
+    facebook: 'vinccolocal',
+  },
+  // Codigo con el que el usuario invita a otros. En produccion
+  // deberia venir del backend al crear la cuenta.
+  codigoInvitacion: 'VINCCO-A4K9',
   ...generarNotificaciones(),
   ...generarEventosCalendario(),
   agregarPuntos: (cantidad) => set((state) => ({
@@ -154,6 +163,22 @@ const useStore = create((set) => ({
     set((state) => ({ negociosAsociados: [nuevo, ...state.negociosAsociados] }))
     return nuevo.id
   },
+  // Actualiza solo los campos que vienen en datos y conserva el resto
+  // (id, estado y color no se tocan desde el formulario)
+  editarNegocioAsociado: (id, datos) => set((state) => ({
+    negociosAsociados: state.negociosAsociados.map((n) =>
+      n.id === id ? { ...n, ...datos } : n
+    )
+  })),
+  // Conecta o actualiza una red del negocio
+  guardarRed: (id, valor) => set((state) => ({
+    redesNegocio: { ...state.redesNegocio, [id]: valor.trim() }
+  })),
+  // Desconecta una red quitandola del objeto
+  quitarRed: (id) => set((state) => {
+    const { [id]: _quitada, ...resto } = state.redesNegocio
+    return { redesNegocio: resto }
+  }),
   enviarNotificacionCompra: () => set((state) => ({
     notificaciones: [
       {

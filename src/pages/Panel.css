@@ -4,7 +4,9 @@
   font-family: 'Inter', 'Segoe UI', sans-serif;
   background: linear-gradient(180deg, #002e43 0%, #003f5a 30%, #3f6f84 100%);
   min-height: 100vh;
-  padding-bottom: 100px;
+  /* El espacio para la barra inferior lo reserva .page-shell (App.css),
+     que ademas contempla la safe-area del celular. */
+  padding-bottom: 24px;
   color: #0f172a;
 }
 
@@ -1023,7 +1025,9 @@
   font-family: 'Inter', 'Segoe UI', sans-serif;
   background: linear-gradient(180deg, #002e43 0%, #003f5a 30%, #3f6f84 100%);
   min-height: 100vh;
-  padding-bottom: 100px;
+  /* El espacio para la barra inferior lo reserva .page-shell (App.css),
+     que ademas contempla la safe-area del celular. */
+  padding-bottom: 24px;
   color: #0f172a;
 }
 
@@ -1388,24 +1392,9 @@
   margin-top: 8px;
 }
 
-/* Form row layout */
-.panel-form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-.panel-form-row--3 {
-  grid-template-columns: 1fr 1fr 1fr;
-}
-
-/* Inventory summary */
-.panel-inv-resumen {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 20px;
-}
+/* .panel-form-row, .panel-form-row--3 y .panel-inv-resumen estaban
+   repetidos aca con los mismos valores que arriba (lineas ~257 y ~660).
+   Se dejo una sola definicion. */
 
 .panel-inv-resumen-card {
   background: #ffffff;
@@ -2080,5 +2069,62 @@
   }
   .panel-pub-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ── Tablet (481px a 1024px) ──────────────────────────────
+   Faltaba este tramo: las grillas de 3 columnas saltaban de
+   movil directo a laptop y quedaban muy apretadas en tablet. */
+@media (min-width: 481px) and (max-width: 1024px) {
+  /* Los formularios de 3 campos pasan a 2 columnas.
+     El ultimo campo ocupa el ancho completo para que no quede huerfano. */
+  .panel-form-row--3 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .panel-form-row--3 > *:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  /* El resumen de inventario si aguanta 3 columnas, son cifras cortas,
+     pero necesita menos aire entre tarjetas */
+  .panel-inv-resumen {
+    gap: 10px;
+  }
+
+  .panel-contenido {
+    padding: 0 24px;
+  }
+
+  .panel-header {
+    padding: 20px 24px 0;
+  }
+
+  .panel-nav {
+    padding: 14px 24px;
+    /* Si hay muchas pestanas, se deslizan en horizontal
+       en vez de romper el layout */
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .panel-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .panel-pub-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Tablet vertical chica: el resumen de inventario a 3 columnas
+   ya no entra comodo */
+@media (min-width: 481px) and (max-width: 700px) {
+  .panel-inv-resumen {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .panel-inv-resumen > *:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
 }

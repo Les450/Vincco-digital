@@ -20,7 +20,9 @@ function getMenuItems(userType) {
 
 export default function Sidebar({ open, onClose }) {
   const navigate = useNavigate()
-  const { isLoggedIn, setLoggedIn, userType } = useStore()
+  const isLoggedIn = useStore((s) => s.isLoggedIn)
+  const setLoggedIn = useStore((s) => s.setLoggedIn)
+  const userType = useStore((s) => s.userType)
   const menuItems = getMenuItems(userType)
 
   const handleNav = (path) => {
