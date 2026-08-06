@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useStore from '../store/puntos_usestore'
 import Icon from '../components/icons/Icon'
+import { filtrarPorConfig } from '../utils/filtroNotificaciones'
 import './Notificaciones.css'
 
 
@@ -29,22 +30,37 @@ export default function Notificaciones() {
   const navigate = useNavigate()
   const notificaciones = useStore((s) => s.notificaciones)
   const userType = useStore((s) => s.userType)
+  const config = useStore((s) => s.configuraciones[s.userType])
   const marcarNotificacionLeida = useStore((s) => s.marcarNotificacionLeida)
   const marcarTodasLeidas = useStore((s) => s.marcarTodasLeidas)
   const [filtro, setFiltro] = useState('todas')
 
+  // Las que corresponden al rol Y que la configuración deja pasar.
+  // Si el usuario apagó los avisos de promociones en /config, acá
+  // dejan de aparecer de verdad.
+  const permitidas = useMemo(
+    () => filtrarPorConfig(
+      notificaciones.filter((n) => n.userType === userType),
+      config,
+      userType
+    ),
+    [notificaciones, config, userType]
+  )
+
   const notificacionesFiltradas = useMemo(() => {
-    const delUsuario = notificaciones.filter((n) => n.userType === userType)
-    delUsuario.sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+    const ordenadas = [...permitidas].sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
 
-    if (filtro === 'no-leidas') return delUsuario.filter((n) => !n.leida)
-    if (filtro === 'leidas') return delUsuario.filter((n) => n.leida)
-    return delUsuario
-  }, [notificaciones, userType, filtro])
+    if (filtro === 'no-leidas') return ordenadas.filter((n) => !n.leida)
+    if (filtro === 'leidas') return ordenadas.filter((n) => n.leida)
+    return ordenadas
+  }, [permitidas, filtro])
 
-  const noLeidas = useMemo(() => {
-    return notificaciones.filter((n) => n.userType === userType && !n.leida).length
-  }, [notificaciones, userType])
+  // El contador usa la misma lista que se ve, así el número del
+  // badge nunca dice 5 cuando en pantalla hay 3.
+  const noLeidas = useMemo(
+    () => permitidas.filter((n) => !n.leida).length,
+    [permitidas]
+  )
 
   const handleClick = (n) => {
     if (!n.leida) marcarNotificacionLeida(n.id)

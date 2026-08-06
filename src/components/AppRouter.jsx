@@ -20,6 +20,7 @@ const NegociosAsociados = lazy(() => import('../pages/NegociosAsociados'))
 const Ayuda = lazy(() => import('../pages/Ayuda'))
 const Redes = lazy(() => import('../pages/Redes'))
 const Perfil = lazy(() => import('../pages/Perfil'))
+const Config = lazy(() => import('../pages/Config'))
 
 // Fondo navy mientras carga el trozo de codigo de la pagina.
 // Es el mismo color de las pantallas, asi no se ve un flash blanco.
@@ -54,6 +55,9 @@ const SHELL_ROUTES = [
   { path: '/redes', element: <Redes /> },
   // Perfil: una sola ruta que muestra la pantalla del rol activo
   { path: '/perfil', element: <Perfil /> },
+  // Configuraciones: igual que el perfil, una ruta y tres pantallas.
+  // Es la que abre "Configuraciones" del menú hamburguesa.
+  { path: '/config', element: <Config /> },
 ]
 
 function AppContent() {

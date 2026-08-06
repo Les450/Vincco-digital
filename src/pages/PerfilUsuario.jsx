@@ -41,6 +41,10 @@ export default function PerfilUsuario() {
   const guardarPerfil = useStore((s) => s.guardarPerfil)
   const guardarFoto = useStore((s) => s.guardarFoto)
   const quitarFoto = useStore((s) => s.quitarFoto)
+  // El ojo lee y escribe la misma preferencia que el interruptor
+  // "Ocultar mis datos" de /config: no son dos ajustes distintos.
+  const ocultarDatos = useStore((s) => s.configuraciones.usuario.ocultarDatos)
+  const guardarConfig = useStore((s) => s.guardarConfig)
 
   const puntos = usuario.puntos
   const nivel = nivelActual(puntos)
@@ -98,6 +102,8 @@ export default function PerfilUsuario() {
             valores={perfil}
             onGuardar={(datos) => guardarPerfil('usuario', datos)}
             ocultable
+            ocultos={ocultarDatos}
+            onOcultos={(v) => guardarConfig('usuario', 'ocultarDatos', v)}
           />
 
           <Seccion

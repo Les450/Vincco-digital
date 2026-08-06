@@ -72,9 +72,10 @@ function useTabs() {
     },
   ]
 
-  // Se filtra por id, no por label: los textos son cortos para que entren
-  // en pantallas de 360px y pueden cambiar sin romper esta logica.
-  return userType === 'usuario' ? tabs.filter(t => t.id !== 'publicaciones') : tabs
+  // Publicar solo aplica a negocios y proveedores: se quita del nav de
+  // clientes. Se filtra por id, no por label: los textos son cortos para
+  // que entren en pantallas de 360px y pueden cambiar sin romper esto.
+  return esSocio ? tabs : tabs.filter(t => t.id !== 'publicaciones')
 }
 
 export default function BottomNav() {

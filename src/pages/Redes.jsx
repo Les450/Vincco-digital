@@ -184,23 +184,30 @@ export default function Redes() {
 
         <div className="rds-grid rds-grid--oficial">
           {redesVincco.map((red) => {
-            const info = REDES[red.id]
+            const esCorreo = red.id === 'email'
+            const info = esCorreo ? { nombre: 'Correo', color: '#ea4335' } : REDES[red.id]
             return (
               <a
                 key={red.id}
                 className="rds-oficial"
                 href={red.url}
-                target="_blank"
-                rel="noopener noreferrer"
+                target={esCorreo ? undefined : '_blank'}
+                rel={esCorreo ? undefined : 'noopener noreferrer'}
               >
                 <span className="rds-oficial-icono" style={{ background: info.color }}>
-                  <IconRed nombre={red.id} size={20} style={{ color: '#ffffff' }} />
+                  {esCorreo ? (
+                    <Icon name="mail" size={20} style={{ color: '#ffffff' }} />
+                  ) : (
+                    <IconRed nombre={red.id} size={20} style={{ color: '#ffffff' }} />
+                  )}
                 </span>
                 <span className="rds-oficial-info">
                   <span className="rds-oficial-nombre" translate="no">{info.nombre}</span>
-                  <span className="rds-oficial-usuario">@{red.usuario.replace(/^@/, '')}</span>
+                  <span className="rds-oficial-usuario">
+                    {esCorreo ? red.usuario : `@${red.usuario.replace(/^@/, '')}`}
+                  </span>
                 </span>
-                <span className="rds-oficial-seguidores">{red.seguidores}</span>
+                {red.seguidores && <span className="rds-oficial-seguidores">{red.seguidores}</span>}
                 <Icon name="arrow-right" size={15} className="rds-oficial-flecha" />
               </a>
             )

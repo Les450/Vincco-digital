@@ -340,10 +340,11 @@ export const articulosAyuda = [
 
 /* ── Redes sociales ───────────────────────────────────────── */
 
-// Cuentas oficiales de Vincco. Cambiar por las reales antes de publicar.
+// Cuentas oficiales de Vincco.
 export const redesVincco = [
-  { id: 'facebook', usuario: 'vinccolocal', url: 'https://facebook.com/vinccolocal', seguidores: '2.4k' },
-  { id: 'instagram', usuario: 'vinccolocal', url: 'https://instagram.com/vinccolocal', seguidores: '1.8k' },
+  { id: 'facebook', usuario: 'Vincco', url: 'https://www.facebook.com/share/1BCqe3smqg/?mibextid=wwXIfr', seguidores: '2.4k' },
+  { id: 'instagram', usuario: 'vincco505', url: 'https://www.instagram.com/vincco505?utm_source=qr', seguidores: '1.8k' },
+  { id: 'email', usuario: 'impulsodygital505@gmail.com', url: 'mailto:impulsodygital505@gmail.com' },
   { id: 'whatsapp', usuario: '+505 5717 8100', url: 'https://wa.me/50557178100', seguidores: 'Canal' },
   { id: 'tiktok', usuario: 'vinccolocal', url: 'https://tiktok.com/@vinccolocal', seguidores: '960' },
   { id: 'youtube', usuario: 'vinccolocal', url: 'https://youtube.com/@vinccolocal', seguidores: '340' },
@@ -490,6 +491,23 @@ export const favoritosPerfil = [
   { id: 2, nombre: 'Café del Barrio', categoria: 'Cafetería', puntos: '80 pts', color: '#8f5a00' },
   { id: 3, nombre: 'Boutique Alma', categoria: 'Ropa', puntos: '150 pts', color: '#00374e' },
   { id: 4, nombre: 'Agroservicios El Campo', categoria: 'Agro', puntos: '40 pts', color: '#005c5e' },
+]
+
+/* ── Permisos de vitrina (consentimiento) ─────────────────────
+   El proveedor puede mostrar publicamente a que negocios abastece,
+   pero solo con permiso de cada negocio. Es la misma relacion vista
+   desde dos lados:
+     - el negocio ve quien le pidio permiso y decide
+     - el proveedor ve el estado de cada pedido que hizo
+   Por eso los datos son UNA sola lista y no dos.
+   Estados: 'autorizado' | 'pendiente' | 'rechazado'
+   ───────────────────────────────────────────────────────────── */
+export const permisosVitrina = [
+  { id: 1, negocio: 'Ferretería Don Chico', proveedor: 'Distribuidora Norte', rubro: 'Cemento y agregados', estado: 'autorizado', fecha: '12 jul 2026', color: '#c05900' },
+  { id: 2, negocio: 'Pulpería La Esquina', proveedor: 'Distribuidora Norte', rubro: 'Abarrotes', estado: 'pendiente', fecha: '2 ago 2026', color: '#005c5e' },
+  { id: 3, negocio: 'Agroservicios El Campo', proveedor: 'Distribuidora Norte', rubro: 'Material eléctrico', estado: 'autorizado', fecha: '28 jun 2026', color: '#8f5a00' },
+  { id: 4, negocio: 'Boutique Estilo', proveedor: 'Distribuidora Norte', rubro: 'Textiles', estado: 'rechazado', fecha: '5 jul 2026', color: '#a34b00' },
+  { id: 5, negocio: 'Ferretería Don Chico', proveedor: 'Materiales La Unión', rubro: 'Hierro y varilla', estado: 'pendiente', fecha: '4 ago 2026', color: '#00374e' },
 ]
 
 // Ultimas reseñas que recibio el comercio.

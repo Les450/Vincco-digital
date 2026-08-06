@@ -9,14 +9,14 @@ import Icon from './icons/Icon'
 // - proveedor: ve los negocios que abastece, sin "Proveedores Guardados".
 function getMenuItems(userType) {
   const esProveedor = userType === 'proveedor'
-  const esUsuario = userType === 'usuario'
+  const esCliente = userType === 'usuario' || userType === 'cliente'
 
   const items = [
     { label: 'Perfil', icon: 'user', path: '/perfil' },
     { label: 'Inicio', icon: 'home', path: '/inicio' },
   ]
 
-  if (!esUsuario) {
+  if (!esCliente) {
     items.push(
       esProveedor
         ? { label: 'Negocios Asociados', icon: 'store', path: '/negocios-asociados' }
@@ -24,7 +24,7 @@ function getMenuItems(userType) {
     )
   }
 
-  if (!esUsuario && !esProveedor) {
+  if (!esCliente && !esProveedor) {
     items.push({ label: 'Proveedores Guardados', icon: 'star', path: '/proveedores' })
   }
 

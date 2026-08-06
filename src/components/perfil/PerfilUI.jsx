@@ -313,6 +313,13 @@ function enmascarar(valor, tipo) {
 // los cambia por inputs sin sacar al usuario de la pagina.
 // Con "ocultable" aparece el boton de ojo para esconder los datos
 // personales de un vistazo (util si le prestan el celular a alguien).
+//
+// El ojo puede funcionar de dos formas:
+//   - suelto: si no le pasan "ocultos", se maneja solo y recuerda la
+//     preferencia en localStorage
+//   - controlado: si le pasan "ocultos" y "onOcultos", la fuente de
+//     verdad es el store, y el mismo interruptor vive tambien en
+//     /config. Es una sola preferencia vista desde dos pantallas.
 export function BloqueDatos({
   campos,
   valores,
@@ -320,21 +327,32 @@ export function BloqueDatos({
   titulo,
   descripcion,
   ocultable = false,
+  ocultos,
+  onOcultos,
   clavePrivacidad = CLAVE_PRIVACIDAD,
 }) {
+  const controlado = typeof ocultos === 'boolean' && typeof onOcultos === 'function'
+
   const [editando, setEditando] = useState(false)
   const [borrador, setBorrador] = useState(valores)
   const [guardado, setGuardado] = useState(false)
-  const [ocultos, setOcultos] = useState(() => (ocultable ? leerPreferencia(clavePrivacidad) : false))
+  const [ocultosLocal, setOcultosLocal] = useState(() =>
+    ocultable && !controlado ? leerPreferencia(clavePrivacidad) : false
+  )
+
+  const estanOcultos = controlado ? ocultos : ocultosLocal
 
   useEffect(() => {
-    if (ocultable) guardarPreferencia(clavePrivacidad, ocultos)
-  }, [ocultable, ocultos, clavePrivacidad])
+    if (ocultable && !controlado) guardarPreferencia(clavePrivacidad, ocultosLocal)
+  }, [ocultable, controlado, ocultosLocal, clavePrivacidad])
 
   // Al editar siempre se ven los datos: no se puede escribir a ciegas.
-  const enmascarado = ocultable && ocultos && !editando
+  const enmascarado = ocultable && estanOcultos && !editando
 
-  const alternarVisibilidad = () => setOcultos((prev) => !prev)
+  const alternarVisibilidad = () => {
+    if (controlado) onOcultos(!ocultos)
+    else setOcultosLocal((prev) => !prev)
+  }
 
   const abrir = () => {
     setBorrador(valores)

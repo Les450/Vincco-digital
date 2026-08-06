@@ -1171,3 +1171,70 @@ section {
     padding: 9px;
   }
 }
+
+/* ══════════════════════════════════════════════════════════
+   Preferencias de accesibilidad y ahorro de datos.
+
+   App.js pone estas clases en el <body> según lo que el usuario
+   eligió en Configuraciones (/config). Van acá, en App.css,
+   porque son globales: afectan a todas las pantallas por igual.
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Texto más grande ────────────────────────────────────── */
+/* Sube el tamaño base y todo lo que use rem crece con él. Los
+   tamaños en px no se tocan, para que no se rompa ningún layout. */
+body.vincco--texto-grande {
+  font-size: 112.5%;
+}
+
+body.vincco--texto-grande p,
+body.vincco--texto-grande span,
+body.vincco--texto-grande li,
+body.vincco--texto-grande label,
+body.vincco--texto-grande button,
+body.vincco--texto-grande input,
+body.vincco--texto-grande textarea {
+  font-size: 1.06em;
+  line-height: 1.55;
+}
+
+/* ── Alto contraste ──────────────────────────────────────── */
+/* Para leer bajo el sol: bordes marcados y texto secundario más
+   oscuro. No cambia la identidad de color de Vincco, solo la
+   separación entre elementos. */
+body.vincco--alto-contraste .pf-seccion,
+body.vincco--alto-contraste .cfg-grupo,
+body.vincco--alto-contraste .pf-metrica {
+  border: 1.5px solid #0b1b26;
+  box-shadow: none;
+}
+
+body.vincco--alto-contraste .pf-campo-valor,
+body.vincco--alto-contraste .cfg-ajuste-ayuda,
+body.vincco--alto-contraste .cfg-grupo-texto p,
+body.vincco--alto-contraste .pf-metrica-detalle,
+body.vincco--alto-contraste .pf-metrica-label {
+  color: #24404f;
+}
+
+body.vincco--alto-contraste .cfg-ajuste,
+body.vincco--alto-contraste .pf-favorito {
+  border-color: #b4c6d1;
+}
+
+body.vincco--alto-contraste a,
+body.vincco--alto-contraste .pf-metrica-enlace {
+  text-decoration: underline;
+}
+
+/* Respeta a quien pidió menos movimiento en su sistema operativo.
+   No es un ajuste de Vincco: es una preferencia del dispositivo. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

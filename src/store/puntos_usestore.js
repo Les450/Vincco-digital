@@ -1,5 +1,119 @@
 import { create } from 'zustand'
-import { negociosAsociados as negociosAsociadosIniciales } from '../data/data_falso'
+import {
+  negociosAsociados as negociosAsociadosIniciales,
+  permisosVitrina as permisosVitrinaIniciales,
+} from '../data/data_falso'
+
+/* ── Configuraciones ──────────────────────────────────────────
+   Un bloque por rol, porque los ajustes no son los mismos: el
+   cliente no tiene inventario y el proveedor no da puntos.
+   Los grupos que sí comparten (canales de aviso, app, cuenta)
+   igual se guardan por separado, para que alguien que usa la app
+   como cliente y como negocio no se pise sus propias preferencias.
+
+   Se guarda en localStorage porque todavía no hay backend. El día
+   que exista API, esto pasa a ser un GET/PATCH y la pantalla no
+   se entera.
+   ───────────────────────────────────────────────────────────── */
+
+const CLAVE_CONFIG = 'vincco:configuraciones'
+
+// Valores con los que arranca alguien que nunca tocó nada.
+// Criterio: lo que protege al usuario va encendido de fábrica
+// (PIN de canje, confirmar antes de canjear); lo que puede
+// molestar va apagado (WhatsApp, reseñas anónimas).
+const CONFIG_INICIAL = {
+  usuario: {
+    ocultarDatos: false,
+    resenasAnonimas: false,
+    aparecerRanking: true,
+    pinCanje: true,
+    confirmarCanje: true,
+    avisoVencimiento: true,
+    diasVencimiento: 7,
+    avisoRecompensa: true,
+    radioBusqueda: 5,
+    promosCercanas: 'todas',
+    avisoPrecioFavoritos: true,
+    canalPush: true,
+    canalCorreo: false,
+    canalWhatsapp: false,
+    silencio: true,
+    silencioDesde: '21:00',
+    silencioHasta: '06:00',
+    textoGrande: false,
+    altoContraste: false,
+    idioma: 'es',
+    moneda: 'NIO',
+  },
+  negocio: {
+    mostrarPrecios: 'publicos',
+    puntosPorCompra: 10,
+    puntosDobles: false,
+    diaPuntosDobles: 'viernes',
+    umbralStock: 10,
+    recordatorioPrecios: 15,
+    tiempoRespuesta: 2,
+    montoMinimo: 0,
+    respuestaAutomatica: true,
+    avisoResenas: true,
+    canalPush: true,
+    canalCorreo: true,
+    canalWhatsapp: true,
+    silencio: true,
+    silencioDesde: '21:00',
+    silencioHasta: '06:00',
+    textoGrande: false,
+    altoContraste: false,
+    idioma: 'es',
+    moneda: 'NIO',
+  },
+  proveedor: {
+    formaPago: 'ambas',
+    catalogoPublico: 'registrados',
+    recibirSolicitudes: true,
+    validezCotizacion: 15,
+    pedidoMinimoProv: 5000,
+    plantillaCotizacion: true,
+    frecuenciaEntrega: 'semanal',
+    recordatorioCatalogo: 15,
+    canalPush: true,
+    canalCorreo: true,
+    canalWhatsapp: true,
+    silencio: true,
+    silencioDesde: '21:00',
+    silencioHasta: '06:00',
+    textoGrande: false,
+    altoContraste: false,
+    idioma: 'es',
+    moneda: 'NIO',
+  },
+}
+
+function leerConfig() {
+  try {
+    const guardado = JSON.parse(window.localStorage.getItem(CLAVE_CONFIG) || '{}')
+    // Se mezcla con los valores iniciales para que, si mañana agregás
+    // un ajuste nuevo, quien ya tenía config guardada igual lo reciba
+    // con su valor por defecto en vez de undefined.
+    return {
+      usuario: { ...CONFIG_INICIAL.usuario, ...(guardado.usuario || {}) },
+      negocio: { ...CONFIG_INICIAL.negocio, ...(guardado.negocio || {}) },
+      proveedor: { ...CONFIG_INICIAL.proveedor, ...(guardado.proveedor || {}) },
+    }
+  } catch {
+    // Modo privado del navegador o JSON corrupto: se arranca de cero
+    return CONFIG_INICIAL
+  }
+}
+
+function escribirConfig(configuraciones) {
+  try {
+    window.localStorage.setItem(CLAVE_CONFIG, JSON.stringify(configuraciones))
+  } catch {
+    // Si no se puede guardar, la preferencia dura solo esta sesión
+  }
+}
 
 function generarNotificaciones() {
   const ahora = Date.now()
@@ -130,6 +244,8 @@ const useStore = create((set) => ({
   isLoggedIn: false,
   userType: 'usuario',
   negociosAsociados: negociosAsociadosIniciales,
+  configuraciones: leerConfig(),
+  permisosVitrina: permisosVitrinaIniciales,
   // Redes que el comercio o proveedor conecto a su perfil.
   // La clave es el id de la red y el valor es el usuario o telefono.
   redesNegocio: {
@@ -240,6 +356,41 @@ const useStore = create((set) => ({
     const { [id]: _quitada, ...resto } = state.redesNegocio
     return { redesNegocio: resto }
   }),
+  // Cambia un ajuste y lo persiste. Se guarda al vuelo, sin botón
+  // de "Guardar": es lo que espera la gente en una pantalla de
+  // configuración de celular.
+  guardarConfig: (rol, clave, valor) => set((state) => {
+    const configuraciones = {
+      ...state.configuraciones,
+      [rol]: { ...state.configuraciones[rol], [clave]: valor },
+    }
+    escribirConfig(configuraciones)
+    return { configuraciones }
+  }),
+
+  // Vuelve un grupo a sus valores de fábrica (el botón "Restablecer"
+  // de cada sección). Solo toca las claves de ese grupo, no las demás.
+  restablecerConfig: (rol, claves) => set((state) => {
+    const restaurado = {}
+    claves.forEach((clave) => {
+      if (clave in CONFIG_INICIAL[rol]) restaurado[clave] = CONFIG_INICIAL[rol][clave]
+    })
+    const configuraciones = {
+      ...state.configuraciones,
+      [rol]: { ...state.configuraciones[rol], ...restaurado },
+    }
+    escribirConfig(configuraciones)
+    return { configuraciones }
+  }),
+
+  // Consentimiento de vitrina: el negocio autoriza o rechaza que un
+  // proveedor lo muestre públicamente como cliente suyo.
+  responderPermisoVitrina: (id, estado) => set((state) => ({
+    permisosVitrina: state.permisosVitrina.map((p) =>
+      p.id === id ? { ...p, estado } : p
+    ),
+  })),
+
   enviarNotificacionCompra: () => set((state) => ({
     notificaciones: [
       {
