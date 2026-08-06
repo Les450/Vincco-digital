@@ -10,7 +10,7 @@ import './Redes.css'
 const IDS_REDES = Object.keys(REDES)
 
 // Arma el enlace final a partir de lo que escribio el negocio.
-// Si ya pego una URL completa se respeta tal cual.
+// Si ya pego una URL completa se respeta tal como estan.
 function construirUrl(id, valor) {
   const limpio = (valor || '').trim()
   if (!limpio) return null

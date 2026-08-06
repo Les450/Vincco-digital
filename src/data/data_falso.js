@@ -1,3 +1,5 @@
+import { numero, cordobasTexto, MONEDA } from '../utils/moneda'
+
 export const usuario = {
   nombre: "Leslie",
   puntos: 340,
@@ -31,7 +33,7 @@ export const promociones = [
 ]
 
 export const recompensas = [
-  { id: 1, titulo: "Cupón C$50", puntos: 200, emoji: "ticket", descripcion: "Canjea por crédito en cualquier negocio afiliado", negocio: "Todos los afiliados", popular: true },
+  { id: 1, titulo: `Cupón de ${cordobasTexto(50)}`, puntos: 200, emoji: "ticket", descripcion: "Canjea por crédito en cualquier negocio afiliado", negocio: "Todos los afiliados", popular: true },
   { id: 2, titulo: "Café gratis", puntos: 80, emoji: "coffee", descripcion: "Disfruta un café artesanal en Café del Barrio", negocio: "Café del Barrio", popular: true },
   { id: 3, titulo: "Descuento 15%", puntos: 150, emoji: "tag", descripcion: "15% de descuento en productos seleccionados", negocio: "Boutique Alma", popular: false },
   { id: 4, titulo: "Entrada cine", puntos: 400, emoji: "film", descripcion: "Entrada doble para función de estreno", negocio: "Cinema Nueva Guinea", popular: false },
@@ -362,4 +364,145 @@ export const destacadas = [
   { id: 1, titulo: "Boutique Alma", descripcion: "Colección de temporada con los looks más pedidos por nuestras clientas.", categoria: "Ropa", likes: 128 },
   { id: 2, titulo: "Café del Barrio", descripcion: "El café de origen nicaragüense favorito del barrio, ahora con nueva carta.", categoria: "Cafetería", likes: 96 },
   { id: 3, titulo: "TechStore Managua", descripcion: "Los accesorios tecnológicos más buscados de la semana.", categoria: "Tecnología", likes: 74 },
+]
+
+/* ── Perfil ───────────────────────────────────────────────── */
+
+// Cada rol tiene su propia ficha porque la informacion que importa
+// es distinta: al cliente le interesan sus puntos, al comercio su
+// ficha publica y ventas, al proveedor su cobertura y cotizaciones.
+
+// Campos editables del perfil, por rol. El tipo define que input
+// se dibuja y "ancho" marca los que ocupan la fila completa.
+export const camposPerfil = {
+  // "privado: true" = el boton de ojo del perfil esconde este campo.
+  // El nombre no se marca porque ya sale en grande en el encabezado.
+  usuario: [
+    { id: 'nombre', label: 'Nombre completo', tipo: 'text', icono: 'user' },
+    { id: 'telefono', label: 'Teléfono', tipo: 'tel', icono: 'smartphone', privado: true },
+    { id: 'correo', label: 'Correo electrónico', tipo: 'email', icono: 'mail', ancho: true, privado: true },
+    { id: 'municipio', label: 'Municipio', tipo: 'text', icono: 'map-pin', privado: true },
+    { id: 'barrio', label: 'Barrio o zona', tipo: 'text', icono: 'home', privado: true },
+  ],
+  negocio: [
+    { id: 'nombre', label: 'Nombre del negocio', tipo: 'text', icono: 'store' },
+    { id: 'categoria', label: 'Categoría', tipo: 'text', icono: 'tag' },
+    { id: 'propietario', label: 'Propietario', tipo: 'text', icono: 'user' },
+    { id: 'telefono', label: 'Teléfono / WhatsApp', tipo: 'tel', icono: 'smartphone' },
+    { id: 'correo', label: 'Correo electrónico', tipo: 'email', icono: 'mail' },
+    { id: 'ruc', label: 'RUC o cédula', tipo: 'text', icono: 'file-text' },
+    { id: 'direccion', label: 'Dirección', tipo: 'text', icono: 'map-pin', ancho: true },
+    { id: 'descripcion', label: 'Descripción del negocio', tipo: 'textarea', icono: 'book-open', ancho: true },
+  ],
+  proveedor: [
+    { id: 'nombre', label: 'Nombre de la empresa', tipo: 'text', icono: 'truck' },
+    { id: 'categoria', label: 'Rubro que abastece', tipo: 'text', icono: 'box' },
+    { id: 'contacto', label: 'Persona de contacto', tipo: 'text', icono: 'user' },
+    { id: 'telefono', label: 'Teléfono / WhatsApp', tipo: 'tel', icono: 'smartphone' },
+    { id: 'correo', label: 'Correo electrónico', tipo: 'email', icono: 'mail' },
+    { id: 'ruc', label: 'RUC', tipo: 'text', icono: 'file-text' },
+    { id: 'cobertura', label: 'Zona de cobertura', tipo: 'text', icono: 'map-pin', ancho: true },
+    { id: 'descripcion', label: 'Qué distribuye', tipo: 'textarea', icono: 'book-open', ancho: true },
+  ],
+}
+
+// Bloque de metricas que encabeza cada perfil.
+export const metricasPerfil = {
+  usuario: [
+    { id: 'compras', icono: 'shopping-bag', valor: '34', label: 'Compras con Vincco', detalle: '6 este mes' },
+    // Los montos van SIEMPRE en cordobas nicaraguenses, nunca en dolares.
+    // Se escribe la palabra completa ("1,240 córdobas") y no el simbolo,
+    // porque "C$" se lee como dolar canadiense.
+    { id: 'ahorro', icono: 'wallet', valor: numero(1240), unidad: MONEDA.nombrePlural, label: 'Ahorrado en canjes', detalle: 'desde marzo' },
+    { id: 'favoritos', icono: 'heart', valor: '12', label: 'Negocios favoritos', detalle: '3 nuevos', enlace: '/favoritos', enlaceLabel: 'Ver favoritos' },
+    { id: 'canjes', icono: 'gift', valor: '7', label: 'Recompensas canjeadas', detalle: '1 pendiente' },
+  ],
+  negocio: [
+    { id: 'ventas', icono: 'trending-up', valor: numero(48600), unidad: MONEDA.nombrePlural, label: 'Ventas del mes', detalle: '+18% vs. julio' },
+    { id: 'clientes', icono: 'users', valor: '186', label: 'Clientes con puntos', detalle: '24 nuevos' },
+    { id: 'ranking', icono: 'award', valor: '#3', label: 'Ranking de ferreterías', detalle: 'subió 2 puestos' },
+    { id: 'resenas', icono: 'star', valor: '4.8', label: 'Calificación', detalle: '52 reseñas' },
+  ],
+  proveedor: [
+    { id: 'negocios', icono: 'store', valor: '23', label: 'Negocios abastecidos', detalle: '4 este trimestre' },
+    { id: 'cotizaciones', icono: 'file-text', valor: '68', label: 'Cotizaciones enviadas', detalle: '9 pendientes' },
+    { id: 'aceptacion', icono: 'check-circle', valor: '74%', label: 'Tasa de aceptación', detalle: '+6% vs. julio' },
+    { id: 'entregas', icono: 'truck', valor: '96%', label: 'Entregas a tiempo', detalle: 'último trimestre' },
+  ],
+}
+
+// Insignias: logros visibles en la ficha, distintos por rol.
+export const insigniasPerfil = {
+  usuario: [
+    { id: 'u1', icono: 'medal', label: 'Cliente frecuente', descripcion: '20+ compras registradas', activa: true },
+    { id: 'u2', icono: 'flame', label: 'Racha de 4 semanas', descripcion: 'Compraste local 4 semanas seguidas', activa: true },
+    { id: 'u3', icono: 'users', label: 'Embajador', descripcion: 'Invitá a 5 personas para desbloquearla', activa: false },
+  ],
+  negocio: [
+    { id: 'n1', icono: 'check-circle', label: 'Negocio verificado', descripcion: 'Documentación validada por Vincco', activa: true },
+    { id: 'n2', icono: 'zap', label: 'Respuesta rápida', descripcion: 'Responde cotizaciones en menos de 2 horas', activa: true },
+    { id: 'n3', icono: 'crown', label: 'Top 3 del mes', descripcion: 'Entre los mejores de su categoría', activa: true },
+    { id: 'n4', icono: 'shield', label: 'Formalizado', descripcion: 'Subí tu RUC para desbloquearla', activa: false },
+  ],
+  proveedor: [
+    { id: 'p1', icono: 'check-circle', label: 'Proveedor verificado', descripcion: 'Documentación validada por Vincco', activa: true },
+    { id: 'p2', icono: 'truck', label: 'Entrega puntual', descripcion: '95%+ de entregas a tiempo', activa: true },
+    { id: 'p3', icono: 'handshake', label: 'Aliado del año', descripcion: 'Abastecé 30 negocios para desbloquearla', activa: false },
+  ],
+}
+
+// Ultimos movimientos de la cuenta. El campo "tono" pinta el punto
+// de color de la linea de tiempo.
+export const actividadPerfil = {
+  usuario: [
+    { id: 'a1', icono: 'gift', tono: 'positivo', titulo: 'Canjeaste Café gratis', detalle: 'Café del Barrio · -80 pts', fecha: 'Hoy, 10:24' },
+    { id: 'a2', icono: 'shopping-bag', tono: 'neutro', titulo: 'Compra registrada', detalle: 'Ferretería Don Chico · +50 pts', fecha: 'Ayer, 16:40' },
+    { id: 'a3', icono: 'star', tono: 'neutro', titulo: 'Dejaste una reseña', detalle: 'Agroservicios El Campo · 5 estrellas', fecha: '29 jul, 09:15' },
+    { id: 'a4', icono: 'award', tono: 'positivo', titulo: 'Subiste a nivel Plata', detalle: 'Alcanzaste los 200 puntos', fecha: '24 jul, 12:02' },
+    { id: 'a5', icono: 'heart', tono: 'neutro', titulo: 'Agregaste un favorito', detalle: 'Boutique Alma', fecha: '21 jul, 18:30' },
+  ],
+  negocio: [
+    { id: 'b1', icono: 'mail', tono: 'alerta', titulo: 'Cotización recibida', detalle: 'Cliente pidió precio de 12 productos', fecha: 'Hoy, 11:05' },
+    { id: 'b2', icono: 'package', tono: 'alerta', titulo: 'Stock bajo', detalle: 'Cemento Holcim: 8 unidades', fecha: 'Hoy, 08:30' },
+    { id: 'b3', icono: 'star', tono: 'positivo', titulo: 'Nueva reseña de 5 estrellas', detalle: '"Buen precio y atención" — María G.', fecha: 'Ayer, 17:12' },
+    { id: 'b4', icono: 'truck', tono: 'neutro', titulo: 'Pedido a proveedor confirmado', detalle: 'Distribuidora Norte · entrega el jueves', fecha: '30 jul, 14:20' },
+    { id: 'b5', icono: 'award', tono: 'positivo', titulo: 'Subiste en el ranking', detalle: 'Del puesto #5 al #3 en ferreterías', fecha: '28 jul, 09:00' },
+  ],
+  proveedor: [
+    { id: 'c1', icono: 'mail', tono: 'alerta', titulo: 'Solicitud de cotización', detalle: 'Ferretería Don Chico · 8 productos', fecha: 'Hoy, 09:47' },
+    { id: 'c2', icono: 'check-circle', tono: 'positivo', titulo: 'Cotización aceptada', detalle: `Materiales La Unión · ${cordobasTexto(32400)}`, fecha: 'Ayer, 15:03' },
+    { id: 'c3', icono: 'truck', tono: 'neutro', titulo: 'Pedido en tránsito', detalle: 'Pedido #1023 · llega mañana', fecha: 'Ayer, 07:15' },
+    { id: 'c4', icono: 'store', tono: 'positivo', titulo: 'Nuevo negocio abastecido', detalle: 'Pulpería La Esquina se sumó', fecha: '29 jul, 13:40' },
+    { id: 'c5', icono: 'dollar-sign', tono: 'neutro', titulo: 'Catálogo actualizado', detalle: '14 precios modificados', fecha: '26 jul, 10:10' },
+  ],
+}
+
+// Horario de atencion: solo aplica a negocio y proveedor.
+export const horarioPerfil = [
+  { dia: 'Lunes a viernes', horas: '7:00 AM - 6:00 PM', abierto: true },
+  { dia: 'Sábado', horas: '7:00 AM - 4:00 PM', abierto: true },
+  { dia: 'Domingo', horas: 'Cerrado', abierto: false },
+]
+
+// Negocios que el cliente marco como favoritos (vista resumida).
+export const favoritosPerfil = [
+  { id: 1, nombre: 'Ferretería Don Chico', categoria: 'Ferretería', puntos: '50 pts', color: '#c05900' },
+  { id: 2, nombre: 'Café del Barrio', categoria: 'Cafetería', puntos: '80 pts', color: '#8f5a00' },
+  { id: 3, nombre: 'Boutique Alma', categoria: 'Ropa', puntos: '150 pts', color: '#00374e' },
+  { id: 4, nombre: 'Agroservicios El Campo', categoria: 'Agro', puntos: '40 pts', color: '#005c5e' },
+]
+
+// Ultimas reseñas que recibio el comercio.
+export const resenasPerfil = [
+  { id: 1, autor: 'María Gutiérrez', estrellas: 5, texto: 'Buen precio y siempre tienen lo que busco. La atención es rápida.', fecha: 'hace 2 días' },
+  { id: 2, autor: 'Carlos Espinoza', estrellas: 5, texto: 'Me resolvieron una compra grande sin problema. Recomendado.', fecha: 'hace 1 semana' },
+  { id: 3, autor: 'Ana Lucía Morales', estrellas: 4, texto: 'Todo bien, aunque los sábados se llena bastante.', fecha: 'hace 2 semanas' },
+]
+
+// Rubros que el proveedor distribuye, con su nivel de stock.
+export const lineasProveedor = [
+  { id: 1, nombre: 'Cemento y agregados', negocios: 14, stock: 'alto' },
+  { id: 2, nombre: 'Hierro y varilla', negocios: 11, stock: 'medio' },
+  { id: 3, nombre: 'Herramienta manual', negocios: 9, stock: 'alto' },
+  { id: 4, nombre: 'Material eléctrico', negocios: 6, stock: 'bajo' },
 ]

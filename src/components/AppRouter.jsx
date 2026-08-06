@@ -19,6 +19,7 @@ const Favoritos = lazy(() => import('../pages/Favoritos'))
 const NegociosAsociados = lazy(() => import('../pages/NegociosAsociados'))
 const Ayuda = lazy(() => import('../pages/Ayuda'))
 const Redes = lazy(() => import('../pages/Redes'))
+const Perfil = lazy(() => import('../pages/Perfil'))
 
 // Fondo navy mientras carga el trozo de codigo de la pagina.
 // Es el mismo color de las pantallas, asi no se ve un flash blanco.
@@ -51,6 +52,8 @@ const SHELL_ROUTES = [
   { path: '/ayuda', element: <Ayuda /> },
   // Redes sociales: los negocios conectan las suyas, todos ven las de Vincco
   { path: '/redes', element: <Redes /> },
+  // Perfil: una sola ruta que muestra la pantalla del rol activo
+  { path: '/perfil', element: <Perfil /> },
 ]
 
 function AppContent() {

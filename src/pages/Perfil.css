@@ -1,0 +1,1408 @@
+/* ══════════════════════════════════════════════════════════
+   Perfil — estilos compartidos por los tres roles.
+   El color de acento cambia por rol vía la variable --pf-acento
+   que inyecta PerfilHero, así el mismo layout se lee distinto
+   para cliente (naranja), negocio (teal) y proveedor (navy).
+   Breakpoints del proyecto: móvil ≤480 / tablet 481-1024 / laptop ≥1025
+   ══════════════════════════════════════════════════════════ */
+
+.pf {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #002e43 0%, #003f5a 30%, #3f6f84 100%);
+  color: #0b1b26;
+}
+
+.pf-body {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 20px 28px;
+}
+
+/* ── Encabezado ──────────────────────────────────────────── */
+
+.pf-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 62px 20px 26px;
+  background: linear-gradient(155deg, #001d2a 0%, #002e43 58%, #003f5a 100%);
+}
+
+/* Trama diagonal tenue: da textura sin competir con el contenido */
+.pf-hero-trama {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.045) 0 1px,
+    transparent 1px 13px
+  );
+}
+
+/* Halo del color del rol, detrás del avatar */
+.pf-hero::after {
+  content: '';
+  position: absolute;
+  top: -120px;
+  left: -60px;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: var(--pf-acento, #dd6600);
+  opacity: 0.18;
+  filter: blur(70px);
+  pointer-events: none;
+}
+
+.pf-hero-volver {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  z-index: 5;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pf-hero-volver:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.pf-hero-cuerpo {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pf-hero-identidad {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.pf-avatar {
+  flex-shrink: 0;
+  width: 66px;
+  height: 66px;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  background: linear-gradient(140deg, var(--pf-acento, #dd6600), rgba(255, 255, 255, 0.12));
+  box-shadow: 0 12px 28px rgba(0, 10, 18, 0.4);
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+}
+
+/* ── Avatar con carga de foto ────────────────────────────── */
+
+.pf-avatar-zona {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pf-avatar--editable {
+  position: relative;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.pf-avatar--editable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(0, 10, 18, 0.48);
+}
+
+.pf-avatar-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Capa oscura con la cámara: siempre visible en móvil (no hay hover)
+   y solo al pasar el mouse en pantallas grandes */
+.pf-avatar-capa {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 20, 32, 0.45);
+  color: #ffffff;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.pf-avatar--cargando .pf-avatar-capa {
+  background: rgba(0, 20, 32, 0.68);
+}
+
+.pf-avatar-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pf-avatar-quitar {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  z-index: 3;
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid #002e43;
+  background: #b3261e;
+  color: #ffffff;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+
+.pf-avatar-quitar:hover {
+  filter: brightness(1.15);
+}
+
+.pf-avatar-error {
+  position: absolute;
+  top: calc(100% + 9px);
+  left: 0;
+  z-index: 6;
+  width: max-content;
+  max-width: 230px;
+  margin: 0;
+  padding: 8px 11px;
+  border-radius: 10px;
+  background: #b3261e;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(0, 10, 18, 0.32);
+}
+
+.pf-hero-texto {
+  min-width: 0;
+}
+
+.pf-hero-kicker {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.pf-hero-nombre {
+  margin: 0 0 5px;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #ffffff;
+}
+
+.pf-hero-sub {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.pf-chips {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 11px 0 0;
+  padding: 0;
+}
+
+.pf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.pf-chip--destacado {
+  border-color: transparent;
+  background: var(--pf-acento, #dd6600);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* Tarjeta translúcida a la derecha del encabezado.
+   Cada rol mete adentro algo distinto (nivel, ficha, cobertura). */
+.pf-hero-extra {
+  padding: 15px 17px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.pf-hero-acciones {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  margin: 18px auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* ── Extra del cliente: progreso de nivel ────────────────── */
+
+.pf-nivel-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+
+.pf-nivel-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.pf-nivel-valor {
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 19px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.pf-barra {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+
+.pf-barra-relleno {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #feb862, var(--pf-acento, #dd6600));
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pf-nivel-pie {
+  margin: 9px 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.pf-nivel-pie strong {
+  color: #ffffff;
+}
+
+/* ── Extra del negocio: cómo lo ven los clientes ─────────── */
+
+.pf-ficha-label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.pf-ficha-texto {
+  margin: 0 0 11px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.pf-ficha-contacto {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.pf-ficha-contacto span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* ── Extra del proveedor: cobertura ──────────────────────── */
+
+.pf-cobertura-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.pf-cobertura-lista {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+}
+
+.pf-cobertura-lista li {
+  padding: 5px 11px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.pf-cobertura-pie {
+  margin: 12px 0 0;
+  padding-top: 11px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.pf-cobertura-pie strong {
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 15px;
+  color: #ffffff;
+}
+
+/* ── Métricas ────────────────────────────────────────────── */
+
+.pf-metricas {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px;
+  margin: 0 0 22px;
+  padding: 0;
+}
+
+.pf-metrica {
+  position: relative;
+  padding: 15px 15px 13px;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(0, 20, 32, 0.12);
+}
+
+.pf-metrica-icono {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  background: rgba(0, 63, 90, 0.08);
+  color: #00374e;
+}
+
+.pf-metrica-valor {
+  display: block;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #0b1b26;
+  overflow-wrap: anywhere;
+}
+
+/* Moneda escrita con todas sus letras ("córdobas"). Va más chica para
+   que el número siga siendo lo que se lee primero. */
+.pf-metrica-unidad {
+  display: block;
+  margin-top: 1px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #4a6274;
+}
+
+.pf-metrica-label {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4a6274;
+}
+
+.pf-metrica-detalle {
+  display: block;
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: #7d94a4;
+}
+
+/* Atajo dentro de la tarjeta (ej. "Ver favoritos" -> /favoritos).
+   Se separa con una línea fina para que no se confunda con el detalle. */
+.pf-metrica--enlazada {
+  display: flex;
+  flex-direction: column;
+}
+
+.pf-metrica-enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  align-self: flex-start;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid #eaf1f5;
+  width: 100%;
+  font-size: 12px;
+  font-weight: 700;
+  color: #c05900;
+  text-decoration: none;
+  transition: color 0.15s, gap 0.15s;
+}
+
+.pf-metrica-enlace:hover,
+.pf-metrica-enlace:focus-visible {
+  color: #dd6600;
+  gap: 6px;
+}
+
+/* ── Secciones ───────────────────────────────────────────── */
+
+.pf-seccion {
+  margin-bottom: 22px;
+  padding: 18px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 8px 26px rgba(0, 20, 32, 0.13);
+}
+
+.pf-seccion-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.pf-seccion-head h2 {
+  margin: 0 0 3px;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0b1b26;
+}
+
+.pf-seccion-head p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #6b8496;
+}
+
+.pf-head-acciones {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+}
+
+.pf-guardado {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #007a7b;
+}
+
+.pf-columnas {
+  display: grid;
+  gap: 0;
+}
+
+/* ── Botones ─────────────────────────────────────────────── */
+
+.pf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 17px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: filter 0.18s, background 0.18s, transform 0.18s;
+}
+
+.pf-btn:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.pf-btn--solido {
+  background: linear-gradient(135deg, #dd6600, #c05900);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(192, 89, 0, 0.3);
+}
+
+.pf-btn--claro {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  color: #ffffff;
+}
+
+.pf-btn--linea {
+  padding: 8px 14px;
+  background: #ffffff;
+  border: 1.5px solid #d7e2ea;
+  color: #00374e;
+  font-size: 12.5px;
+}
+
+.pf-btn--linea:hover {
+  background: #f2f7fa;
+}
+
+.pf-btn--fantasma {
+  background: #f2f5f8;
+  color: #4a6274;
+}
+
+/* Los botones de acción también se usan como <Link>, que no hereda
+   estos estilos de texto por ser una etiqueta <a>. */
+a.pf-btn {
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* ── Botón de ojo (privacidad) ───────────────────────────── */
+
+.pf-ojo {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid #d7e2ea;
+  background: #ffffff;
+  color: #4a6274;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+
+.pf-ojo:hover {
+  background: #f2f7fa;
+  color: #00374e;
+}
+
+.pf-ojo:focus-visible {
+  outline: 2px solid #dd6600;
+  outline-offset: 2px;
+}
+
+/* Estado "datos ocultos": se marca en naranja para que se note
+   de un vistazo que la información está escondida a propósito. */
+.pf-ojo--activo {
+  border-color: rgba(221, 102, 0, 0.4);
+  background: rgba(221, 102, 0, 0.1);
+  color: #c05900;
+}
+
+.pf-campo-valor--oculto {
+  letter-spacing: 0.06em;
+  color: #7d94a4;
+  user-select: none;
+}
+
+.pf-privacidad-aviso {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 14px 0 0;
+  padding: 9px 12px;
+  border-radius: 11px;
+  background: rgba(0, 63, 90, 0.05);
+  font-size: 12px;
+  line-height: 1.4;
+  color: #4a6274;
+}
+
+/* ── Datos editables ─────────────────────────────────────── */
+
+.pf-datos-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.pf-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.pf-campo-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #7d94a4;
+}
+
+.pf-campo-valor {
+  font-size: 14px;
+  line-height: 1.45;
+  color: #0b1b26;
+  word-break: break-word;
+}
+
+.pf-vacio {
+  color: #9db0bd;
+  font-style: italic;
+}
+
+.pf-input {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1.5px solid #d7e2ea;
+  border-radius: 11px;
+  background: #f8fbfc;
+  font-family: inherit;
+  font-size: 14px;
+  color: #0b1b26;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.pf-input:focus {
+  outline: none;
+  border-color: #007a7b;
+  background: #ffffff;
+}
+
+.pf-textarea {
+  resize: vertical;
+  min-height: 78px;
+  line-height: 1.5;
+}
+
+.pf-datos-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #eef3f6;
+}
+
+/* ── Insignias ───────────────────────────────────────────── */
+
+.pf-insignias {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+.pf-insignia {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 13px;
+  border-radius: 13px;
+  border: 1px solid #e6eef3;
+  background: #f8fbfc;
+}
+
+.pf-insignia-icono {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: rgba(221, 102, 0, 0.12);
+  color: #c05900;
+}
+
+.pf-insignia-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pf-insignia-texto strong {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0b1b26;
+}
+
+.pf-insignia-texto span {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #6b8496;
+}
+
+/* Las bloqueadas se ven apagadas: se entiende que faltan por ganar */
+.pf-insignia--bloqueada {
+  background: #ffffff;
+  border-style: dashed;
+  opacity: 0.72;
+}
+
+.pf-insignia--bloqueada .pf-insignia-icono {
+  background: #eef3f6;
+  color: #9db0bd;
+}
+
+.pf-insignia-candado {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: #9db0bd;
+}
+
+/* ── Favoritos (cliente) ─────────────────────────────────── */
+
+.pf-favoritos {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+.pf-favorito {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 13px;
+  border-radius: 13px;
+  border: 1px solid #e6eef3;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.pf-favorito:hover {
+  border-color: #c9dae4;
+  transform: translateX(2px);
+}
+
+.pf-favorito-marca {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  color: #ffffff;
+}
+
+.pf-favorito-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.pf-favorito-info strong {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0b1b26;
+}
+
+.pf-favorito-info span {
+  font-size: 12px;
+  color: #6b8496;
+}
+
+.pf-favorito-puntos {
+  flex-shrink: 0;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgba(221, 102, 0, 0.1);
+  font-size: 12px;
+  font-weight: 700;
+  color: #c05900;
+}
+
+/* ── Horario ─────────────────────────────────────────────── */
+
+.pf-horario {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pf-horario li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #eef3f6;
+}
+
+.pf-horario li:last-child {
+  border-bottom: none;
+}
+
+.pf-horario-dia {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0b1b26;
+}
+
+.pf-horario-horas {
+  font-size: 13px;
+  font-weight: 700;
+  color: #007a7b;
+}
+
+.pf-horario--cerrado .pf-horario-horas {
+  color: #a8b8c4;
+  font-weight: 600;
+}
+
+/* ── Redes conectadas (negocio) ──────────────────────────── */
+
+.pf-redes {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+.pf-red {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 13px;
+  border-radius: 13px;
+  border: 1px solid #e6eef3;
+}
+
+.pf-red-icono {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+}
+
+.pf-red-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+
+.pf-red-info strong {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0b1b26;
+}
+
+.pf-red-info span {
+  font-size: 12px;
+  color: #6b8496;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pf-red-check {
+  flex-shrink: 0;
+  color: #007a7b;
+}
+
+.pf-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 0;
+  padding: 13px;
+  border-radius: 12px;
+  background: rgba(221, 102, 0, 0.08);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #8f5a00;
+}
+
+/* ── Reseñas (negocio) ───────────────────────────────────── */
+
+.pf-resenas {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+}
+
+.pf-resena {
+  padding: 13px 14px;
+  border-radius: 13px;
+  border: 1px solid #e6eef3;
+  background: #f8fbfc;
+}
+
+.pf-resena-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 7px;
+}
+
+.pf-resena-top strong {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0b1b26;
+}
+
+.pf-estrellas {
+  display: inline-flex;
+  gap: 2px;
+  color: #fea02f;
+}
+
+.pf-resena-texto {
+  margin: 0 0 7px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #4a6274;
+}
+
+.pf-resena-fecha {
+  font-size: 11.5px;
+  color: #9db0bd;
+}
+
+/* ── Líneas del proveedor ────────────────────────────────── */
+
+.pf-lineas {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 11px;
+  margin: 0;
+  padding: 0;
+}
+
+.pf-linea {
+  padding: 13px 14px;
+  border-radius: 13px;
+  border: 1px solid #e6eef3;
+}
+
+.pf-linea-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 7px;
+}
+
+.pf-linea-top strong {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0b1b26;
+}
+
+.pf-linea-pie {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #6b8496;
+}
+
+.pf-stock {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.pf-stock--alto {
+  background: rgba(0, 122, 123, 0.12);
+  color: #005c5e;
+}
+
+.pf-stock--medio {
+  background: rgba(254, 160, 47, 0.16);
+  color: #8f5a00;
+}
+
+.pf-stock--bajo {
+  background: rgba(179, 38, 30, 0.1);
+  color: #b3261e;
+}
+
+/* ── Actividad ───────────────────────────────────────────── */
+
+.pf-actividad {
+  list-style: none;
+  position: relative;
+  margin: 0;
+  padding: 0 0 0 26px;
+}
+
+/* Línea vertical que une los hitos */
+.pf-actividad::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 14px;
+  left: 12px;
+  width: 2px;
+  background: #eef3f6;
+}
+
+.pf-act {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 0 0 18px;
+}
+
+.pf-act:last-child {
+  padding-bottom: 0;
+}
+
+.pf-act-marca {
+  position: absolute;
+  left: -26px;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  background: #eef3f6;
+  color: #6b8496;
+}
+
+.pf-act--positivo .pf-act-marca {
+  background: rgba(0, 122, 123, 0.14);
+  color: #005c5e;
+}
+
+.pf-act--alerta .pf-act-marca {
+  background: rgba(221, 102, 0, 0.14);
+  color: #c05900;
+}
+
+.pf-act-cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.pf-act-titulo {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0b1b26;
+}
+
+.pf-act-detalle {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #6b8496;
+}
+
+.pf-act-fecha {
+  flex-shrink: 0;
+  font-size: 11.5px;
+  color: #9db0bd;
+  white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Tablet (481px a 1024px)
+   ══════════════════════════════════════════════════════════ */
+
+@media (min-width: 481px) {
+  .pf-hero {
+    padding: 76px 28px 30px;
+  }
+
+  .pf-body {
+    padding: 26px 28px 34px;
+  }
+
+  .pf-hero-volver {
+    top: 24px;
+    left: 26px;
+  }
+
+  .pf-avatar {
+    width: 76px;
+    height: 76px;
+    font-size: 27px;
+  }
+
+  .pf-hero-nombre {
+    font-size: 27px;
+  }
+
+  .pf-hero-sub {
+    font-size: 14px;
+  }
+
+  .pf-metricas {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .pf-seccion {
+    padding: 22px;
+  }
+
+  .pf-datos-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pf-campo--ancho {
+    grid-column: 1 / -1;
+  }
+
+  .pf-favoritos,
+  .pf-lineas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   Laptop (1025px en adelante)
+   ══════════════════════════════════════════════════════════ */
+
+@media (min-width: 1025px) {
+  .pf-hero {
+    padding: 88px 40px 34px;
+  }
+
+  .pf-body {
+    padding: 32px 40px 44px;
+  }
+
+  .pf-hero-volver {
+    top: 30px;
+    left: 40px;
+  }
+
+  /* En pantalla ancha la identidad y la tarjeta extra van lado a lado */
+  .pf-hero-cuerpo {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+  }
+
+  .pf-hero-identidad {
+    gap: 20px;
+  }
+
+  .pf-hero-extra {
+    flex-shrink: 0;
+    width: 340px;
+    padding: 18px 20px;
+  }
+
+  .pf-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 26px;
+    font-size: 32px;
+  }
+
+  /* Con mouse disponible, la capa de la cámara solo aparece al pasar
+     por encima para no tapar la foto */
+  .pf-avatar--editable .pf-avatar-capa {
+    opacity: 0;
+  }
+
+  .pf-avatar--editable:hover .pf-avatar-capa,
+  .pf-avatar--editable:focus-visible .pf-avatar-capa,
+  .pf-avatar--cargando .pf-avatar-capa {
+    opacity: 1;
+  }
+
+  .pf-avatar-quitar {
+    width: 30px;
+    height: 30px;
+  }
+
+  .pf-hero-nombre {
+    font-size: 33px;
+  }
+
+  .pf-seccion {
+    padding: 24px;
+  }
+
+  .pf-seccion-head h2 {
+    font-size: 18px;
+  }
+
+  /* Dos columnas: la principal más ancha que la lateral */
+  .pf-columnas {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 22px;
+    align-items: start;
+  }
+
+  .pf-columnas > .pf-seccion {
+    margin-bottom: 22px;
+  }
+
+  .pf-favoritos,
+  .pf-lineas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pf-metrica-valor {
+    font-size: 24px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   Móvil chico
+   ══════════════════════════════════════════════════════════ */
+
+@media (max-width: 380px) {
+  .pf-hero {
+    padding: 56px 16px 22px;
+  }
+
+  .pf-body {
+    padding: 16px 14px 24px;
+  }
+
+  .pf-hero-identidad {
+    gap: 12px;
+  }
+
+  .pf-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    font-size: 20px;
+  }
+
+  .pf-avatar-quitar {
+    width: 24px;
+    height: 24px;
+  }
+
+  .pf-avatar-error {
+    max-width: 190px;
+  }
+
+  .pf-hero-nombre {
+    font-size: 19px;
+  }
+
+  .pf-metricas {
+    gap: 9px;
+  }
+
+  .pf-metrica {
+    padding: 13px 12px 11px;
+  }
+
+  .pf-metrica-valor {
+    font-size: 18px;
+  }
+
+  .pf-metrica-unidad {
+    font-size: 11px;
+  }
+
+  .pf-seccion {
+    padding: 15px;
+  }
+
+  /* En pantallas muy angostas el título y los botones no caben en una
+     sola línea, así que las acciones bajan y se alinean a la derecha. */
+  .pf-seccion-head {
+    flex-wrap: wrap;
+  }
+
+  .pf-head-acciones {
+    margin-left: auto;
+  }
+
+  .pf-ojo {
+    width: 32px;
+    height: 32px;
+  }
+
+  .pf-metrica-enlace {
+    font-size: 11.5px;
+  }
+
+  .pf-act-fecha {
+    display: none;
+  }
+}

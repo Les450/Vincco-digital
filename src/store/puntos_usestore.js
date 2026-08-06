@@ -7,9 +7,9 @@ function generarNotificaciones() {
 
   const cliente = [
     { id: 1, tipo: 'cotizacion_recibida', icono: 'package', titulo: 'Cotización recibida', descripcion: 'Ferretería Don Chico respondió a tu solicitud de cotización.', fecha: h(1), leida: false, ruta: '/home', userType: 'usuario' },
-    { id: 2, tipo: 'cambio_precio', icono: 'dollar-sign', titulo: 'Cambio de precio', descripcion: 'Martillo Stanley bajó de precio: ahora C$180.', fecha: h(4), leida: false, ruta: '/favoritos', userType: 'usuario' },
+    { id: 2, tipo: 'cambio_precio', icono: 'dollar-sign', titulo: 'Cambio de precio', descripcion: 'Martillo Stanley bajó de precio: ahora 180 córdobas.', fecha: h(4), leida: false, ruta: '/favoritos', userType: 'usuario' },
     { id: 3, tipo: 'puntos_obtenidos', icono: 'gift', titulo: 'Puntos obtenidos', descripcion: 'Recibiste 50 puntos por tu compra en Pulpería La Esquina.', fecha: h(8), leida: true, ruta: '/puntos', userType: 'usuario' },
-    { id: 4, tipo: 'recompensa_disponible', icono: 'award', titulo: 'Recompensa disponible', descripcion: 'Ya puedes canjear tus 200 puntos por un Cupón de C$50.', fecha: h(12), leida: false, ruta: '/puntos', userType: 'usuario' },
+    { id: 4, tipo: 'recompensa_disponible', icono: 'award', titulo: 'Recompensa disponible', descripcion: 'Ya puedes canjear tus 200 puntos por un Cupón de 50 córdobas.', fecha: h(12), leida: false, ruta: '/puntos', userType: 'usuario' },
     { id: 5, tipo: 'nuevo_negocio_categoria', icono: 'megaphone', titulo: 'Nuevo negocio registrado', descripcion: 'Un nuevo negocio de ferretería se registró en tu zona.', fecha: h(20), leida: false, ruta: '/directorio', userType: 'usuario' },
     { id: 6, tipo: 'nuevos_productos', icono: 'shopping-bag', titulo: 'Nuevos productos', descripcion: 'Ferretería Don Chico publicó 3 nuevos productos.', fecha: h(30), leida: false, ruta: '/home', userType: 'usuario' },
     { id: 7, tipo: 'solicitud_resena', icono: 'star', titulo: 'Deja tu reseña', descripcion: 'Califica tu compra en Agroservicios El Campo.', fecha: h(36), leida: true, ruta: '/home', userType: 'usuario' },
@@ -139,6 +139,44 @@ const useStore = create((set) => ({
   // Codigo con el que el usuario invita a otros. En produccion
   // deberia venir del backend al crear la cuenta.
   codigoInvitacion: 'VINCCO-A4K9',
+  // Ficha editable del perfil. Se guarda una por rol porque los
+  // campos no son los mismos: el cliente no tiene RUC ni cobertura,
+  // y el proveedor no tiene "propietario" sino persona de contacto.
+  perfiles: {
+    usuario: {
+      nombre: 'Leslie Martínez',
+      telefono: '+505 8877 4411',
+      correo: 'leslie.martinez@gmail.com',
+      municipio: 'Nueva Guinea',
+      barrio: 'Barrio San Pedro',
+      miembroDesde: 'marzo 2026',
+      foto: null,
+    },
+    negocio: {
+      nombre: 'Ferretería Don Chico',
+      categoria: 'Ferretería',
+      propietario: 'Francisco Duarte',
+      telefono: '+505 8855 6677',
+      correo: 'ferreteriadonchico@gmail.com',
+      ruc: 'J0310000123456',
+      direccion: 'Frente al parque central, Nueva Guinea',
+      descripcion: 'Ferretería con más de 12 años en Nueva Guinea. Materiales de construcción, herramienta manual y accesorios eléctricos.',
+      miembroDesde: 'enero 2026',
+      foto: null,
+    },
+    proveedor: {
+      nombre: 'Distribuidora Norte',
+      categoria: 'Construcción',
+      contacto: 'Roberto Sánchez',
+      telefono: '+505 8844 2200',
+      correo: 'ventas@distribuidoranorte.com',
+      ruc: 'J0310000998877',
+      cobertura: 'Nueva Guinea, El Rama y Muelle de los Bueyes',
+      descripcion: 'Distribuimos cemento, hierro, herramienta manual y material eléctrico a ferreterías y constructoras de la RACCS.',
+      miembroDesde: 'febrero 2026',
+      foto: null,
+    },
+  },
   ...generarNotificaciones(),
   ...generarEventosCalendario(),
   agregarPuntos: (cantidad) => set((state) => ({
@@ -169,6 +207,29 @@ const useStore = create((set) => ({
     negociosAsociados: state.negociosAsociados.map((n) =>
       n.id === id ? { ...n, ...datos } : n
     )
+  })),
+  // Guarda los cambios del formulario de perfil sin pisar los
+  // campos que no vienen en "datos" (por ejemplo miembroDesde).
+  guardarPerfil: (rol, datos) => set((state) => ({
+    perfiles: {
+      ...state.perfiles,
+      [rol]: { ...state.perfiles[rol], ...datos },
+    },
+  })),
+  // La foto se guarda como dataURL (base64) porque no hay backend
+  // todavia. Al conectar la API esto pasaria a ser la URL del archivo
+  // subido; el resto de la pantalla no cambia.
+  guardarFoto: (rol, foto) => set((state) => ({
+    perfiles: {
+      ...state.perfiles,
+      [rol]: { ...state.perfiles[rol], foto },
+    },
+  })),
+  quitarFoto: (rol) => set((state) => ({
+    perfiles: {
+      ...state.perfiles,
+      [rol]: { ...state.perfiles[rol], foto: null },
+    },
   })),
   // Conecta o actualiza una red del negocio
   guardarRed: (id, valor) => set((state) => ({

@@ -2,20 +2,39 @@ import { useNavigate } from 'react-router-dom'
 import useStore from '../store/puntos_usestore'
 import Icon from './icons/Icon'
 
+// El menu cambia segun quien entra:
+// - usuario (consumidor): no tiene negocio propio ni compra a proveedores,
+//   asi que no se le muestran "Mi Negocio" ni "Proveedores Guardados".
+// - negocio: ve su negocio y los proveedores que guardo.
+// - proveedor: ve los negocios que abastece, sin "Proveedores Guardados".
 function getMenuItems(userType) {
   const esProveedor = userType === 'proveedor'
+  const esUsuario = userType === 'usuario'
 
   const items = [
     { label: 'Perfil', icon: 'user', path: '/perfil' },
     { label: 'Inicio', icon: 'home', path: '/inicio' },
-    { label: esProveedor ? 'Negocios Asociados' : 'Mi Negocio', icon: 'store', path: esProveedor ? '/negocios-asociados' : '/mi-negocio' },
-    { label: 'Proveedores Guardados', icon: 'star', path: '/proveedores' },
+  ]
+
+  if (!esUsuario) {
+    items.push(
+      esProveedor
+        ? { label: 'Negocios Asociados', icon: 'store', path: '/negocios-asociados' }
+        : { label: 'Mi Negocio', icon: 'store', path: '/mi-negocio' }
+    )
+  }
+
+  if (!esUsuario && !esProveedor) {
+    items.push({ label: 'Proveedores Guardados', icon: 'star', path: '/proveedores' })
+  }
+
+  items.push(
     { label: 'Ayuda y Soporte', icon: 'help-circle', path: '/ayuda' },
     { label: 'Configuraciones', icon: 'settings', path: '/config' },
     { label: 'Redes Sociales', icon: 'globe', path: '/redes' },
-  ]
+  )
 
-  return esProveedor ? items.filter((item) => item.path !== '/proveedores') : items
+  return items
 }
 
 export default function Sidebar({ open, onClose }) {

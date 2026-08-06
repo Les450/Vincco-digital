@@ -46,7 +46,7 @@
   margin: 0;
   font-size: 12.5px;
   line-height: 1.45;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(225, 22, 22, 0.6);
 }
 
 .rds-contador {
@@ -54,7 +54,7 @@
   padding: 5px 13px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(197, 18, 18, 0.08);
   font-size: 12px;
   font-weight: 700;
   color: #ffffff;
