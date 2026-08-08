@@ -1,6 +1,7 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom'
 import BottomNav from '../components/BottomNav'
+import useStore from '../store/puntos_usestore'
 import Home from '../pages/Home'
 
 // Home se importa directo porque es la pantalla de entrada.
@@ -21,6 +22,12 @@ const Ayuda = lazy(() => import('../pages/Ayuda'))
 const Redes = lazy(() => import('../pages/Redes'))
 const Perfil = lazy(() => import('../pages/Perfil'))
 const Config = lazy(() => import('../pages/Config'))
+const Guia = lazy(() => import('../Chatbot/pagina-guia/Guia'))
+
+// Kiara se carga aparte del resto: quien la tenga apagada en
+// Configuración nunca descarga este trozo de código.
+const PanelChat = lazy(() => import('../Chatbot/ui/PanelChat'))
+const KiaraFlotante = lazy(() => import('../Chatbot/ui/KiaraFlotante'))
 
 // Fondo navy mientras carga el trozo de codigo de la pagina.
 // Es el mismo color de las pantallas, asi no se ve un flash blanco.
@@ -58,11 +65,28 @@ const SHELL_ROUTES = [
   // Configuraciones: igual que el perfil, una ruta y tres pantallas.
   // Es la que abre "Configuraciones" del menú hamburguesa.
   { path: '/config', element: <Config /> },
+  // Guía de usuario: el manual de la plataforma. Es también la
+  // única fuente de la que Kiara saca sus respuestas.
+  { path: '/guia', element: <Guia /> },
 ]
 
 function AppContent() {
   const location = useLocation()
   const hideNav = location.pathname === '/login' || location.pathname === '/register'
+
+  const chatAbierto = useStore((s) => s.chat.abierto)
+  const mostrarAsistente = useStore((s) => s.configuraciones[s.userType]?.mostrarAsistente !== false)
+
+  /* En pantalla ancha el panel de Kiara no tapa el contenido: la
+     app se corre para dejarle lugar. Ese corrimiento se hace con
+     una clase en el <body> para que lo apliquen todas las pantallas
+     a la vez, sin que ninguna tenga que saber de Kiara. */
+  useEffect(() => {
+    document.body.classList.toggle(
+      'vincco--asistente-abierto',
+      chatAbierto && mostrarAsistente
+    )
+  }, [chatAbierto, mostrarAsistente])
 
   return (
     <>
@@ -76,6 +100,16 @@ function AppContent() {
         </Routes>
       </Suspense>
       {!hideNav && <BottomNav />}
+
+      {/* Kiara se monta por encima del router: aparece en todas las
+          pantallas sin que ninguna la importe. En login y registro
+          no va, porque ahí todavía no se sabe qué rol es. */}
+      {!hideNav && mostrarAsistente && (
+        <Suspense fallback={null}>
+          <PanelChat />
+          <KiaraFlotante />
+        </Suspense>
+      )}
     </>
   )
 }

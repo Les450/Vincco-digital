@@ -92,6 +92,13 @@ const GRUPO_APP = {
   icono: 'sliders',
   ajustes: [
     {
+      id: 'mostrarAsistente',
+      tipo: 'switch',
+      icono: 'message-circle',
+      label: 'Mostrar a Kiara',
+      ayuda: 'La asistente que aparece al costado de la pantalla',
+    },
+    {
       id: 'textoGrande',
       tipo: 'switch',
       icono: 'search',

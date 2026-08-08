@@ -509,12 +509,56 @@ section {
 }
 
 .bottom-nav-icon {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 24px;
   height: 24px;
   flex-shrink: 0;
+}
+
+/* El mismo punto naranja que marca la ruta activa en el Sidebar:
+   ambas barras de navegacion hablan el mismo idioma visual. */
+.bottom-nav-dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--orange-500);
+  box-shadow: 0 0 0 3px var(--navy-900);
+  transform: scale(0);
+  transition: transform 0.2s ease;
+}
+
+.bottom-nav-btn--active .bottom-nav-dot {
+  transform: scale(1);
+}
+
+/* Publicar es la unica accion de escritura de la barra (el resto son
+   destinos): se eleva como boton relleno para que se note la diferencia. */
+.bottom-nav-btn--fab .bottom-nav-icon {
+  width: 44px;
+  height: 44px;
+  margin-top: -22px;
+  border-radius: 50%;
+  background: linear-gradient(155deg, var(--gold-400), var(--orange-500));
+  color: var(--surface);
+  box-shadow: 0 8px 20px rgba(221, 102, 0, 0.45), 0 0 0 4px var(--navy-900);
+}
+
+.bottom-nav-btn--fab.bottom-nav-btn--active .bottom-nav-icon {
+  background: linear-gradient(155deg, var(--gold-500), var(--orange-600));
+}
+
+.bottom-nav-btn--fab {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.bottom-nav-btn--fab .bottom-nav-dot {
+  display: none;
 }
 
 .bottom-nav-label {
@@ -559,6 +603,177 @@ section {
   .bottom-nav-label {
     font-size: 11px;
   }
+}
+
+/* ── Menu lateral (Sidebar.jsx) ────────────────────────────
+   Comparte panel con la barra inferior: es la otra mitad de la
+   navegacion global de la app. Fondo navy oscuro para que ambas
+   se sientan parte del mismo sistema, no dos widgets distintos. */
+.side-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 10, 16, 0.55);
+  z-index: 1100;
+}
+
+.side-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(300px, 84vw);
+  background: linear-gradient(180deg, var(--navy-900) 0%, var(--navy-950) 100%);
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 40px rgba(0, 10, 16, 0.45);
+}
+
+.side-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.side-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.side-logo-text {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 19px;
+  color: var(--surface);
+  line-height: 1;
+}
+
+.side-role-chip {
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold-400);
+  background: rgba(254, 184, 98, 0.12);
+  border: 1px solid rgba(254, 184, 98, 0.28);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.side-nav {
+  flex: 1;
+  padding: 10px 12px;
+  overflow-y: auto;
+}
+
+.side-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 2px;
+  border: none;
+  border-radius: 12px;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.68);
+  text-align: left;
+  transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.side-nav-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--surface);
+}
+
+.side-nav-item--active {
+  background: rgba(221, 102, 0, 0.16);
+  color: var(--surface);
+}
+
+.side-nav-icon {
+  color: rgba(255, 255, 255, 0.55);
+  transition: color 0.15s;
+}
+
+.side-nav-item:hover .side-nav-icon {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.side-nav-item--active .side-nav-icon {
+  color: var(--gold-400);
+}
+
+.side-nav-label {
+  flex: 1;
+}
+
+.side-nav-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--orange-500);
+  box-shadow: 0 0 0 4px rgba(221, 102, 0, 0.18);
+  flex-shrink: 0;
+}
+
+.side-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.side-btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 14.5px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.side-btn--primary {
+  border: none;
+  background: var(--orange-500);
+  color: var(--surface);
+}
+
+.side-btn--primary:hover {
+  background: var(--orange-600);
+}
+
+.side-btn--outline {
+  border: 1.5px solid var(--teal-500);
+  background: transparent;
+  color: var(--teal-500);
+}
+
+.side-btn--outline:hover {
+  background: rgba(63, 156, 156, 0.12);
+}
+
+.side-btn--danger {
+  border: none;
+  background: rgba(179, 38, 30, 0.18);
+  color: #ff8a80;
+}
+
+.side-btn--danger:hover {
+  background: rgba(179, 38, 30, 0.28);
 }
 
 /* ── Carrusel de negocios asociados ────────────────────────

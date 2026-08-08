@@ -87,14 +87,18 @@ export default function BottomNav() {
     <nav className="bottom-nav">
       {TABS.map((tab) => {
         const isActive = location.pathname === tab.path
+        const isFab = tab.id === 'publicaciones'
         return (
           <button
             key={tab.path}
-            className={`bottom-nav-btn ${isActive ? 'bottom-nav-btn--active' : ''}`}
+            className={`bottom-nav-btn ${isFab ? 'bottom-nav-btn--fab ' : ''}${isActive ? 'bottom-nav-btn--active' : ''}`}
             onClick={() => navigate(tab.path)}
             type="button"
           >
-            <span className="bottom-nav-icon">{tab.icon}</span>
+            <span className="bottom-nav-icon">
+              {tab.icon}
+              <span className="bottom-nav-dot" />
+            </span>
             <span className="bottom-nav-label">{tab.label}</span>
           </button>
         )

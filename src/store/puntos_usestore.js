@@ -41,6 +41,7 @@ const CONFIG_INICIAL = {
     silencio: true,
     silencioDesde: '21:00',
     silencioHasta: '06:00',
+    mostrarAsistente: true,
     textoGrande: false,
     altoContraste: false,
     idioma: 'es',
@@ -63,6 +64,7 @@ const CONFIG_INICIAL = {
     silencio: true,
     silencioDesde: '21:00',
     silencioHasta: '06:00',
+    mostrarAsistente: true,
     textoGrande: false,
     altoContraste: false,
     idioma: 'es',
@@ -83,6 +85,7 @@ const CONFIG_INICIAL = {
     silencio: true,
     silencioDesde: '21:00',
     silencioHasta: '06:00',
+    mostrarAsistente: true,
     textoGrande: false,
     altoContraste: false,
     idioma: 'es',
@@ -246,6 +249,15 @@ const useStore = create((set) => ({
   negociosAsociados: negociosAsociadosIniciales,
   configuraciones: leerConfig(),
   permisosVitrina: permisosVitrinaIniciales,
+  // Conversación con Kiara. Vive en el store y no dentro del
+  // componente para que no se borre al cambiar de pantalla: podés
+  // preguntar algo, ir a verlo y volver con el hilo intacto.
+  // No se persiste a propósito: cada visita arranca limpia.
+  chat: {
+    abierto: false,
+    mensajes: [],
+    pensando: false,
+  },
   // Redes que el comercio o proveedor conecto a su perfil.
   // La clave es el id de la red y el valor es el usuario o telefono.
   redesNegocio: {
@@ -382,6 +394,32 @@ const useStore = create((set) => ({
     escribirConfig(configuraciones)
     return { configuraciones }
   }),
+
+  /* ── Kiara ────────────────────────────────────────────────
+     El store solo guarda los mensajes. Quién responde y con qué
+     información es asunto de src/Chatbot, no del store: así el
+     día que cambie el motor, esto no se toca. */
+  alternarChat: () => set((state) => ({
+    chat: { ...state.chat, abierto: !state.chat.abierto },
+  })),
+
+  abrirChat: () => set((state) => ({ chat: { ...state.chat, abierto: true } })),
+  cerrarChat: () => set((state) => ({ chat: { ...state.chat, abierto: false } })),
+
+  agregarMensajeChat: (mensaje) => set((state) => ({
+    chat: {
+      ...state.chat,
+      mensajes: [...state.chat.mensajes, { id: `${Date.now()}-${Math.random()}`, ...mensaje }],
+    },
+  })),
+
+  setChatPensando: (pensando) => set((state) => ({
+    chat: { ...state.chat, pensando },
+  })),
+
+  limpiarChat: () => set((state) => ({
+    chat: { ...state.chat, mensajes: [] },
+  })),
 
   // Consentimiento de vitrina: el negocio autoriza o rechaza que un
   // proveedor lo muestre públicamente como cliente suyo.

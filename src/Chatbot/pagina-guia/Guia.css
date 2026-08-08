@@ -1,0 +1,459 @@
+/* ══════════════════════════════════════════════════════════
+   Guía de usuario.
+   Mismo tema claro que Configuración: son las dos pantallas
+   donde se lee y se administra, no donde se navega.
+   Breakpoints: móvil ≤480 / tablet 481-1024 / laptop ≥1025
+   ══════════════════════════════════════════════════════════ */
+
+.gui {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  background: #eaeef4;
+  color: #0b1b26;
+}
+
+/* ── Encabezado ──────────────────────────────────────────── */
+
+.gui-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 56px 20px 26px;
+  background: linear-gradient(155deg, #001d2a 0%, #002e43 58%, #003f5a 100%);
+}
+
+.gui-hero::after {
+  content: '';
+  position: absolute;
+  top: -110px;
+  right: -50px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: #dd6600;
+  opacity: 0.17;
+  filter: blur(70px);
+  pointer-events: none;
+}
+
+.gui-volver {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.gui-volver:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.gui-hero-cuerpo {
+  position: relative;
+  z-index: 1;
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.gui-kicker {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #feb862;
+}
+
+.gui-hero-cuerpo h1 {
+  margin: 5px 0 0;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #ffffff;
+}
+
+.gui-hero-cuerpo p {
+  margin: 7px 0 0;
+  max-width: 56ch;
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+/* ── Cuerpo ──────────────────────────────────────────────── */
+
+.gui-body {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px 20px 28px;
+}
+
+.gui-buscador {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 12px;
+  padding: 11px 14px;
+  border: 1px solid #dbe3ec;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #8399a8;
+}
+
+.gui-buscador:focus-within {
+  border-color: #dd6600;
+}
+
+.gui-buscador input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: none;
+  font-family: inherit;
+  font-size: 14px;
+  color: #0b1b26;
+}
+
+.gui-buscador input::placeholder {
+  color: #9bb0bd;
+}
+
+.gui-buscador input[type='search']::-webkit-search-cancel-button {
+  display: none;
+}
+
+.gui-buscador button {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: #eef3f7;
+  color: #4a6274;
+  cursor: pointer;
+}
+
+/* ── Atajo a Kiara ───────────────────────────────────────── */
+
+.gui-asistente {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  margin-bottom: 18px;
+  padding: 13px 15px;
+  border: 1px solid #cfdce6;
+  border-radius: 14px;
+  background: #ffffff;
+  font-family: inherit;
+  text-align: left;
+  color: #8399a8;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.gui-asistente:hover {
+  border-color: #003f5a;
+  background: #f7fafc;
+}
+
+.gui-asistente-icono {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: #003f5a;
+  color: #ffffff;
+}
+
+.gui-asistente-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.gui-asistente-texto strong {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0b1b26;
+}
+
+.gui-asistente-texto span {
+  font-size: 11.5px;
+  color: #6b8496;
+}
+
+/* ── Sección ─────────────────────────────────────────────── */
+
+.gui-seccion {
+  margin-bottom: 16px;
+  padding: 16px 16px 8px;
+  border: 1px solid #dfe6ee;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.gui-seccion-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eef3f7;
+}
+
+.gui-seccion-icono {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: #eff4f9;
+  color: #c05900;
+}
+
+.gui-seccion-head h2 {
+  margin: 0 0 2px;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 15.5px;
+  font-weight: 700;
+  color: #0b1b26;
+}
+
+.gui-seccion-head p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #6b8496;
+}
+
+.gui-seccion-cuenta {
+  flex-shrink: 0;
+  min-width: 22px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-align: center;
+  color: #6b8496;
+}
+
+/* ── Entradas ────────────────────────────────────────────── */
+
+.gui-entradas {
+  display: flex;
+  flex-direction: column;
+}
+
+.gui-entrada {
+  border-bottom: 1px solid #f2f6f9;
+}
+
+.gui-entrada:last-child {
+  border-bottom: none;
+}
+
+.gui-entrada-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  color: #7d94a4;
+  cursor: pointer;
+}
+
+.gui-entrada-titulo {
+  flex: 1;
+  min-width: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #0b1b26;
+}
+
+.gui-entrada--abierta .gui-entrada-titulo {
+  font-weight: 700;
+  color: #c05900;
+}
+
+/* Función documentada que todavía no existe. Se marca acá igual
+   que Kiara lo dice al responder. */
+.gui-pendiente {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #faeeda;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #854f0b;
+  vertical-align: middle;
+}
+
+.gui-entrada-cuerpo-wrap {
+  overflow: hidden;
+}
+
+.gui-entrada-cuerpo {
+  padding: 0 0 16px;
+}
+
+.gui-resumen {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #24404f;
+}
+
+.gui-pasos {
+  margin: 11px 0 0;
+  padding-left: 19px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #4a6274;
+}
+
+.gui-nota {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 12px 0 0;
+  padding: 9px 12px;
+  border-radius: 11px;
+  background: #f1f5f9;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #4a6274;
+}
+
+.gui-ir {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 999px;
+  background: #dd6600;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+
+.gui-ir:hover {
+  filter: brightness(1.07);
+}
+
+/* ── Cierre ──────────────────────────────────────────────── */
+
+.gui-vacio {
+  margin: 0 0 16px;
+  padding: 20px 16px;
+  border: 1px solid #dfe6ee;
+  border-radius: 14px;
+  background: #ffffff;
+  font-size: 13px;
+  line-height: 1.55;
+  text-align: center;
+  color: #7d94a4;
+}
+
+.gui-pie {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(0, 63, 90, 0.06);
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #4a6274;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Tablet y laptop
+   ══════════════════════════════════════════════════════════ */
+
+@media (min-width: 481px) {
+  .gui-hero {
+    padding: 62px 28px 30px;
+  }
+
+  .gui-body {
+    padding: 24px 28px 32px;
+  }
+
+  .gui-hero-cuerpo h1 {
+    font-size: 29px;
+  }
+
+  .gui-seccion {
+    padding: 19px 20px 10px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .gui-hero-cuerpo h1 {
+    font-size: 33px;
+  }
+
+  .gui-hero-cuerpo p {
+    font-size: 14px;
+  }
+
+  .gui-entrada-titulo {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 380px) {
+  .gui-hero {
+    padding: 52px 16px 22px;
+  }
+
+  .gui-body {
+    padding: 16px 14px 24px;
+  }
+
+  .gui-hero-cuerpo h1 {
+    font-size: 21px;
+  }
+
+  .gui-seccion {
+    padding: 14px 14px 6px;
+  }
+
+  .gui-pendiente {
+    display: block;
+    margin: 4px 0 0;
+    width: fit-content;
+  }
+}

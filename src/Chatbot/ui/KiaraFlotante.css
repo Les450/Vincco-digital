@@ -1,0 +1,114 @@
+/* ══════════════════════════════════════════════════════════
+   Kiara flotante — la mascota arrastrable.
+
+   Vive por encima de toda la app (z-index alto, position: fixed).
+   El tamaño responsive se define acá; el componente lo lee del DOM
+   para calcular sus límites de arrastre, así que estos valores son
+   la única fuente de verdad del tamaño real.
+   ══════════════════════════════════════════════════════════ */
+
+.kf-mascota {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1260;
+  width: 78px;
+  height: 78px;
+  display: grid;
+  place-items: center;
+  cursor: grab;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  filter: drop-shadow(0 8px 16px rgba(0, 20, 32, 0.26));
+}
+
+.kf-mascota:active {
+  cursor: grabbing;
+}
+
+.kf-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Burbuja de saludo ───────────────────────────────────── */
+
+.kf-burbuja {
+  position: absolute;
+  bottom: calc(100% + 7px);
+  max-width: 152px;
+  padding: 8px 11px;
+  border-radius: 13px;
+  background: #ffffff;
+  box-shadow: 0 8px 22px rgba(0, 20, 32, 0.22);
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #0b1b26;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* La mascota vive del lado derecho: la burbuja se pega a su
+   izquierda para no salirse de la pantalla */
+.kf-mascota--derecha .kf-burbuja {
+  right: -6px;
+}
+
+.kf-mascota--izquierda .kf-burbuja {
+  left: -6px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Celular angosto (≤380px): la mascota es lo primero que hay
+   que achicar, es la pantalla con menos lugar de todas.
+   ══════════════════════════════════════════════════════════ */
+
+@media (max-width: 380px) {
+  .kf-mascota {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   Tablet (481–1024px)
+   ══════════════════════════════════════════════════════════ */
+
+@media (min-width: 481px) {
+  .kf-mascota {
+    width: 96px;
+    height: 96px;
+  }
+
+  .kf-burbuja {
+    max-width: 190px;
+    font-size: 12.5px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   Laptop y escritorio (≥1025px)
+   ══════════════════════════════════════════════════════════ */
+
+@media (min-width: 1025px) {
+  .kf-mascota {
+    width: 108px;
+    height: 108px;
+  }
+
+  .kf-burbuja {
+    max-width: 220px;
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kf-mascota {
+    transition: none;
+  }
+}

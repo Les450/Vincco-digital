@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import useStore from '../store/puntos_usestore'
 import Icon from './icons/Icon'
 
@@ -20,15 +21,22 @@ function getMenuItems(userType) {
     items.push(
       esProveedor
         ? { label: 'Negocios Asociados', icon: 'store', path: '/negocios-asociados' }
-        : { label: 'Mi Negocio', icon: 'store', path: '/mi-negocio' }
+        // Antes apuntaba a /mi-negocio, que no existe en AppRouter:
+        // el menú llevaba a una pantalla en blanco.
+        : { label: 'Mi Negocio', icon: 'store', path: '/panel-negocio' }
     )
   }
 
   if (!esCliente && !esProveedor) {
-    items.push({ label: 'Proveedores Guardados', icon: 'star', path: '/proveedores' })
+    // Igual que arriba: /proveedores tampoco existe. El directorio
+    // es donde el negocio encuentra a sus proveedores.
+    items.push({ label: 'Proveedores', icon: 'truck', path: '/directorio' })
   }
 
   items.push(
+    // La guía es el manual de la plataforma y, además, la única
+    // fuente de la que Kiara saca sus respuestas.
+    { label: 'Guía de Usuario', icon: 'book-open', path: '/guia' },
     { label: 'Ayuda y Soporte', icon: 'help-circle', path: '/ayuda' },
     { label: 'Configuraciones', icon: 'settings', path: '/config' },
     { label: 'Redes Sociales', icon: 'globe', path: '/redes' },
@@ -37,12 +45,29 @@ function getMenuItems(userType) {
   return items
 }
 
+// Home vive en tres rutas a la vez (/, /inicio, /home): el item
+// "Inicio" tiene que marcarse activo en las tres, no solo en /inicio.
+const ALIAS_INICIO = ['/', '/inicio', '/home']
+
+function esRutaActiva(path, pathname) {
+  return path === '/inicio' ? ALIAS_INICIO.includes(pathname) : pathname === path
+}
+
+const ROLE_LABELS = {
+  usuario: 'Cliente',
+  cliente: 'Cliente',
+  negocio: 'Negocio',
+  proveedor: 'Proveedor',
+}
+
 export default function Sidebar({ open, onClose }) {
   const navigate = useNavigate()
+  const location = useLocation()
   const isLoggedIn = useStore((s) => s.isLoggedIn)
   const setLoggedIn = useStore((s) => s.setLoggedIn)
   const userType = useStore((s) => s.userType)
   const menuItems = getMenuItems(userType)
+  const rolLabel = ROLE_LABELS[userType] || 'Cliente'
 
   const handleNav = (path) => {
     onClose()
@@ -66,146 +91,78 @@ export default function Sidebar({ open, onClose }) {
   }
 
   return (
-    <>
+    <AnimatePresence>
       {open && (
-        <div
-          onClick={onClose}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            zIndex: 1100,
-          }}
-        />
+        <>
+          <motion.div
+            className="side-overlay"
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          />
+
+          <motion.div
+            className="side-panel"
+            initial={{ x: '-100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '-100%' }}
+            transition={{ type: 'spring', stiffness: 340, damping: 34 }}
+          >
+            <div className="side-header">
+              <svg width="42" height="42" viewBox="0 0 72 72" fill="none">
+                <defs>
+                  <linearGradient id="side-logo-grad" x1="0" y1="0" x2="72" y2="72">
+                    <stop offset="0%" stopColor="var(--gold-400)" />
+                    <stop offset="100%" stopColor="var(--orange-500)" />
+                  </linearGradient>
+                </defs>
+                <circle cx="36" cy="36" r="36" fill="url(#side-logo-grad)" />
+                <text x="36" y="45" textAnchor="middle" fill="var(--navy-950)" fontSize="30" fontWeight="800" fontFamily="Sora, Inter, sans-serif">V</text>
+              </svg>
+              <div className="side-header-text">
+                <span className="side-logo-text">Vincco</span>
+                <span className="side-role-chip">{rolLabel}</span>
+              </div>
+            </div>
+
+            <nav className="side-nav">
+              {menuItems.map((item) => {
+                const activo = esRutaActiva(item.path, location.pathname)
+                return (
+                  <button
+                    key={item.path}
+                    onClick={() => handleNav(item.path)}
+                    className={`side-nav-item${activo ? ' side-nav-item--active' : ''}`}
+                  >
+                    <Icon name={item.icon} size={19} className="side-nav-icon" />
+                    <span className="side-nav-label">{item.label}</span>
+                    {activo && <span className="side-nav-dot" />}
+                  </button>
+                )
+              })}
+            </nav>
+
+            <div className="side-footer">
+              {isLoggedIn ? (
+                <button onClick={handleLogout} className="side-btn side-btn--danger">
+                  Cerrar Sesión
+                </button>
+              ) : (
+                <>
+                  <button onClick={handleLogin} className="side-btn side-btn--primary">
+                    Iniciar Sesión
+                  </button>
+                  <button onClick={handleRegister} className="side-btn side-btn--outline">
+                    Registrarme
+                  </button>
+                </>
+              )}
+            </div>
+          </motion.div>
+        </>
       )}
-
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        width: 290,
-        backgroundColor: '#ffffff',
-        zIndex: 1200,
-        transform: open ? 'translateX(0)' : 'translateX(-100%)',
-        transition: 'transform 0.3s ease',
-        display: 'flex',
-        flexDirection: 'column',
-        boxShadow: '4px 0 30px rgba(0,0,0,0.12)',
-      }}>
-        <div style={{
-          padding: '24px 20px 16px',
-          borderBottom: '1px solid #f0f0f0',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-        }}>
-          <svg width="40" height="40" viewBox="0 0 72 72" fill="none">
-            <circle cx="36" cy="36" r="36" fill="#003f5a" />
-            <text x="36" y="44" textAnchor="middle" fill="#ffffff" fontSize="30" fontWeight="800" fontFamily="Sora, Inter, sans-serif">V</text>
-          </svg>
-          <span style={{ fontWeight: 800, fontSize: 20, color: '#0b1b26', fontFamily: "'Sora', 'Inter', sans-serif" }}>Vincco</span>
-        </div>
-
-        <nav style={{ flex: 1, padding: '12px 0', overflowY: 'auto' }}>
-          {menuItems.map((item) => (
-            <button
-              key={item.path}
-              onClick={() => handleNav(item.path)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 14,
-                width: '100%',
-                padding: '14px 24px',
-                border: 'none',
-                background: 'none',
-                cursor: 'pointer',
-                fontSize: 15,
-                color: '#374151',
-                textAlign: 'left',
-                fontFamily: 'inherit',
-                transition: 'background 0.15s',
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = '#f3f4f6'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
-            >
-              <Icon name={item.icon} size={20} style={{ color: '#64798a' }} />
-              {item.label}
-            </button>
-          ))}
-        </nav>
-
-        <div style={{
-          borderTop: '1px solid #f0f0f0',
-          padding: '16px 20px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 10,
-        }}>
-          {isLoggedIn ? (
-            <button
-              onClick={handleLogout}
-              style={{
-                width: '100%',
-                padding: '14px',
-                border: 'none',
-                borderRadius: 12,
-                background: '#fee2e2',
-                color: '#b3261e',
-                fontWeight: 700,
-                fontSize: 15,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                transition: 'background 0.15s',
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = '#fecaca'}
-              onMouseLeave={(e) => e.currentTarget.style.background = '#fee2e2'}
-            >
-              Cerrar Sesión
-            </button>
-          ) : (
-            <>
-              <button
-                onClick={handleLogin}
-                style={{
-                  width: '100%',
-                  padding: '14px',
-                  border: 'none',
-                  borderRadius: 12,
-                  background: '#c05900',
-                  color: '#ffffff',
-                  fontWeight: 700,
-                  fontSize: 15,
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = '#a34b00'}
-                onMouseLeave={(e) => e.currentTarget.style.background = '#c05900'}
-              >
-                Iniciar Sesión
-              </button>
-              <button
-                onClick={handleRegister}
-                style={{
-                  width: '100%',
-                  padding: '14px',
-                  border: '2px solid #007a7b',
-                  borderRadius: 12,
-                  background: '#ffffff',
-                  color: '#005c5e',
-                  fontWeight: 700,
-                  fontSize: 15,
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                }}
-              >
-                Registrarme
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-    </>
+    </AnimatePresence>
   )
 }

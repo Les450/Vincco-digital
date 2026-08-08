@@ -1,0 +1,410 @@
+/* ══════════════════════════════════════════════════════════
+   Kiara — panel lateral de la asistente de Vincco.
+
+   Escritorio ≥1280: columna fija a la derecha, siempre visible.
+   Se abre y cierra tocando a la mascota flotante (KiaraFlotante.jsx),
+   que es el único botón de entrada en cualquier tamaño de pantalla.
+
+   El panel se monta por encima del router, así que estos estilos
+   no dependen de ninguna pantalla y no pisan a ninguna. Todas las
+   clases llevan prefijo chat-*.
+   ══════════════════════════════════════════════════════════ */
+
+.chat-panel {
+  --chat-ancho: 348px;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* ── Capa de fondo ───────────────────────────────────────── */
+
+.chat-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 1240;
+  background: rgba(0, 20, 32, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.24s;
+}
+
+.chat-fondo--visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Panel ───────────────────────────────────────────────── */
+
+.chat-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1300;
+  display: flex;
+  flex-direction: column;
+  width: min(92vw, var(--chat-ancho));
+  background: #f6f8fb;
+  border-left: 1px solid #dbe3ec;
+  transform: translateX(100%);
+  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.chat-panel--abierto {
+  transform: translateX(0);
+}
+
+/* ── Encabezado ──────────────────────────────────────────── */
+
+.chat-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  padding: 14px 14px 13px;
+  background: #003f5a;
+  color: #ffffff;
+}
+
+.chat-head-marca {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.chat-head-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chat-head-texto {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-head-texto strong {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.chat-head-texto span {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.chat-head-btn {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.chat-head-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ── Lista de mensajes ───────────────────────────────────── */
+
+.chat-lista {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.chat-msg {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-msg--usuario {
+  justify-content: flex-end;
+}
+
+.chat-avatar {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  width: 27px;
+  height: 27px;
+  margin-top: 2px;
+  border-radius: 50%;
+  background: #003f5a;
+  color: #ffffff;
+}
+
+.chat-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chat-cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  max-width: 88%;
+}
+
+.chat-burbuja {
+  margin: 0;
+  padding: 11px 13px;
+  border: 1px solid #e2e9f0;
+  border-radius: 14px 14px 14px 4px;
+  background: #ffffff;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #0b1b26;
+}
+
+.chat-burbuja--usuario {
+  max-width: 88%;
+  border: none;
+  border-radius: 14px 14px 4px 14px;
+  background: #003f5a;
+  color: #ffffff;
+}
+
+/* Respuesta fuera de alcance o sin información: se marca en un
+   tono distinto para que se note que Kiara no supo, en vez de que
+   parezca una respuesta más */
+.chat-burbuja--limite {
+  border-color: #e6d4bd;
+  background: #fdf7ee;
+}
+
+.chat-texto {
+  margin: 0;
+}
+
+.chat-pasos {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #24404f;
+}
+
+.chat-nota {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #4a6274;
+}
+
+.chat-ir {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 11px;
+  padding: 8px 13px;
+  border: none;
+  border-radius: 999px;
+  background: #dd6600;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+
+.chat-ir:hover {
+  filter: brightness(1.07);
+}
+
+/* De qué entrada de la guía salió la respuesta. Le permite al
+   usuario verificar y a vos detectar qué entrada respondió mal. */
+.chat-fuente {
+  padding-left: 3px;
+  font-size: 10.5px;
+  color: #9bb0bd;
+}
+
+/* ── Sugerencias ─────────────────────────────────────────── */
+
+.chat-sugerencias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chat-sugerencia {
+  padding: 7px 11px;
+  border: 1px solid #cfdce6;
+  border-radius: 999px;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #24404f;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.chat-sugerencia:hover {
+  background: #eef4f9;
+  border-color: #003f5a;
+}
+
+/* ── Pensando ────────────────────────────────────────────── */
+
+.chat-burbuja--pensando {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 15px;
+}
+
+.chat-burbuja--pensando span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #9bb0bd;
+  animation: chat-latido 1.2s infinite ease-in-out;
+}
+
+.chat-burbuja--pensando span:nth-child(2) { animation-delay: 0.15s; }
+.chat-burbuja--pensando span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes chat-latido {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+
+/* ── Entrada de texto ────────────────────────────────────── */
+
+.chat-entrada {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 12px 14px 0;
+}
+
+.chat-entrada input {
+  flex: 1;
+  min-width: 0;
+  padding: 11px 14px;
+  border: 1px solid #d3dee7;
+  border-radius: 999px;
+  outline: none;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 13.5px;
+  color: #0b1b26;
+}
+
+.chat-entrada input:focus {
+  border-color: #003f5a;
+}
+
+.chat-entrada input::placeholder {
+  color: #9bb0bd;
+}
+
+.chat-entrada button {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: #dd6600;
+  color: #ffffff;
+  cursor: pointer;
+  transition: filter 0.15s, opacity 0.15s;
+}
+
+.chat-entrada button:hover:not(:disabled) {
+  filter: brightness(1.07);
+}
+
+.chat-entrada button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.chat-pie {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 9px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  font-size: 10.5px;
+  line-height: 1.4;
+  text-align: center;
+  color: #8399a8;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Tablet (≥481)
+   ══════════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════
+   Escritorio (≥1280)
+
+   Acá el panel deja de taparle el contenido a la app: se queda
+   fijo a la derecha y el resto de la página se corre para dejarle
+   lugar. Por eso es "una asistente al lado" y no un popup.
+   ══════════════════════════════════════════════════════════ */
+
+@media (min-width: 1280px) {
+  .chat-fondo {
+    display: none;
+  }
+
+  .chat-panel {
+    box-shadow: -2px 0 22px rgba(0, 20, 32, 0.1);
+  }
+
+  /* La app se corre. La clase la pone AppRouter en el <body>
+     cuando el panel está abierto en pantalla ancha. */
+  body.vincco--asistente-abierto .page-shell,
+  body.vincco--asistente-abierto .bottom-nav {
+    padding-right: var(--chat-ancho, 348px);
+    transition: padding-right 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* Menos movimiento para quien lo pidió en su sistema */
+@media (prefers-reduced-motion: reduce) {
+  .chat-panel,
+  .chat-fondo,
+  body.vincco--asistente-abierto .page-shell {
+    transition: none;
+  }
+
+  .chat-burbuja--pensando span {
+    animation: none;
+    opacity: 0.6;
+  }
+}
