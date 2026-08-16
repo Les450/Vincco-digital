@@ -5,38 +5,33 @@ import Icon from '../components/icons/Icon'
 const TESTIMONIALS = [
   {
     name: 'María González',
-    role: 'Dueña de Cafetería El Aroma',
-    avatar: 'MG',
+    role: 'Comercio · Cafetería El Aroma',
+    variant: 'orange',
     text: 'Desde que usamos Vincco, nuestros clientes vuelven semana tras semana. El programa de puntos transformó la fidelidad de nuestros clientes.',
-    stars: 5,
   },
   {
     name: 'Carlos Mendoza',
     role: 'Proveedor de insumos',
-    avatar: 'CM',
+    variant: 'teal',
     text: 'Recibir cotizaciones de los negocios es increíblemente fácil. En minutos tengo pedidos nuevos sin tener que salir a buscarlos.',
-    stars: 5,
   },
   {
     name: 'Ana Martínez',
     role: 'Consumidora frecuente',
-    avatar: 'AM',
+    variant: 'gold',
     text: 'Amo acumular puntos en mis compras del día a día. Ya canjeé varios descuentos y siento que mi dinero rinde más.',
-    stars: 5,
   },
   {
     name: 'Roberto Sánchez',
-    role: 'Gerente de Ferretería Sánchez',
-    avatar: 'RS',
-    text: 'El dashboard me da una visibilidad completa de mi inventario. Ahora sé exactamente qué comprar y cuándo.',
-    stars: 4,
+    role: 'Comercio · Ferretería Sánchez',
+    variant: 'orange',
+    text: 'El panel me da una visibilidad completa de mi inventario. Ahora sé exactamente qué comprar y cuándo.',
   },
   {
     name: 'Lucía Pérez',
-    role: 'Dueña de Boutique Luna',
-    avatar: 'LP',
+    role: 'Comercio · Boutique Luna',
+    variant: 'orange',
     text: 'El ranking de negocios nos motivó a mejorar nuestro servicio. Ahora somos el negocio mejor valorado de nuestra zona.',
-    stars: 5,
   },
 ]
 
@@ -47,7 +42,7 @@ export default function TestimonialsSection() {
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       setCurrent((prev) => (prev + 1) % TESTIMONIALS.length)
-    }, 4000)
+    }, 5000)
     return () => clearInterval(intervalRef.current)
   }, [])
 
@@ -57,7 +52,7 @@ export default function TestimonialsSection() {
   }
 
   return (
-    <section className="vc-section">
+    <section className="vc-section" id="testimonios">
       <div className="vc-section-header">
         <motion.span
           className="vc-section-eyebrow"
@@ -65,7 +60,7 @@ export default function TestimonialsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          Testimonios
+          Constancias
         </motion.span>
         <motion.h2
           className="vc-section-title"
@@ -73,7 +68,7 @@ export default function TestimonialsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          Lo que dicen nuestros usuarios
+          Lo que dice la gente de la red
         </motion.h2>
         <motion.p
           className="vc-section-subtitle"
@@ -81,12 +76,12 @@ export default function TestimonialsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          Historias reales de la comunidad Vincco
+          Testimonios verificados de los tres actores del padrón
         </motion.p>
       </div>
 
       <div className="vc-testimonials">
-        <div className="vc-testimonials-track" style={{ transform: `translateX(0)` }}>
+        <div className="vc-testimonials-track">
           {visible.map((t, i) => (
             <motion.div
               key={`${t.name}-${i}`}
@@ -96,17 +91,15 @@ export default function TestimonialsSection() {
               exit={{ opacity: 0, x: -30 }}
               transition={{ duration: 0.4, delay: i * 0.1 }}
             >
-              <div className="vc-testimonial-stars">
-                {Array.from({ length: t.stars }).map((_, j) => (
-                  <Icon key={j} name="star" filled size={15} style={{ color: '#fea02f' }} />
-                ))}
-              </div>
+              <p className="vc-testimonial-mark">&ldquo;</p>
               <p className="vc-testimonial-text">{t.text}</p>
               <div className="vc-testimonial-author">
-                <div className="vc-testimonial-avatar">{t.avatar}</div>
+                <span className="vc-testimonial-seal">
+                  <Icon name="shield" filled size={17} />
+                </span>
                 <div>
                   <p className="vc-testimonial-name">{t.name}</p>
-                  <p className="vc-testimonial-role">{t.role}</p>
+                  <p className={`vc-testimonial-role vc-testimonial-role--${t.variant}`}>{t.role}</p>
                 </div>
               </div>
             </motion.div>
@@ -118,14 +111,15 @@ export default function TestimonialsSection() {
             <button
               key={i}
               onClick={() => setCurrent(i)}
+              aria-label={`Ver constancia ${i + 1}`}
               style={{
                 width: 8,
                 height: 8,
                 borderRadius: '50%',
                 border: 'none',
-                background: i === current ? '#2F80ED' : '#e5e7eb',
+                background: i === current ? 'var(--vc-orange-700)' : 'var(--vc-bone-line)',
                 cursor: 'pointer',
-                transition: 'all 0.3s',
+                transition: 'background 0.3s',
                 padding: 0,
               }}
             />

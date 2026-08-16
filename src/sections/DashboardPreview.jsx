@@ -22,13 +22,13 @@ export default function DashboardPreview() {
     <section className="vc-section">
       <div className="vc-section-header">
         <motion.span className="vc-section-eyebrow" {...fadeUp}>
-          Dashboard
+          El panel del comercio
         </motion.span>
         <motion.h2 className="vc-section-title" {...fadeUp}>
-          Tu negocio al alcance de un clic
+          Todo lo que pasa en tu negocio, en una sola vista
         </motion.h2>
         <motion.p className="vc-section-subtitle" {...fadeUp}>
-          Un panel moderno e intuitivo con todo lo que necesitas para gestionar tu negocio
+          Inventario, cotizaciones, pedidos y puntos — sin planillas sueltas
         </motion.p>
       </div>
 
@@ -41,9 +41,8 @@ export default function DashboardPreview() {
       >
         <div className="vc-preview-wrapper">
           <div className="vc-preview-header">
-            <span className="vc-preview-dot" />
-            <span className="vc-preview-dot" />
-            <span className="vc-preview-dot" />
+            <Icon name="bar-chart-2" size={15} style={{ color: 'rgba(255,255,255,0.7)' }} />
+            <span className="vc-preview-header-word">Panel de negocio — Ferretería Sánchez</span>
           </div>
           <div className="vc-preview-body">
             <div className="vc-preview-sidebar">

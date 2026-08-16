@@ -3,6 +3,7 @@ import useStore from '../store/puntos_usestore'
 import Icon from '../components/icons/Icon'
 import {
   PerfilHero,
+  VerificacionBanner,
   Seccion,
   Metricas,
   BloqueDatos,
@@ -45,6 +46,7 @@ export default function PerfilUsuario() {
   // "Ocultar mis datos" de /config: no son dos ajustes distintos.
   const ocultarDatos = useStore((s) => s.configuraciones.usuario.ocultarDatos)
   const guardarConfig = useStore((s) => s.guardarConfig)
+  const estadoVerificacion = useStore((s) => s.estadosVerificacion.usuario)
 
   const puntos = usuario.puntos
   const nivel = nivelActual(puntos)
@@ -69,7 +71,9 @@ export default function PerfilUsuario() {
         chips={[
           { label: `Nivel ${nivel.nivel}`, icono: nivel.icono, destacado: true },
           { label: `${puntos} puntos`, icono: 'star' },
-          { label: 'Cuenta verificada', icono: 'check-circle' },
+          ...(estadoVerificacion === 'aprobada'
+            ? [{ label: 'Cliente verificado', icono: 'check-circle' }]
+            : []),
         ]}
         extra={
           <div className="pf-nivel">
@@ -89,6 +93,12 @@ export default function PerfilUsuario() {
             </p>
           </div>
         }
+      />
+
+      <VerificacionBanner
+        rol="usuario"
+        estado={estadoVerificacion}
+        texto="Para que tu perfil y tus reseñas aparezcan como Cliente verificado, podés solicitar la verificación de tu cuenta."
       />
 
       <div className="pf-body">

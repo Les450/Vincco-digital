@@ -1,4 +1,4 @@
-import { entradasDelRol } from './guia_generada'
+import { entradasDelRol, entradaPorId } from './guia_generada'
 import { guia, precargarGuia, origenGuia } from './cargarGuia'
 import { normalizar, palabras } from '../orquestador/normalizar'
 
@@ -134,4 +134,14 @@ export function sugerenciasIniciales(rol, cantidad = 4) {
    guía para que se note cuando la base crece. */
 export function tamanoBase(rol) {
   return entradasDelRol(rol, guia().entradas).length
+}
+
+/* Trae UNA entrada por su id, sin buscar por texto. Así llega Kiara
+   cuando el usuario toca una opción de un menú en vez de escribir.
+   Respeta el rol igual que buscar(): si la entrada no es para ese
+   rol, es como si no existiera. */
+export function obtenerPorId(id, rol = 'usuario') {
+  const entrada = entradaPorId(id, guia().entradas)
+  if (!entrada || !entrada.roles.includes(rol)) return null
+  return entrada
 }

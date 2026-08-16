@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 import useStore from '../../store/puntos_usestore'
 import Icon from '../../components/icons/Icon'
 import Mensaje from './Mensaje'
-import { preguntar, mensajeBienvenida } from '../orquestador/orquestador'
+import { preguntar, elegirOpcion, mensajeBienvenida } from '../orquestador/orquestador'
 import { precargarGuia } from '../conocimiento'
 import './Chat.css'
 
@@ -18,9 +18,9 @@ const RUTA_KIARA_IMG = `${process.env.PUBLIC_URL || ''}/assets/images/kiara.png`
        de la app se corre para dejarle lugar, no la tapa.
      Tablet y celular: pestaña al costado que abre el panel encima.
 
-   El usuario puede apagarla del todo desde Configuración → La app
-   → "Mostrar a Kiara". Si la apaga, este componente no devuelve
-   nada: ni el panel ni la pestaña.
+   El usuario puede apagarla del todo desde Configuración →
+   Accesibilidades → "Mostrar a Kiara". Si la apaga, este componente
+   no devuelve nada: ni el panel ni la pestaña.
 
    Este componente NO sabe cómo se responden las preguntas. Llama a
    preguntar() y muestra lo que vuelva.
@@ -96,6 +96,36 @@ export default function PanelChat() {
     }
   }, [pensando, userType, pathname, mensajes, agregarMensajeChat, setChatPensando])
 
+  /* Tocar una opción de un menú (o "Volver al menú"): no se busca
+     nada, se entra directo a esa entrada de la guía por su id. Se
+     muestra igual que si el usuario lo hubiera escrito, para que la
+     conversación se siga leyendo de corrido. */
+  const elegir = useCallback(async (opcion, origenMenu) => {
+    if (pensando) return
+
+    agregarMensajeChat({ autor: 'usuario', texto: opcion.texto })
+    setChatPensando(true)
+
+    await new Promise((r) => setTimeout(r, 220))
+
+    try {
+      const respuesta = await elegirOpcion(opcion.id, {
+        rol: userType,
+        ruta: pathname,
+        origenMenu,
+      })
+      agregarMensajeChat({ autor: 'asistente', ...respuesta })
+    } catch {
+      agregarMensajeChat({
+        autor: 'asistente',
+        texto: 'Se me complicó traer esa opción. ¿Podés volver a intentar?',
+        seguro: false,
+      })
+    } finally {
+      setChatPensando(false)
+    }
+  }, [pensando, userType, pathname, agregarMensajeChat, setChatPensando])
+
   // Escape cierra el panel cuando está encima del contenido
   useEffect(() => {
     if (!abierto) return undefined
@@ -158,7 +188,7 @@ export default function PanelChat() {
 
         <div className="chat-lista">
           {mensajes.map((m) => (
-            <Mensaje key={m.id} mensaje={m} onSugerencia={enviar} />
+            <Mensaje key={m.id} mensaje={m} onSugerencia={enviar} onOpcion={elegir} />
           ))}
 
           {pensando && (

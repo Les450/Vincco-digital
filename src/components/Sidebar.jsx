@@ -18,19 +18,20 @@ function getMenuItems(userType) {
   ]
 
   if (!esCliente) {
-    items.push(
+if (!esCliente && !esProveedor) {
+    // Los proveedores del negocio viven en el panel, con la misma
+    // interfaz (filtros por categoría y ubicación): el menú abre
+    // directo esa seccion.
+    items.push({ label: 'Proveedores', icon: 'truck', path: '/panel-negocio?tab=proveedores' })
+  }
+
+  items.push(
       esProveedor
         ? { label: 'Negocios Asociados', icon: 'store', path: '/negocios-asociados' }
         // Antes apuntaba a /mi-negocio, que no existe en AppRouter:
         // el menú llevaba a una pantalla en blanco.
         : { label: 'Mi Negocio', icon: 'store', path: '/panel-negocio' }
     )
-  }
-
-  if (!esCliente && !esProveedor) {
-    // Igual que arriba: /proveedores tampoco existe. El directorio
-    // es donde el negocio encuentra a sus proveedores.
-    items.push({ label: 'Proveedores', icon: 'truck', path: '/directorio' })
   }
 
   items.push(
@@ -111,16 +112,11 @@ export default function Sidebar({ open, onClose }) {
             transition={{ type: 'spring', stiffness: 340, damping: 34 }}
           >
             <div className="side-header">
-              <svg width="42" height="42" viewBox="0 0 72 72" fill="none">
-                <defs>
-                  <linearGradient id="side-logo-grad" x1="0" y1="0" x2="72" y2="72">
-                    <stop offset="0%" stopColor="var(--gold-400)" />
-                    <stop offset="100%" stopColor="var(--orange-500)" />
-                  </linearGradient>
-                </defs>
-                <circle cx="36" cy="36" r="36" fill="url(#side-logo-grad)" />
-                <text x="36" y="45" textAnchor="middle" fill="var(--navy-950)" fontSize="30" fontWeight="800" fontFamily="Sora, Inter, sans-serif">V</text>
-              </svg>
+              <img
+                src={`${process.env.PUBLIC_URL}/assets/logos/vincco-logo.png`}
+                alt="Vincco"
+                className="side-logo-img"
+              />
               <div className="side-header-text">
                 <span className="side-logo-text">Vincco</span>
                 <span className="side-role-chip">{rolLabel}</span>

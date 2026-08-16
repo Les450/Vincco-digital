@@ -42,6 +42,140 @@
   opacity: 0.8;
 }
 
+.ntf-header-acciones {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.ntf-eliminar-btn {
+  color: #ffd28c;
+}
+
+/* ── Modo eliminar ─────────────────────────────────────── */
+
+.ntf-barra-eliminar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.ntf-btn-eliminar {
+  border: none;
+  background: #c05900;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  padding: 9px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ntf-btn-eliminar:hover {
+  background: #a34b00;
+}
+
+.ntf-btn-eliminar--disabled {
+  background: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.55);
+  cursor: not-allowed;
+}
+
+.ntf-item--seleccionado {
+  border-color: #c05900;
+  box-shadow: 0 0 0 1px #c05900;
+}
+
+.ntf-item-check {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.ntf-item-check input {
+  width: 20px;
+  height: 20px;
+  accent-color: #c05900;
+  cursor: pointer;
+}
+
+/* ── Modal de confirmación ─────────────────────────────── */
+
+.ntf-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(0, 20, 32, 0.6);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.ntf-modal {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: 0 24px 60px rgba(0, 20, 32, 0.35);
+}
+
+.ntf-modal h3 {
+  margin: 0 0 8px;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #0b1b26;
+}
+
+.ntf-modal p {
+  margin: 0 0 20px;
+  font-size: 13px;
+  color: #3d5164;
+  line-height: 1.5;
+}
+
+.ntf-modal-acciones {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.ntf-modal-acciones button {
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  padding: 9px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ntf-modal-cancelar {
+  background: #e6eff4;
+  color: #003f5a;
+}
+
+.ntf-modal-cancelar:hover {
+  background: #d5e3ea;
+}
+
+.ntf-modal-confirmar {
+  background: #c05900;
+  color: #ffffff;
+}
+
+.ntf-modal-confirmar:hover {
+  background: #a34b00;
+}
+
 /* ── Filters ──────────────────────────────────────────── */
 
 .ntf-filtros {
@@ -172,6 +306,52 @@
   line-height: 1.5;
 }
 
+/* ── Solicitud de asociación (proveedor ↔ negocio) ───────── */
+
+.ntf-item-solicitud {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.ntf-item-solicitud-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+
+.ntf-item-solicitud-btn--aceptar {
+  background: #1a8f5e;
+  color: #ffffff;
+}
+
+.ntf-item-solicitud-btn--rechazar {
+  background: #f2f5f8;
+  color: #5a7080;
+}
+
+.ntf-item-solicitud-btn:hover {
+  filter: brightness(1.08);
+}
+
+.ntf-item-solicitud-resuelta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #5a7080;
+}
+
 .ntf-item-meta {
   display: flex;
   align-items: center;
@@ -242,6 +422,7 @@
 
   .ntf-header,
   .ntf-filtros,
+  .ntf-barra-eliminar,
   .ntf-lista,
   .ntf-vacio {
     width: 100%;

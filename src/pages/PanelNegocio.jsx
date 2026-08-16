@@ -1,43 +1,56 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect, useRef } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import useStore from '../store/puntos_usestore'
-import { proveedores } from '../data/data_falso'
 import Icon from '../components/icons/Icon'
 import PublicacionesPanel from '../components/panel/PublicacionesPanel'
+import ResenasPanel from '../components/panel/ResenasPanel'
+import CotizacionesPanel from '../components/panel/CotizacionesPanel'
+import PapeleriaPanel from '../components/panel/PapeleriaPanel'
+import { useCategoriasInventario } from '../data/categoriasInventario'
+import { esPromocion, getEtiquetaPublicacion, claveInventario } from '../data/inventario'
+import { moverAPapelera } from '../data/papelera'
 import './Panel.css'
 
 const TABS = [
   { id: 'publicaciones', label: 'Publicaciones', icon: 'megaphone' },
-  { id: 'proveedores', label: 'Proveedores', icon: 'package' },
   { id: 'inventario', label: 'Inventario', icon: 'bar-chart-2' },
-]
-
-const CATEGORIAS_INVENTARIO = [
-  'Todas', 'Herramientas', 'Materiales', 'Alimentos', 'Limpieza', 'Electrónicos', 'Ropa', 'Otros',
+  { id: 'proveedores', label: 'Proveedores', icon: 'truck' },
+  { id: 'cotizaciones', label: 'Cotizaciones', icon: 'dollar-sign' },
+  { id: 'resenas', label: 'Reseñas y Ranking', icon: 'star' },
+  { id: 'Papeleria', label: 'Papelería', icon: 'trash-2' },
 ]
 
 const UNIDADES = ['unidad', 'kg', 'lb', 'litro', 'caja', 'paquete', 'metros']
 
 function ProveedoresSection() {
-  const [lista] = useState(
-    proveedores.map((p, i) => ({
-      ...p,
-      descripcion: i === 0
-        ? 'Distribuidora de alimentos y productos de consumo masivo'
-        : 'Venta de materiales para construcción y ferretería',
-      estado: i === 0 ? 'Verificado' : 'Premium',
-      categorias: i === 0 ? ['Alimentos', 'Bebidas', 'Lácteos'] : ['Materiales', 'Herramientas', 'Pinturas'],
-      contacto: i === 0 ? 'info@distribuidoranorte.com' : 'ventas@materialeslaunion.com',
-      telefono: i === 0 ? '2255-3344' : '2277-8899',
-      ubicacion: i === 0 ? 'Managua, Nicaragua' : 'León, Nicaragua',
-      productos: i === 0
-        ? ['Arroz', 'Frijoles', 'Aceite', 'Azúcar', 'Harina']
-        : ['Cemento', 'Varilla', 'Pintura', 'Tubería', 'Clavos'],
-    }))
-  )
+  const negociosAsociados = useStore((s) => s.negociosAsociados)
+  const perfilProveedor = useStore((s) => s.perfiles.proveedor)
+  const estadoVerifProveedor = useStore((s) => s.estadosVerificacion.proveedor)
+
+  // Esta es una demo de una sola identidad: no hay un directorio de
+  // muchos proveedores reales, solo el que se usa para probar ese rol
+  // (Vincco Proveedor). Por eso, en cuanto exista alguna asociacion
+  // ya aceptada (sin importar el nombre de negocio con el que se pidio),
+  // se muestra una tarjeta con los datos reales de ese perfil.
+  const hayAsociacionAceptada = negociosAsociados.some((n) => n.estado === 'aceptada')
+  const lista = hayAsociacionAceptada
+    ? [{
+        id: 'proveedor-actual',
+        nombre: perfilProveedor.nombre,
+        descripcion: perfilProveedor.descripcion,
+        estado: estadoVerifProveedor === 'aprobada' ? 'Verificado' : 'Premium',
+        categorias: [perfilProveedor.categoria].filter(Boolean),
+        contacto: perfilProveedor.correo,
+        telefono: perfilProveedor.telefono,
+        ubicacion: perfilProveedor.cobertura,
+        productos: [],
+      }]
+    : []
   const [favoritos, setFavoritos] = useState([])
   const [selectedProveedor, setSelectedProveedor] = useState(null)
   const [filtro, setFiltro] = useState('todos')
+  const [filtroCategoria, setFiltroCategoria] = useState('todas')
+  const [filtroUbicacion, setFiltroUbicacion] = useState('todas')
 
   const toggleFav = (id) => {
     setFavoritos((prev) =>
@@ -45,9 +58,13 @@ function ProveedoresSection() {
     )
   }
 
-  const listaFiltrada = filtro === 'favoritos'
-    ? lista.filter((p) => favoritos.includes(p.id))
-    : lista
+  const categoriasDisponibles = [...new Set(lista.flatMap((p) => p.categorias))].sort()
+  const ubicacionesDisponibles = [...new Set(lista.map((p) => p.ubicacion))].sort()
+
+  const listaFiltrada = lista
+    .filter((p) => filtro !== 'favoritos' || favoritos.includes(p.id))
+    .filter((p) => filtroCategoria === 'todas' || p.categorias.includes(filtroCategoria))
+    .filter((p) => filtroUbicacion === 'todas' || p.ubicacion === filtroUbicacion)
 
   return (
     <div className="panel-seccion">
@@ -73,10 +90,47 @@ function ProveedoresSection() {
         </button>
       </div>
 
+      <div className="panel-filtros-fila">
+        <label className="panel-filtro">
+          <span className="panel-filtro-etiqueta">Categoría</span>
+          <select
+            className="panel-form-select"
+            value={filtroCategoria}
+            onChange={(e) => setFiltroCategoria(e.target.value)}
+          >
+            <option value="todas">Todas las categorías</option>
+            {categoriasDisponibles.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+        </label>
+        <label className="panel-filtro">
+          <span className="panel-filtro-etiqueta">Ubicación</span>
+          <select
+            className="panel-form-select"
+            value={filtroUbicacion}
+            onChange={(e) => setFiltroUbicacion(e.target.value)}
+          >
+            <option value="todas">Todas las ubicaciones</option>
+            {ubicacionesDisponibles.map((ubic) => (
+              <option key={ubic} value={ubic}>{ubic}</option>
+            ))}
+          </select>
+        </label>
+        {(filtroCategoria !== 'todas' || filtroUbicacion !== 'todas') && (
+          <button
+            className="panel-btn panel-btn-outline"
+            onClick={() => { setFiltroCategoria('todas'); setFiltroUbicacion('todas') }}
+          >
+            Limpiar filtros
+          </button>
+        )}
+      </div>
+
       {listaFiltrada.length === 0 ? (
         <div className="panel-vacio">
           <div className="panel-vacio-icono"><Icon name="package" size={32} /></div>
-          <p>{filtro === 'favoritos' ? 'No tienes proveedores favoritos.' : 'No hay proveedores disponibles.'}</p>
+          <p>{filtro === 'favoritos' ? 'No tienes proveedores favoritos.' : 'Todavía no tenés proveedores asociados. Cuando aceptes una solicitud de asociación desde Avisos, va a aparecer acá.'}</p>
         </div>
       ) : (
         <div className="panel-lista">
@@ -149,14 +203,16 @@ function ProveedoresSection() {
                   {selectedProveedor.estado}
                 </span>
               </div>
-              <div>
-                <span className="panel-modal-info-label">Productos</span>
-                <div className="panel-modal-productos">
-                  {selectedProveedor.productos.map((prod) => (
-                    <span key={prod} className="panel-modal-producto-tag">{prod}</span>
-                  ))}
+              {selectedProveedor.productos.length > 0 && (
+                <div>
+                  <span className="panel-modal-info-label">Productos</span>
+                  <div className="panel-modal-productos">
+                    {selectedProveedor.productos.map((prod) => (
+                      <span key={prod} className="panel-modal-producto-tag">{prod}</span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -166,8 +222,11 @@ function ProveedoresSection() {
 }
 
 function InventarioSection() {
+  const sucursalId = useStore((s) => s.sucursalActiva[s.userType])
+  const clave = claveInventario(sucursalId)
+
   const [items, setItems] = useState(() => {
-    const saved = localStorage.getItem('pn_inventario')
+    const saved = localStorage.getItem(clave)
     if (saved) {
       try { return JSON.parse(saved) } catch {}
     }
@@ -180,21 +239,61 @@ function InventarioSection() {
     ]
   })
 
+  // Si el dueño cambia de sucursal, el inventario se recarga de la
+  // clave de esa sucursal: cada una administra su propio panel.
+  useEffect(() => {
+    const saved = localStorage.getItem(clave)
+    if (saved) {
+      try { setItems(JSON.parse(saved)) } catch {}
+    } else {
+      setItems([])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clave])
+
+  useEffect(() => {
+    localStorage.setItem(clave, JSON.stringify(items))
+  }, [items, clave])
+
   const [filtroCategoria, setFiltroCategoria] = useState('Todas')
   const [mostrarForm, setMostrarForm] = useState(false)
   const [editando, setEditando] = useState(null)
   const [detalleItem, setDetalleItem] = useState(null)
+  const [categorias, agregarCategoria, eliminarCategoria] = useCategoriasInventario()
+  const carruselRef = useRef(null)
+  const [agregandoCat, setAgregandoCat] = useState(false)
+  const [nuevaCat, setNuevaCat] = useState('')
   const [form, setForm] = useState({
-    nombre: '', categoria: 'Herramientas', cantidad: '', unidad: 'unidad', precio: '', stockMinimo: '',
+    nombre: '', categoria: categorias[0] || 'Otros', cantidad: '', unidad: 'unidad', precio: '', stockMinimo: '',
   })
 
-  useEffect(() => {
-    localStorage.setItem('pn_inventario', JSON.stringify(items))
-  }, [items])
+  const desplazarCarrusel = (dir) => {
+    const el = carruselRef.current
+    if (el) el.scrollBy({ left: dir * 140, behavior: 'smooth' })
+  }
+
+  const confirmarAgregarCat = () => {
+    if (agregarCategoria(nuevaCat)) {
+      setNuevaCat('')
+      setAgregandoCat(false)
+    }
+  }
+
+  const eliminarCategoriaConProductos = (cat) => {
+    const cantidad = items.filter((i) => i.categoria === cat).length
+    const aviso = cantidad > 0
+      ? `La categoría "${cat}" tiene ${cantidad} producto(s) en el inventario y se eliminarán. ¿Eliminar categoría?`
+      : `¿Eliminar la categoría "${cat}"?`
+    if (window.confirm(aviso)) {
+      eliminarCategoria(cat)
+      setItems((prev) => prev.filter((i) => i.categoria !== cat))
+      if (filtroCategoria === cat) setFiltroCategoria('Todas')
+    }
+  }
 
   const abrirNuevo = () => {
     setEditando(null)
-    setForm({ nombre: '', categoria: 'Herramientas', cantidad: '', unidad: 'unidad', precio: '', stockMinimo: '' })
+    setForm({ nombre: '', categoria: categorias[0] || 'Otros', cantidad: '', unidad: 'unidad', precio: '', stockMinimo: '' })
     setMostrarForm(true)
   }
 
@@ -213,7 +312,8 @@ function InventarioSection() {
     if (!form.nombre || form.cantidad === '' || form.precio === '') return
 
     const nuevo = {
-      nombre: form.nombre, categoria: form.categoria,
+      nombre: form.nombre,
+      categoria: categorias.includes(form.categoria) ? form.categoria : (categorias[0] || 'Otros'),
       cantidad: Number(form.cantidad), unidad: form.unidad,
       precio: Number(form.precio), stockMinimo: Number(form.stockMinimo) || 0,
     }
@@ -227,6 +327,8 @@ function InventarioSection() {
   }
 
   const eliminar = (id) => {
+    const item = items.find((i) => i.id === id)
+    if (item) moverAPapelera(item, 'inventario')
     setItems((prev) => prev.filter((i) => i.id !== id))
   }
 
@@ -258,8 +360,8 @@ function InventarioSection() {
 
   const totalProductos = items.length
   const totalUnidades = items.reduce((s, i) => s + i.cantidad, 0)
-  const stockBajo = items.filter((i) => i.cantidad > 0 && i.cantidad <= i.stockMinimo).length
-  const agotados = items.filter((i) => i.cantidad === 0).length
+  const stockBajo = items.filter((i) => !esPromocion(i) && i.cantidad > 0 && i.cantidad <= i.stockMinimo).length
+  const agotados = items.filter((i) => !esPromocion(i) && i.cantidad === 0).length
 
   return (
     <div className="panel-seccion">
@@ -297,16 +399,61 @@ function InventarioSection() {
         </div>
       )}
 
-      <div className="panel-inv-filtros">
-        {CATEGORIAS_INVENTARIO.map((cat) => (
+      <div className="panel-inv-carrusel">
+        <button type="button" className="panel-inv-carrusel-btn" onClick={() => desplazarCarrusel(-1)} aria-label="Anterior">
+          <Icon name="arrow-left" size={14} />
+        </button>
+        <div className="panel-inv-filtros" ref={carruselRef}>
           <button
-            key={cat}
-            className={`panel-nav-btn ${filtroCategoria === cat ? 'panel-nav-btn--activo' : ''}`}
-            onClick={() => setFiltroCategoria(cat)}
+            type="button"
+            className={`panel-nav-btn ${filtroCategoria === 'Todas' ? 'panel-nav-btn--activo' : ''}`}
+            onClick={() => setFiltroCategoria('Todas')}
           >
-            {cat}
+            Todas
           </button>
-        ))}
+          {categorias.map((cat) => (
+            <span
+              key={cat}
+              className={`panel-nav-btn ${filtroCategoria === cat ? 'panel-nav-btn--activo' : ''}`}
+              onClick={() => setFiltroCategoria(cat)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setFiltroCategoria(cat) }}
+            >
+              {cat}
+              <button
+                type="button"
+                className="panel-inv-chip-x"
+                title="Eliminar categoría"
+                onClick={(e) => { e.stopPropagation(); eliminarCategoriaConProductos(cat) }}
+              >
+                <Icon name="x" size={10} />
+              </button>
+            </span>
+          ))}
+          {agregandoCat ? (
+            <span className="panel-inv-agregar-form">
+              <input
+                className="panel-inv-agregar-input"
+                type="text"
+                placeholder="Nombre de la categoría"
+                value={nuevaCat}
+                autoFocus
+                onChange={(e) => setNuevaCat(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') confirmarAgregarCat() }}
+              />
+              <button type="button" className="panel-btn panel-btn-icono" onClick={confirmarAgregarCat} title="Guardar categoría"><Icon name="check-circle" size={16} /></button>
+              <button type="button" className="panel-btn panel-btn-icono" onClick={() => { setAgregandoCat(false); setNuevaCat('') }} title="Cancelar"><Icon name="x" size={16} /></button>
+            </span>
+          ) : (
+            <button type="button" className="panel-inv-agregar" onClick={() => setAgregandoCat(true)}>
+              + Agregar
+            </button>
+          )}
+        </div>
+        <button type="button" className="panel-inv-carrusel-btn" onClick={() => desplazarCarrusel(1)} aria-label="Siguiente">
+          <Icon name="arrow-right" size={14} />
+        </button>
       </div>
 
       {mostrarForm && (
@@ -321,7 +468,7 @@ function InventarioSection() {
             <div className="panel-form-grupo">
               <label className="panel-form-label">Categoría</label>
               <select className="panel-form-select" value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })}>
-                {CATEGORIAS_INVENTARIO.filter((c) => c !== 'Todas').map((c) => <option key={c} value={c}>{c}</option>)}
+                {categorias.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
           </div>
@@ -364,12 +511,29 @@ function InventarioSection() {
         <div className="panel-lista">
           {itemsFiltrados.map((item) => {
             const status = getStockStatus(item)
+            const etiqueta = getEtiquetaPublicacion(item)
+            const esPromo = esPromocion(item)
             return (
               <div key={item.id} className={`panel-inv-item ${status.itemClass}`}>
-                <div className="panel-inv-item-icono"><Icon name={getItemIcono(item.categoria)} size={20} /></div>
+                <div className="panel-inv-item-icono">
+                  {item.imagen ? (
+                    <img src={item.imagen} alt={item.nombre} className="panel-inv-item-img" />
+                  ) : (
+                    <Icon name={getItemIcono(item.categoria)} size={20} />
+                  )}
+                </div>
                 <div className="panel-inv-item-info">
                   <h3 className="panel-inv-item-nombre">{item.nombre}</h3>
-                  <p className="panel-inv-item-detalle">{item.categoria} · C${item.precio} / {item.unidad}</p>
+                  <p className="panel-inv-item-detalle">
+                    {item.categoria}{esPromo
+                      ? item.descuento ? ` · -${item.descuento}%` : ''
+                      : ` · C$${item.precio} / ${item.unidad}`}
+                  </p>
+                  {etiqueta && (
+                    <span className={`panel-inv-tag ${etiqueta.className}`}>
+                      <Icon name={etiqueta.icono} size={11} /> {etiqueta.label}
+                    </span>
+                  )}
                 </div>
                 <div className="panel-inv-item-cantidad">
                   <span className={`panel-inv-item-num ${status.numClass}`}>{item.cantidad}</span>
@@ -379,7 +543,9 @@ function InventarioSection() {
                 <div className="panel-inv-item-acciones">
                   <button className="panel-btn panel-btn-icono" onClick={() => setDetalleItem(item)} title="Ver detalles"><Icon name="eye" size={16} /></button>
                   <button className="panel-btn panel-btn-icono" onClick={() => abrirEditar(item)} title="Editar"><Icon name="edit-2" size={16} /></button>
-                  <button className="panel-btn panel-btn-icono" onClick={() => actualizarStock(item.id)} title="Actualizar existencias"><Icon name="package" size={16} /></button>
+                  {!esPromo && (
+                    <button className="panel-btn panel-btn-icono" onClick={() => actualizarStock(item.id)} title="Actualizar existencias"><Icon name="package" size={16} /></button>
+                  )}
                   <button className="panel-btn panel-btn-icono panel-btn-icono--peligro" onClick={() => eliminar(item.id)} title="Eliminar"><Icon name="trash-2" size={16} /></button>
                 </div>
               </div>
@@ -396,22 +562,63 @@ function InventarioSection() {
               <button className="panel-modal-cerrar" onClick={() => setDetalleItem(null)}><Icon name="x" size={16} /></button>
             </div>
             <div className="panel-modal-body">
+              {detalleItem.imagen && (
+                <div className="panel-inv-detail-img">
+                  <img src={detalleItem.imagen} alt={detalleItem.nombre} />
+                </div>
+              )}
+              {getEtiquetaPublicacion(detalleItem) && (
+                <div className="panel-modal-info-row">
+                  <span className="panel-modal-info-label">Publicación</span>
+                  <span className={`panel-inv-tag ${getEtiquetaPublicacion(detalleItem).className}`}>
+                    <Icon name={getEtiquetaPublicacion(detalleItem).icono} size={11} />
+                    {' '}{getEtiquetaPublicacion(detalleItem).label}
+                  </span>
+                </div>
+              )}
               <div className="panel-modal-info-row">
                 <span className="panel-modal-info-label">Categoría</span>
                 <span className="panel-modal-info-value">{detalleItem.categoria}</span>
               </div>
-              <div className="panel-modal-info-row">
-                <span className="panel-modal-info-label">Precio</span>
-                <span className="panel-modal-info-value">C${detalleItem.precio} / {detalleItem.unidad}</span>
-              </div>
-              <div className="panel-modal-info-row">
-                <span className="panel-modal-info-label">Cantidad</span>
-                <span className="panel-modal-info-value">{detalleItem.cantidad} {detalleItem.unidad}(s)</span>
-              </div>
-              <div className="panel-modal-info-row">
-                <span className="panel-modal-info-label">Stock mínimo</span>
-                <span className="panel-modal-info-value">{detalleItem.stockMinimo} {detalleItem.unidad}(s)</span>
-              </div>
+              {esPromocion(detalleItem) ? (
+                <>
+                  {detalleItem.descuento && (
+                    <div className="panel-modal-info-row">
+                      <span className="panel-modal-info-label">Descuento</span>
+                      <span className="panel-modal-info-value">-{detalleItem.descuento}%</span>
+                    </div>
+                  )}
+                  {detalleItem.validoHasta && (
+                    <div className="panel-modal-info-row">
+                      <span className="panel-modal-info-label">Válido hasta</span>
+                      <span className="panel-modal-info-value">{detalleItem.validoHasta}</span>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="panel-modal-info-row">
+                  <span className="panel-modal-info-label">Precio</span>
+                  <span className="panel-modal-info-value">C${detalleItem.precio} / {detalleItem.unidad}</span>
+                </div>
+              )}
+              {esPromocion(detalleItem) && (
+                <div className="panel-modal-info-row">
+                  <span className="panel-modal-info-label">Unidades</span>
+                  <span className="panel-modal-info-value">{detalleItem.cantidad} {detalleItem.unidad}(s)</span>
+                </div>
+              )}
+              {!esPromocion(detalleItem) && (
+                <>
+                  <div className="panel-modal-info-row">
+                    <span className="panel-modal-info-label">Cantidad</span>
+                    <span className="panel-modal-info-value">{detalleItem.cantidad} {detalleItem.unidad}(s)</span>
+                  </div>
+                  <div className="panel-modal-info-row">
+                    <span className="panel-modal-info-label">Stock mínimo</span>
+                    <span className="panel-modal-info-value">{detalleItem.stockMinimo} {detalleItem.unidad}(s)</span>
+                  </div>
+                </>
+              )}
               <div className="panel-modal-info-row">
                 <span className="panel-modal-info-label">Estado</span>
                 <span className={`panel-inv-stock-badge ${getStockStatus(detalleItem).className}`}>
@@ -428,11 +635,25 @@ function InventarioSection() {
 
 export default function PanelNegocio() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const userType = useStore((s) => s.userType)
   const usuario = useStore((s) => s.usuario)
+  const sucursales = useStore((s) => s.sucursales[userType] || [])
+  const sucursalActivaId = useStore((s) => s.sucursalActiva[userType])
+  const sucursal = sucursales.find((s) => s.id === sucursalActivaId) || sucursales[0]
   const [tabActiva, setTabActiva] = useState('publicaciones')
 
   const esNegocio = userType === 'negocio'
+
+  // Permite entrar directo a una seccion desde fuera (ej: el home
+  // lleva a ?tab=proveedores). Se respeta el valor de la URL la
+  // primera vez; despues el usuario navega como siempre con las tabs.
+  useEffect(() => {
+    const tabDeUrl = searchParams.get('tab')
+    if (tabDeUrl && TABS.some((t) => t.id === tabDeUrl)) {
+      setTabActiva(tabDeUrl)
+    }
+  }, [searchParams])
 
   useEffect(() => {
     if (!esNegocio) {
@@ -450,7 +671,7 @@ export default function PanelNegocio() {
         </button>
         <div className="panel-header-info">
           <h1 className="panel-header-titulo">Panel de Negocio</h1>
-          <p className="panel-header-tipo">{usuario.nombre} · Rol: Negocio</p>
+          <p className="panel-header-tipo">{sucursal?.nombre || usuario.nombre}</p>
         </div>
       </div>
 
@@ -471,6 +692,17 @@ export default function PanelNegocio() {
         {tabActiva === 'publicaciones' && <PublicacionesPanel />}
         {tabActiva === 'proveedores' && <ProveedoresSection />}
         {tabActiva === 'inventario' && <InventarioSection />}
+        {tabActiva === 'resenas' && <ResenasPanel />}
+        {tabActiva === 'cotizaciones' && <CotizacionesPanel />}
+        {tabActiva === 'Papeleria' && <PapeleriaPanel />}
+        {tabActiva !== 'publicaciones' && tabActiva !== 'proveedores' && tabActiva !== 'inventario' && tabActiva !== 'resenas' && tabActiva !== 'cotizaciones' && tabActiva !== 'Papeleria' && (
+          <div className="panel-seccion panel-placeholder">
+            <h2 className="panel-seccion-titulo">
+              {TABS.find((t) => t.id === tabActiva)?.label}
+            </h2>
+            <p>Esta sección estará disponible próximamente.</p>
+          </div>
+        )}
       </div>
     </div>
   )

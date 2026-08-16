@@ -1,9 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import Icon from './icons/Icon'
+import useStore from '../store/puntos_usestore'
 
 const VINCCO_LOGO = `${process.env.PUBLIC_URL}/assets/logos/vincco-logo.png`
+// Mismo logo, recortado del aire transparente que traía el original (48% del alto).
+// Sirve para barras y navbars, donde el logo debe medir lo que dice medir.
+const VINCCO_LOGO_NAV = `${process.env.PUBLIC_URL}/assets/logos/vincco-logo-nav.png`
 
 const GOLD = '#ffc26b'
 const GOLD_LIGHT = '#ffd28c'
@@ -17,6 +22,13 @@ const CONTACTOS = [
   { label: 'Promociones', icon: 'tag' },
   { label: 'Recompensas', icon: 'star' },
   { label: 'Categorías', icon: 'box' },
+]
+
+// Home de negocios
+const CONTACTOS_NEGOCIO = [
+  { label: 'Negocios', icon: 'store', path: '/panel-negocio' },
+  { label: 'Proveedores', icon: 'truck', path: '/panel-negocio?tab=proveedores' },
+  { label: 'Promociones', icon: 'tag', path: null },
 ]
 
 function useRotatingWord(words, intervalMs = 2200) {
@@ -131,10 +143,7 @@ function DotGridBackground() {
       }
     }
 
-    // Se agrupan los puntos por color en vez de hacer
-    // beginPath + fillStyle + fill uno por uno. Con ~1800 puntos eso
-    // eran 1800 cambios de estado del contexto por frame; agrupados
-    // bajan a unas pocas decenas. El resultado dibujado es el mismo.
+   
     const porColor = new Map()
 
     for (let index = 0; index < dots.length; index++) {
@@ -253,6 +262,15 @@ function DotGridBackground() {
 export default function HeroBanner() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const rotatingWord = useRotatingWord(ROTATING_WORDS)
+  const userType = useStore((s) => s.userType)
+  const navigate = useNavigate()
+
+  const esNegocio = userType === 'negocio'
+  const contactos = esNegocio ? CONTACTOS_NEGOCIO : CONTACTOS
+
+  const irA = (path) => {
+    if (path) navigate(path)
+  }
 
   return (
     <>
@@ -308,39 +326,23 @@ export default function HeroBanner() {
           background: `linear-gradient(to bottom, transparent 0%, ${HERO_BG} 92%), radial-gradient(ellipse at center, transparent 35%, ${HERO_BG} 95%)`,
         }} />
 
-        <header className="hero-banner-header" style={{
-          position: 'relative',
-          zIndex: 10,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '32px 40px',
-        }}>
+        <header className="hero-banner-header">
           <button
+            type="button"
+            className={`hb-burger ${sidebarOpen ? 'is-open' : ''}`}
             onClick={() => setSidebarOpen(true)}
-            style={{
-              background: 'rgba(255,255,255,0.12)',
-              backdropFilter: 'blur(4px)',
-              border: '1px solid rgba(255,255,255,0.20)',
-              borderRadius: 10,
-              cursor: 'pointer',
-              padding: '10px 12px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 5,
-            }}
             aria-label="Abrir menú"
+            aria-expanded={sidebarOpen}
           >
-            <span style={{ display: 'block', width: 20, height: 2, backgroundColor: '#ffffff', borderRadius: 2 }} />
-            <span style={{ display: 'block', width: 20, height: 2, backgroundColor: '#ffffff', borderRadius: 2 }} />
-            <span style={{ display: 'block', width: 20, height: 2, backgroundColor: '#ffffff', borderRadius: 2 }} />
+            <span />
+            <span />
+            <span />
           </button>
 
           <img
-            src={VINCCO_LOGO}
+            src={VINCCO_LOGO_NAV}
             alt="VINCCO"
             className="hero-banner-logo"
-            style={{ height: 38, width: 'auto' }}
           />
         </header>
 
@@ -484,18 +486,19 @@ export default function HeroBanner() {
               color: 'rgba(255,255,255,0.55)',
               marginBottom: 12,
             }}>
-              Contactos
+              {esNegocio ? 'Descubrir' : 'Contactos'}
             </span>
             <div className="hero-contactos-chips" style={{
               display: 'flex',
               flexWrap: 'wrap',
               gap: 10,
             }}>
-              {CONTACTOS.map((c) => (
+              {contactos.map((c) => (
                 <button
                   key={c.label}
                   className="hero-chip"
                   type="button"
+                  onClick={() => irA(c.path)}
                   style={{
                     display: 'flex',
                     alignItems: 'center',

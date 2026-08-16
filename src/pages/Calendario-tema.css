@@ -1,0 +1,329 @@
+/* ════════════════════════════════════════════════════════════════
+   Calendario — Temas claro / oscuro
+   ────────────────────────────────────────────────────────────────
+   · Oscuro = modo por defecto (parte del ADN navy de VINCCO).
+   · Claro  = variante, se prende cuando Calendario.jsx quita la
+     clase .dark del <body> (toggle con persistencia local).
+   · Mecanismo de cambio: body.dark (mismo selector que gestiona el
+     kit shadcn en index.css). Los tokens de rol viven aqui.
+
+   Paleta oscuro:  #0B1A2A (fondo) · #0D1B2A→#112240 (superficie)
+                   #0A1120 (celdas) · #1E293B (bordes) · #F97316 (acento)
+   Paleta claro:   slate frío + acento #EA580C.
+════════════════════════════════════════════════════════════════ */
+
+/* ── Tokens por rol (valores HSL «h s% l%» o «h s% l% / a») ───── */
+:root {
+  --bg-primary: 214 33% 94%;        /* fondo general claro        */
+  --bg-secondary: 0 0% 100%;        /* superficie del calendario  */
+  --bg-tertiary: 214 35% 96%;       /* celdas fuera del mes       */
+  --surface-elevated: 0 0% 100%;    /* popovers / tarjetas flot.  */
+  --surface-inset: 210 40% 98%;     /* inputs                     */
+
+  --text-primary: 222 47% 11%;      /* #0F172A                    */
+  --text-secondary: 215 19% 35%;    /* #475569 — números de día   */
+  --text-muted: 215 16% 47%;        /* #64748B — labels navbar    */
+
+  --border-color: 214 32% 91%;      /* #E2E8F0                    */
+  --border-subtle: 213 25% 45% / 0.35;
+
+  --accent-primary: 21 90% 48%;     /* #EA580C — activo (claro)   */
+  --accent-hover: 20 89% 40%;       /* oscurecer en hover (claro) */
+  --accent-text: 0 0% 100%;         /* texto sobre el acento      */
+}
+
+body.dark {
+  --bg-primary: 211 59% 10%;        /* #0B1A2A — fondo general    */
+  --bg-secondary: 211 53% 11%;      /* #0D1B2A — calendario       */
+  --bg-tertiary: 221 53% 8%;        /* #0A1120 — celdas días      */
+  --surface-elevated: 218 58% 16%;  /* #112240 — superficie eleva */
+  --surface-inset: 220 60% 5%;      /* #050A14 — input búsqueda   */
+
+  --text-primary: 210 40% 97%;      /* #F1F5F9                    */
+  --text-secondary: 214 26% 65%;    /* #94A3B8 — números de día   */
+  --text-muted: 215 16% 47%;        /* #64748B — labels navbar    */
+
+  --border-color: 217 33% 17%;      /* #1E293B                    */
+  --border-subtle: 217 33% 30% / 0.4;
+
+  --accent-primary: 25 95% 53%;     /* #F97316 — activo (oscuro)  */
+  --accent-hover: 25 95% 61%;       /* aclarar en hover (oscuro)  */
+  --accent-text: 211 59% 10%;       /* navy oscuro sobre naranja  */
+}
+
+/* ── Superficie de la página ─────────────────────────────────────
+   Reemplaza el gradiente fijo de Calendario.css por uno tematico:
+   fondo general → superficie del calendario → zona elevada.      */
+.cal {
+  background-color: hsl(var(--bg-primary));
+  background-image: linear-gradient(
+    180deg,
+    hsl(var(--bg-primary)) 0%,
+    hsl(var(--bg-secondary)) 46%,
+    hsl(var(--surface-elevated)) 140%
+  );
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.cal .cal-header h2 {
+  transition: color 0.3s ease;
+}
+
+body:not(.dark) .cal .cal-header h2 {
+  color: hsl(var(--text-primary));
+}
+
+/* ── Puente al kit shadcn (dentro de .cal) ──────────────────────
+   EventManager y sus componentes (Button, Input, Card, Badge,
+   Dropdown, Dialog…) se pintan con valores de Tailwind del tipo
+   hsl(var(--background)); aqui les damos la paleta del rol.      */
+
+/* Oscuro (default): botón primario blanco (hover se aclara),
+   día de hoy = círculo blanco con número navy. */
+body.dark .cal {
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
+
+  --card: var(--bg-secondary);
+  --card-foreground: var(--text-primary);
+
+  --popover: var(--surface-elevated);
+  --popover-foreground: var(--text-primary);
+
+  --primary: 210 40% 98%;
+  --primary-foreground: 222 47% 11%;
+
+  --secondary: var(--surface-elevated);
+  --secondary-foreground: var(--text-primary);
+
+  --muted: var(--bg-tertiary);
+  --muted-foreground: var(--text-secondary);
+
+  --accent: var(--surface-elevated);
+  --accent-foreground: var(--text-primary);
+
+  --border: var(--border-color);
+  --input: var(--border-color);
+  --ring: 217 91% 60% / 0.5;
+}
+
+/* Hover de celdas y destinos: slate-800/50 visible sobre el navy. */
+body.dark .cal {
+  --accent: 217 33% 17%;
+}
+
+/* Claro (variante): botón primario = acento (hover se oscurece),
+   día de hoy = círculo naranja con número blanco. */
+body:not(.dark) .cal {
+  --background: var(--bg-secondary);
+  --foreground: var(--text-primary);
+
+  --card: var(--bg-secondary);
+  --card-foreground: var(--text-primary);
+
+  --popover: var(--surface-elevated);
+  --popover-foreground: var(--text-primary);
+
+  --primary: var(--accent-primary);
+  --primary-foreground: var(--accent-text);
+
+  --secondary: var(--bg-tertiary);
+  --secondary-foreground: var(--text-primary);
+
+  --muted: var(--bg-tertiary);
+  --muted-foreground: var(--text-muted);
+
+  --accent: var(--bg-tertiary);
+  --accent-foreground: var(--text-primary);
+
+  --border: var(--border-color);
+  --input: var(--border-color);
+  --ring: 217 91% 60% / 0.3;
+}
+
+/* Superficie principal (Card del mes/semana/día/lista):
+   degradado #0D1B2A → #112240 en oscuro; blanco plano en claro. */
+.cal .bg-card {
+  background-image: linear-gradient(
+    180deg,
+    hsl(var(--bg-secondary)) 0%,
+    hsl(var(--surface-elevated)) 130%
+  );
+}
+
+/* ── Tipografía del calendario ──────────────────────────────────
+   · Etiquetas de día (Dom…Sáb) y números de día: gris del rol.
+   · El día de hoy conserva su círculo (bg-primary/text-primary-foreground):
+     el guard :not(.bg-primary) lo deja intacto.                  */
+.cal .cal-weekday,
+.cal .cal-day-num:not(.bg-primary) {
+  color: hsl(var(--text-secondary));
+}
+
+/* ── Inputs ─────────────────────────────────────────────────────
+   Oscuro: fondo #0F172A (slate-900), borde slate-700 visible,
+   placeholder slate-500.
+   Búsqueda (cal-buscar): misma base + focus con borde azul.
+   Claro: fondo #F8FAFC, placeholder gris claro.                  */
+body.dark .cal :is(input, textarea) {
+  background-color: hsl(222 47% 11%);
+  color: hsl(210 40% 96%);
+}
+
+body:not(.dark) .cal :is(input, textarea) {
+  background-color: hsl(var(--surface-inset));
+}
+
+body.dark .cal ::placeholder {
+  color: hsl(215 16% 47%); /* slate-500 — legible, no negro */
+}
+
+body:not(.dark) .cal ::placeholder {
+  color: hsl(214 26% 65%);
+}
+
+body.dark .cal .cal-buscar {
+  border-color: hsl(215 28% 27%); /* slate-700 — borde visible */
+}
+
+body.dark .cal .cal-buscar:focus {
+  border-color: hsl(217 91% 60%); /* blue-500 — focus claro */
+}
+
+/* ── Botón primario: hover por rol ──────────────────────────────
+   Oscuro: se aclara (blanco casi puro).  Claro: se oscurece
+   hacia el acento profundo (en vez de bg-primary/90, que
+   aclararía el naranja).                                          */
+body:not(.dark) .cal button.bg-primary:hover {
+  background-color: hsl(var(--accent-hover));
+}
+
+/* ── Eventos (chips de color) ───────────────────────────────────
+   En claro los chips necesitan presencia: borde sutil interior
+   (inset shadow, sin mover layout) para que no floten.
+   El texto ya respeta luminancia via text-*-950 (event-manager). */
+body:not(.dark) .cal :is(.bg-blue-500, .bg-green-500, .bg-purple-500, .bg-orange-500, .bg-pink-500, .bg-red-500) {
+  box-shadow: inset 0 0 0 1px hsl(var(--border-subtle));
+}
+
+/* ════════════════════════════════════════════════════════════════
+   CONTRASTE WCAG AA (oscurito) — botones y elementos interactivos
+   con borde, fondo y texto propios del rol oscuro. Mecanismo:
+   clases helper (cal-*) que solo añaden estilo, sin tocar lógica.
+   Especificidad suficiente para imponerse a los utility shadcn.
+════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Botones de navegación (< >, Hoy, Select de vista móvil) ──
+   Fondo slate-700, borde slate-600, texto slate-100, sombra sutil.
+   Hover: slate-600 + borde slate-500.  Active: slate-800.       */
+body.dark .cal .cal-nav-btn {
+  background-color: hsl(215 28% 27%);           /* slate-700       */
+  border-color: hsl(220 26% 31%);               /* slate-600       */
+  color: hsl(210 40% 96%);                      /* slate-100       */
+  box-shadow: 0 1px 2px hsl(222 47% 4% / 0.45);
+}
+
+body.dark .cal .cal-nav-btn:hover {
+  background-color: hsl(220 26% 31%);           /* slate-600       */
+  border-color: hsl(213 15% 47%);               /* slate-500       */
+}
+
+body.dark .cal .cal-nav-btn:active {
+  background-color: hsl(217 33% 17%);           /* slate-800       */
+}
+
+/* Touch objetivo mínimo en móvil (44x44) sin romper el layout
+   de escritorio (la altura custom h-8/h-9 sigue en sm+).        */
+@media (max-width: 480px) {
+  body.dark .cal .cal-nav-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* ── 2. Grupo de vistas (Mes / Semana / Día / Lista) ────────────
+   Contenedor: slate-900 con borde slate-700.
+   Inactivo:  slate-800, texto slate-300, borde slate-700.
+   Activo (usa variant="secondary" → clase bg-secondary):
+   fondo blue-600, texto blanco, borde blue-500, font-medium.    */
+body.dark .cal .cal-vistas {
+  background-color: hsl(222 47% 11%);           /* slate-900       */
+  border-color: hsl(215 28% 27%);               /* slate-700       */
+}
+
+body.dark .cal .cal-view-btn {
+  background-color: hsl(217 33% 17%);           /* slate-800       */
+  color: hsl(213 27% 84%);                      /* slate-300       */
+  border: 1px solid hsl(215 28% 27%);           /* slate-700       */
+}
+
+body.dark .cal .cal-view-btn:hover {
+  background-color: hsl(215 28% 27%);           /* slate-700       */
+  color: hsl(214 32% 91%);                      /* slate-200       */
+}
+
+body.dark .cal .cal-view-btn[class*="bg-secondary"] {
+  background-color: hsl(221 83% 53%);           /* blue-600        */
+  color: #ffffff;
+  border-color: hsl(217 91% 60%);               /* blue-500        */
+  font-weight: 500;
+}
+
+body.dark .cal .cal-view-btn[class*="bg-secondary"]:hover {
+  background-color: hsl(221 83% 60%);
+}
+
+/* ── 3. Filtros (Colores / Etiquetas / Categorías) ──────────────
+   Fondo slate-800/60, borde slate-700, texto slate-200,
+   icono slate-400. Hover: slate-700 + borde slate-600.          */
+body.dark .cal .cal-filter-btn {
+  background-color: hsl(217 33% 17% / 0.6);     /* slate-800/60    */
+  color: hsl(214 32% 91%);                      /* slate-200       */
+  border-color: hsl(215 28% 27%);               /* slate-700       */
+  box-shadow: 0 1px 2px hsl(222 47% 4% / 0.35);
+}
+
+body.dark .cal .cal-filter-btn:hover {
+  background-color: hsl(215 28% 27%);           /* slate-700       */
+  border-color: hsl(220 26% 31%);               /* slate-600       */
+}
+
+body.dark .cal .cal-filter-btn :is(svg, [data-lucide]) {
+  color: hsl(214 27% 65%);                      /* slate-400       */
+}
+
+body.dark .cal .cal-filter-btn:active {
+  background-color: hsl(222 47% 11%);
+}
+
+/* ── 4. Búsqueda: icono lupa en slate-400 (ya mutted-foreground
+   = #94A3B8), placeholder slate-500, focus ring azul 50% + borde
+   blue-500 (definido arriba en la sección Inputs).              */
+body.dark .cal .relative svg.text-muted-foreground {
+  color: hsl(214 27% 65%);
+}
+
+/* ── 5-6. Título y números de día ───────────────────────────────
+   "Agosto de 2026": slate-100 (hereda font-semibold del h2).
+   Días del mes actual:   slate-200.
+   Días de otros meses (celda con bg-muted/30): slate-500.
+   El día de hoy conserva su círculo (guard :not(.bg-primary)).  */
+body.dark .cal .cal-titulo {
+  color: hsl(210 40% 96%);                      /* slate-100       */
+}
+
+body.dark .cal .cal-day-num:not(.bg-primary) {
+  color: hsl(214 32% 91%);                      /* slate-200       */
+}
+
+body.dark .cal [class*="bg-muted"] .cal-day-num:not(.bg-primary) {
+  color: hsl(215 16% 47%);                      /* slate-500       */
+}
+
+/* Etiquetas de día (Dom…Sáb): slate-300, uppercase, tracking
+   ancho (solo rol oscuro; el claro conserva su apariencia).     */
+body.dark .cal .cal-weekday {
+  color: hsl(213 27% 84%);                      /* slate-300       */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router-dom'
 import useStore from '../store/puntos_usestore'
 import Icon from '../components/icons/Icon'
+import SucursalSelector from '../components/panel/SucursalSelector'
 import {
   PerfilHero,
+  VerificacionBanner,
   Seccion,
   Metricas,
   BloqueDatos,
@@ -36,8 +38,11 @@ export default function PerfilProveedor() {
   const guardarFoto = useStore((s) => s.guardarFoto)
   const quitarFoto = useStore((s) => s.quitarFoto)
   const negociosAsociados = useStore((s) => s.negociosAsociados)
+  const estadoVerificacion = useStore((s) => s.estadosVerificacion.proveedor)
 
-  const activos = negociosAsociados.filter((n) => n.estado === 'Activo').length
+  // Solo cuentan las asociaciones ya aceptadas por el negocio: las
+  // pendientes y rechazadas no son una relación real todavía.
+  const asociados = negociosAsociados.filter((n) => n.estado === 'aceptada')
   const zonas = perfil.cobertura.split(/\s*(?:,|y)\s*/).filter(Boolean)
 
   return (
@@ -51,8 +56,10 @@ export default function PerfilProveedor() {
         onFoto={(foto) => guardarFoto('proveedor', foto)}
         onQuitarFoto={() => quitarFoto('proveedor')}
         chips={[
-          { label: 'Proveedor verificado', icono: 'check-circle', destacado: true },
-          { label: `${negociosAsociados.length} negocios asociados`, icono: 'store' },
+          ...(estadoVerificacion === 'aprobada'
+            ? [{ label: 'Proveedor verificado', icono: 'check-circle', destacado: true }]
+            : []),
+          { label: `${asociados.length} negocios asociados`, icono: 'store' },
           { label: '96% entregas a tiempo', icono: 'truck' },
         ]}
         extra={
@@ -66,7 +73,7 @@ export default function PerfilProveedor() {
               ))}
             </ul>
             <p className="pf-cobertura-pie">
-              <strong>{activos}</strong> de {negociosAsociados.length} negocios activos este mes
+              <strong>{asociados.length}</strong> negocios asociados activos
             </p>
           </div>
         }
@@ -89,6 +96,16 @@ export default function PerfilProveedor() {
           </>
         }
       />
+
+      <VerificacionBanner
+        rol="proveedor"
+        estado={estadoVerificacion}
+        texto="Sin verificar podés ver todo el panel, pero no podés publicar productos, enviar cotizaciones ni agregar negocios asociados. Solicitá la verificación de tu empresa para desbloquearlo."
+      />
+
+      <div className="pf-esquina">
+        <SucursalSelector />
+      </div>
 
       <div className="pf-body">
         <Metricas items={metricasPerfil.proveedor} />
@@ -139,7 +156,11 @@ export default function PerfilProveedor() {
             descripcion="Distinciones como proveedor"
             className="pf-seccion--lateral"
           >
-            <Insignias items={insigniasPerfil.proveedor} />
+            <Insignias
+              items={insigniasPerfil.proveedor.map((i) =>
+                i.id === 'p1' ? { ...i, activa: estadoVerificacion === 'aprobada' } : i
+              )}
+            />
           </Seccion>
         </div>
 

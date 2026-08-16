@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 const STATS = [
   { value: 150, prefix: '+', suffix: '', label: 'Negocios activos' },
   { value: 3500, prefix: '+', suffix: '', label: 'Usuarios registrados' },
-  { value: 20000, prefix: '+', suffix: '', label: 'Puntos entregados' },
+  { value: 20000, prefix: '+', suffix: '', label: 'Puntos entregados', gold: true },
   { value: 95, prefix: '', suffix: '%', label: 'Clientes satisfechos' },
 ]
 
@@ -41,7 +41,7 @@ function CountUp({ value, prefix, suffix }) {
   }, [value])
 
   return (
-    <span ref={ref} className="vc-stat-number">
+    <span ref={ref} className="vc-stat-number vc-tabular">
       {prefix}
       {count.toLocaleString()}
       {suffix}
@@ -59,7 +59,7 @@ export default function StatsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          Estadísticas
+          El padrón en cifras
         </motion.span>
         <motion.h2
           className="vc-section-title"
@@ -75,7 +75,7 @@ export default function StatsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          La comunidad Vincco crece cada día
+          La red económica de Nueva Guinea crece cada día
         </motion.p>
       </div>
 
@@ -84,7 +84,7 @@ export default function StatsSection() {
           {STATS.map((stat, i) => (
             <motion.div
               key={i}
-              className="vc-stat-card"
+              className={`vc-stat-card${stat.gold ? ' vc-stat-card--gold' : ''}`}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

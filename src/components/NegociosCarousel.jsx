@@ -1,6 +1,7 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Icon from './icons/Icon'
+import FormularioCotizacion from './panel/FormularioCotizacion'
 
 // Vista principal de Negocios Asociados.
 // Reemplaza el layout de lista + detalle: los negocios son chips que rotan
@@ -24,6 +25,14 @@ const CAT_ICONOS = {
 
 const AUTO_PLAY_INTERVAL = 4500
 const ITEM_HEIGHT = 62
+
+// El estado real (pendiente/aceptada) es interno; acá se traduce a
+// lo que ve el proveedor. Rechazadas no llegan hasta acá: la pantalla
+// que arma la lista ya las filtra antes de pasarlas al carrusel.
+const ESTADO_VISUAL = {
+  pendiente: { clase: 'pendiente', label: 'Solicitud enviada' },
+  aceptada: { clase: 'activo', label: 'Activo' },
+}
 
 // Acomoda v dentro del rango [min, max) dando la vuelta,
 // para que los chips roten en bucle sin saltos.
@@ -59,11 +68,17 @@ export default function NegociosCarousel({
   notifEnviada,
   onNotificar,
   onEditar,
+  proveedor,
+  onCotizar,
+  verificado = true,
+  onBloqueado,
   pausado,
 }) {
   const total = negocios.length
   const idxActual = Math.max(0, negocios.findIndex((n) => n.id === seleccionadoId))
   const seleccionado = negocios[idxActual] || null
+  const [modalCotizacionAbierto, setModalCotizacionAbierto] = useState(false)
+  const [cotizacionEnviadaOk, setCotizacionEnviadaOk] = useState(false)
 
   const irASiguiente = useCallback(() => {
     if (total <= 1) return
@@ -72,12 +87,14 @@ export default function NegociosCarousel({
   }, [negocios, idxActual, total, onSeleccionar])
 
   useEffect(() => {
-    // Se detiene con 1 solo negocio, mientras el usuario escribe
-    // en el buscador o cuando pasa el mouse por encima
-    if (pausado || total <= 1) return
+    // Se detiene con 1 solo negocio, mientras el usuario escribe en
+    // el buscador, o mientras esta llenando la cotizacion: si no,
+    // el carrusel le cambiaba de negocio a mitad del formulario y no
+    // le daba tiempo de terminarlo.
+    if (pausado || modalCotizacionAbierto || total <= 1) return
     const id = setInterval(irASiguiente, AUTO_PLAY_INTERVAL)
     return () => clearInterval(id)
-  }, [irASiguiente, pausado, total])
+  }, [irASiguiente, pausado, modalCotizacionAbierto, total])
 
   // Define si una tarjeta va al centro, atras a un costado, o no se ve
   const getEstadoTarjeta = (index) => {
@@ -175,8 +192,8 @@ export default function NegociosCarousel({
                   <MediaNegocio negocio={negocio} activa={activa} />
 
                   <div className={`ncar-card-estado ${activa ? '' : 'ncar-card-estado--oculto'}`}>
-                    <span className={`ncar-card-punto ncar-card-punto--${(negocio.estado || 'activo').toLowerCase()}`} />
-                    <span>{negocio.estado || 'Activo'}</span>
+                    <span className={`ncar-card-punto ncar-card-punto--${(ESTADO_VISUAL[negocio.estado] || ESTADO_VISUAL.aceptada).clase}`} />
+                    <span>{(ESTADO_VISUAL[negocio.estado] || ESTADO_VISUAL.aceptada).label}</span>
                   </div>
 
                   <AnimatePresence>
@@ -266,42 +283,67 @@ export default function NegociosCarousel({
                     <Icon name="message-circle" size={17} /> Contactar por WhatsApp
                   </a>
 
-                  <motion.button
-                    className="ncar-btn ncar-btn--notificar"
-                    onClick={onNotificar}
-                    type="button"
-                    whileTap={{ scale: 0.97 }}
-                  >
-                    <AnimatePresence mode="wait" initial={false}>
-                      {notifEnviada ? (
-                        <motion.span
-                          key="ok"
-                          className="ncar-btn-contenido"
-                          initial={{ opacity: 0, y: 4 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -4 }}
-                        >
-                          <Icon name="check-circle" size={17} /> Notificación enviada
-                        </motion.span>
-                      ) : (
-                        <motion.span
-                          key="enviar"
-                          className="ncar-btn-contenido"
-                          initial={{ opacity: 0, y: 4 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -4 }}
-                        >
-                          <Icon name="bell" size={17} /> Enviar notificación de compra
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-                  </motion.button>
+                  {seleccionado.estado === 'pendiente' ? (
+                    <span className="ncar-btn ncar-btn--pendiente" title="Este negocio todavía no aceptó tu solicitud de asociación">
+                      <Icon name="clock" size={17} /> Esperando que acepte tu solicitud
+                    </span>
+                  ) : (
+                    <motion.button
+                      className="ncar-btn ncar-btn--notificar"
+                      onClick={() => {
+                        if (!verificado) { onBloqueado && onBloqueado(); return }
+                        setModalCotizacionAbierto(true)
+                        setCotizacionEnviadaOk(false)
+                      }}
+                      type="button"
+                      whileTap={{ scale: 0.97 }}
+                    >
+                      <AnimatePresence mode="wait" initial={false}>
+                        {cotizacionEnviadaOk ? (
+                          <motion.span
+                            key="ok"
+                            className="ncar-btn-contenido"
+                            initial={{ opacity: 0, y: 4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -4 }}
+                          >
+                            <Icon name="check-circle" size={17} /> Cotización enviada
+                          </motion.span>
+                        ) : (
+                          <motion.span
+                            key="cotizar"
+                            className="ncar-btn-contenido"
+                            initial={{ opacity: 0, y: 4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -4 }}
+                          >
+                            <Icon name="file-text" size={17} /> Enviar cotización de compra
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </motion.button>
+                  )}
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </div>
+
+      <AnimatePresence>
+        {modalCotizacionAbierto && seleccionado && proveedor && (
+          <FormularioCotizacion
+            negocio={seleccionado}
+            proveedor={proveedor}
+            onClose={() => setModalCotizacionAbierto(false)}
+            onEnviada={() => {
+              setCotizacionEnviadaOk(true)
+              setModalCotizacionAbierto(false)
+              onCotizar && onCotizar()
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }

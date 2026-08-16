@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import useStore from '../store/puntos_usestore'
 import { motion } from 'framer-motion'
 import Icon from '../components/icons/Icon'
@@ -20,7 +20,7 @@ const INITIAL_FORM = {
 }
 
 const ACCOUNT_TYPES = [
-  { id: 'usuario', label: 'Usuario', icon: 'user', desc: 'Compra y acumula puntos' },
+  { id: 'usuario', label: 'Cliente', icon: 'user', desc: 'Compra y acumula puntos' },
   { id: 'negocio', label: 'Negocio', icon: 'store', desc: 'Registra tu comercio' },
   { id: 'proveedor', label: 'Proveedor', icon: 'package', desc: 'Ofrece tus productos' },
 ]
@@ -92,7 +92,14 @@ const TIPO_NEGOCIO_OPTIONS = ['Físico', 'Delivery', 'Freelancer']
 
 export default function Register() {
   const navigate = useNavigate()
+  const location = useLocation()
   const setUserType = useStore((s) => s.setUserType)
+  const setNegocio = useStore((s) => s.setNegocio)
+  const guardarPerfil = useStore((s) => s.guardarPerfil)
+  const agregarSucursal = useStore((s) => s.agregarSucursal)
+  const continuarSinVerificar = useStore((s) => s.continuarSinVerificar)
+  const abrirKYC = useStore((s) => s.abrirKYC)
+  const estadosVerificacion = useStore((s) => s.estadosVerificacion)
   const [step, setStep] = useState(0)
   const [direction, setDirection] = useState('forward')
   const [formData, setFormData] = useState(INITIAL_FORM)
@@ -102,6 +109,26 @@ export default function Register() {
   const [selectedCategories, setSelectedCategories] = useState([])
   const [verificationInput, setVerificationInput] = useState('')
   const [isVerified, setIsVerified] = useState(false)
+
+  // Modo sucursal: el dueño ya está registrado y solo agrega una
+  // sucursal nueva. Se reutiliza el flujo de negocio/proveedor pero
+  // arrancando en el paso 5 (información del negocio) y, al terminar,
+  // crea la sucursal y vuelve al perfil.
+  const modoSucursal = Boolean(location.state?.modoSucursal)
+  const PASO_INICIAL_SUCURSAL = 4
+
+  // Llegó desde un anuncio del home con el tipo decidido (usuario,
+  // negocio o proveedor): se omite el selector y se entra directo
+  // al flujo correspondiente. En modo sucursal salta directo al paso
+  // 5 (información del negocio), porque el dueño ya está registrado.
+  useEffect(() => {
+    const tipo = location.state?.tipo
+    if (tipo === 'usuario' || tipo === 'negocio' || tipo === 'proveedor') {
+      setAccountType(tipo)
+      setDirection('forward')
+      setStep(modoSucursal ? PASO_INICIAL_SUCURSAL : 1)
+    }
+  }, [location.state, modoSucursal, PASO_INICIAL_SUCURSAL])
 
   const [negocioForm, setNegocioForm] = useState({
     telefono: '',
@@ -118,7 +145,11 @@ export default function Register() {
   })
   const [businessCategories, setBusinessCategories] = useState([])
   const [skipLocation, setSkipLocation] = useState(false)
-  const [verificationSent, setVerificationSent] = useState(false)
+
+  // El estado real vive en el store (y en localStorage, vía
+  // estadosVerificacion): así, si el usuario recarga la página en
+  // esta misma pantalla, no pierde que ya solicitó la verificación.
+  const verificationSent = estadosVerificacion[accountType] === 'pendiente'
 
   const isNegocio = accountType === 'negocio'
   const isProveedor = accountType === 'proveedor'
@@ -286,6 +317,9 @@ export default function Register() {
     setDirection('backward')
     if (step === 0) {
       navigate('/login')
+    } else if (modoSucursal && step <= PASO_INICIAL_SUCURSAL) {
+      // En modo sucursal no hay pasos atrás del 5: volver sale del flujo
+      navigate('/perfil')
     } else {
       setStep((s) => s - 1)
     }
@@ -310,15 +344,39 @@ export default function Register() {
     ? MUNICIPIOS_POR_DEPARTAMENTO[formData.departamento] || []
     : []
 
-  const handleRequestVerification = () => {
-    setVerificationSent(true)
+  // Cualquier rol solicita la verificación con el expediente KYC
+  // completo (identificación, documentos y datos tributarios):
+  // el wizard se abre por encima del registro y, al enviarlo, deja
+  // el rol en "pendiente" y vuelve a la app desde ahí mismo.
+  const abrirVerificacionKYC = () => {
+    guardarDatosRegistro()
     setUserType(accountType)
+    abrirKYC(accountType, 'registro')
+  }
+
+  // Negocio y proveedor: primero se guardan los datos y se entra
+  // a la cuenta, y recién ahí se abre el expediente KYC.
+  const abrirFormularioVerificacion = abrirVerificacionKYC
+
+  const handleContinueAsGuest = () => {
+    guardarDatosRegistro()
+    setUserType(accountType)
+    continuarSinVerificar(accountType)
     navigate('/')
   }
 
-  const handleContinueAsGuest = () => {
-    setUserType(accountType)
-    navigate('/')
+  // Guarda el nombre del negocio que se escribió en el registro:
+  // es el que se muestra en el home ("Bienvenido de nuevo") y en
+  // las reseñas del panel. El perfil puede no existir en cuentas
+  // demo, así que también se deja en "negocio" del store.
+  const guardarDatosRegistro = () => {
+    if (accountType === 'negocio' || accountType === 'proveedor') {
+      const nombre = negocioForm.negocioNombre.trim()
+      if (nombre) {
+        setNegocio((prev) => ({ ...prev, nombre }))
+        guardarPerfil(accountType, { nombre })
+      }
+    }
   }
 
   const renderStep0 = () => (
@@ -736,15 +794,15 @@ export default function Register() {
         return (
           <div className="rk-fields">
             <header className="rk-header">
-              <h1 className="rk-title">Información del Negocio</h1>
-              <p className="rk-sub">Ingresa el nombre de tu negocio</p>
+              <h1 className="rk-title">{modoSucursal ? 'Información de la Sucursal' : 'Información del Negocio'}</h1>
+              <p className="rk-sub">{modoSucursal ? 'Ingresa el nombre de la sucursal' : 'Ingresa el nombre de tu negocio'}</p>
             </header>
             <div className="rk-field">
               <input
                 name="negocioNombre"
                 value={negocioForm.negocioNombre}
                 onChange={handleNegocioChange}
-                placeholder="Nombre del negocio"
+                placeholder={modoSucursal ? 'Nombre de la sucursal' : 'Nombre del negocio'}
                 className={`rk-input ${errors.negocioNombre ? 'rk-input--err' : ''}`}
                 autoComplete="off"
               />
@@ -757,7 +815,7 @@ export default function Register() {
         return (
           <div className="rk-fields">
             <header className="rk-header">
-              <h1 className="rk-title">Ubicación del Negocio</h1>
+              <h1 className="rk-title">{modoSucursal ? 'Ubicación de la Sucursal' : 'Ubicación del Negocio'}</h1>
               <p className="rk-sub">Selecciona tu departamento y municipio</p>
             </header>
             <div className="rk-field">
@@ -816,7 +874,7 @@ export default function Register() {
         return (
           <div className="rk-fields">
             <header className="rk-header">
-              <h1 className="rk-title">Categorías del Negocio</h1>
+              <h1 className="rk-title">{modoSucursal ? 'Categorías de la Sucursal' : 'Categorías del Negocio'}</h1>
               <p className="rk-sub">¿Qué tipo de productos ofreces?</p>
             </header>
             <div className="rk-cat-grid">
@@ -852,7 +910,7 @@ export default function Register() {
         return (
           <div className="rk-fields">
             <header className="rk-header">
-              <h1 className="rk-title">Configuración del Negocio</h1>
+              <h1 className="rk-title">{modoSucursal ? 'Configuración de la Sucursal' : 'Configuración del Negocio'}</h1>
               <p className="rk-sub">Completa la configuración básica</p>
             </header>
             <div className="rk-field">
@@ -984,55 +1042,133 @@ export default function Register() {
     }
   }
 
+  // Cierra el flujo de sucursal: crea la sucursal con los datos del
+  // registro (pasos 5 en adelante) y vuelve al perfil. La nueva
+  // sucursal queda activa porque así lo hace agregarSucursal.
+  const handleSaveSucursal = () => {
+    if (!negocioForm.negocioNombre.trim()) return
+    agregarSucursal(accountType, {
+      nombre: negocioForm.negocioNombre.trim(),
+      direccion: skipLocation
+        ? ''
+        : [formData.departamento, formData.municipio].filter(Boolean).join(', '),
+      telefono: negocioForm.telefono,
+      categorias: businessCategories,
+      tipoNegocio: negocioForm.tipoNegocio,
+      delivery: negocioForm.delivery,
+      horario: negocioForm.horaApertura || negocioForm.horaCierre
+        ? `${negocioForm.horaApertura || '?'} - ${negocioForm.horaCierre || '?'}`
+        : '',
+      whatsapp: negocioForm.whatsapp,
+    })
+    navigate('/perfil')
+  }
+
   const renderBusinessWelcome = () => (
     <div className="rk-step3">
       <div className="rk-step3-bg" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/register-negocio.jpg)` }} />
       <div className="rk-step3-overlay">
+        {modoSucursal && (
+          <button
+            type="button"
+            className="rk-step3-close"
+            onClick={() => navigate('/perfil')}
+            aria-label="Salir del formulario"
+          >
+            <Icon name="x" size={20} />
+          </button>
+        )}
         <img src={VINCCO_LOGO} alt="VINCCO" className="rk-step3-logo" />
         <div className={`rk-step3-body ${animClass}`} key={`sw${direction}`}>
-          <h1 className="rk-step3-title">Felicidades, ya eres parte de VINCCO</h1>
-          <p className="rk-step3-msg">
-            Para acceder al panel de socio y a todas las funcionalidades para negocios,
-            debes solicitar la verificación de tu negocio.
-          </p>
-          <p className="rk-welcome-note">
-            Una vez aprobada la verificación, recibirás la confirmación en tu correo electrónico.
-          </p>
+          {modoSucursal ? (
+            <>
+              <h1 className="rk-step3-title">Sucursal lista para guardar</h1>
+              <p className="rk-step3-msg">
+                Revisa que los datos de la sucursal <strong>{negocioForm.negocioNombre.trim() || 'nueva'}</strong> sean
+                correctos. Al guardarla quedará activa en tu perfil.
+              </p>
+              <p className="rk-welcome-note">
+                Cada sucursal tiene su propio panel: inventario y publicaciones independientes.
+              </p>
+            </>
+          ) : (
+            <>
+              <h1 className="rk-step3-title">Felicidades, ya eres parte de VINCCO</h1>
+              <p className="rk-step3-msg">
+                Ya podés ver todo tu panel de socio. Para publicar y recibir cotizaciones te falta
+                un paso: verificar tu negocio.
+              </p>
+              <p className="rk-welcome-note">
+                Una vez aprobada la verificación, recibirás la confirmación en tu correo electrónico.
+              </p>
+            </>
+          )}
         </div>
         <div className="rk-step3-actions">
-          {verificationSent ? (
-            <p className="rk-success-msg"><Icon name="check-circle" size={16} /> Solicitud enviada</p>
+          {modoSucursal ? (
+            <>
+              <button
+                className="rk-btn rk-btn--primary rk-btn--wide"
+                onClick={handleSaveSucursal}
+                type="button"
+              >
+                Guardar nueva sucursal
+              </button>
+              <button
+                className="rk-btn rk-btn--outline"
+                onClick={prevStep}
+                type="button"
+                style={{ maxWidth: 320 }}
+              >
+                Anterior
+              </button>
+            </>
+          ) : verificationSent ? (
+            <>
+              <p className="rk-success-msg"><Icon name="check-circle" size={16} /> Solicitud enviada</p>
+              <button
+                className="rk-btn rk-btn--primary rk-btn--wide"
+                onClick={() => navigate('/')}
+                type="button"
+              >
+                Entrar a VINCCO
+              </button>
+            </>
           ) : (
-            <button
-              className="rk-btn rk-btn--primary rk-btn--wide"
-              onClick={handleRequestVerification}
-              type="button"
-            >
-              Solicitar verificación
-            </button>
+            <>
+              <button
+                className="rk-btn rk-btn--primary rk-btn--wide"
+                onClick={abrirFormularioVerificacion}
+                type="button"
+              >
+                Solicitar verificación
+              </button>
+              <button
+                className="rk-btn rk-btn--outline rk-btn--wide rk-btn--ghost"
+                onClick={handleContinueAsGuest}
+                type="button"
+              >
+                Continuar sin verificación
+              </button>
+              <button
+                className="rk-btn rk-btn--outline"
+                onClick={prevStep}
+                type="button"
+                style={{ maxWidth: 320 }}
+              >
+                Anterior
+              </button>
+            </>
           )}
-          <button
-            className="rk-btn rk-btn--outline rk-btn--wide rk-btn--ghost"
-            onClick={handleContinueAsGuest}
-            type="button"
-          >
-            Continuar como invitado
-          </button>
-          <button
-            className="rk-btn rk-btn--outline"
-            onClick={prevStep}
-            type="button"
-            style={{ maxWidth: 320 }}
-          >
-            Anterior
-          </button>
         </div>
-        <p className="rk-footer">
-          ¿Ya tienes una cuenta?{' '}
-          <button className="rk-link" onClick={() => navigate('/login')}>
-            Inicia sesión
-          </button>
-        </p>
+        {!modoSucursal && (
+          <p className="rk-footer">
+            ¿Ya tienes una cuenta?{' '}
+            <button className="rk-link" onClick={() => navigate('/login')}>
+              Inicia sesión
+            </button>
+          </p>
+        )}
       </div>
     </div>
   )
@@ -1041,12 +1177,121 @@ export default function Register() {
     <div className="rk-step3">
       <div className="rk-step3-bg" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/register-provedores.jpg)` }} />
       <div className="rk-step3-overlay">
+        {modoSucursal && (
+          <button
+            type="button"
+            className="rk-step3-close"
+            onClick={() => navigate('/perfil')}
+            aria-label="Salir del formulario"
+          >
+            <Icon name="x" size={20} />
+          </button>
+        )}
         <img src={VINCCO_LOGO} alt="VINCCO" className="rk-step3-logo rk-step3-logo--lg" />
         <div className={`rk-step3-body ${animClass}`} key={`sp${direction}`}>
+          {modoSucursal ? (
+            <>
+              <h1 className="rk-step3-title">Sucursal lista para guardar</h1>
+              <p className="rk-step3-msg">
+                Revisa que los datos de la sucursal <strong>{negocioForm.negocioNombre.trim() || 'nueva'}</strong> sean
+                correctos. Al guardarla quedará activa en tu perfil.
+              </p>
+              <p className="rk-welcome-note">
+                Cada sucursal tiene su propio panel: inventario y publicaciones independientes.
+              </p>
+            </>
+          ) : (
+            <>
+              <h1 className="rk-step3-title">Felicidades, ya eres parte de VINCCO</h1>
+              <p className="rk-step3-msg">
+                Ya podés ver todo tu panel de proveedor. Para publicar productos, enviar
+                cotizaciones y agregar negocios asociados te falta un paso: verificar tu empresa.
+              </p>
+              <p className="rk-welcome-note">
+                Una vez aprobada la verificación, recibirás la confirmación en tu correo electrónico.
+              </p>
+            </>
+          )}
+        </div>
+        <div className="rk-step3-actions">
+          {modoSucursal ? (
+            <>
+              <button
+                className="rk-btn rk-btn--primary rk-btn--wide"
+                onClick={handleSaveSucursal}
+                type="button"
+              >
+                Guardar nueva sucursal
+              </button>
+              <button
+                className="rk-btn rk-btn--outline"
+                onClick={prevStep}
+                type="button"
+                style={{ maxWidth: 320 }}
+              >
+                Anterior
+              </button>
+            </>
+          ) : verificationSent ? (
+            <>
+              <p className="rk-success-msg"><Icon name="check-circle" size={16} /> Solicitud enviada</p>
+              <button
+                className="rk-btn rk-btn--primary rk-btn--wide"
+                onClick={() => navigate('/')}
+                type="button"
+              >
+                Entrar a VINCCO
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                className="rk-btn rk-btn--primary rk-btn--wide"
+                onClick={abrirFormularioVerificacion}
+                type="button"
+              >
+                Solicitar verificación
+              </button>
+              <button
+                className="rk-btn rk-btn--outline rk-btn--wide rk-btn--ghost"
+                onClick={handleContinueAsGuest}
+                type="button"
+              >
+                Continuar sin verificación
+              </button>
+              <button
+                className="rk-btn rk-btn--outline"
+                onClick={prevStep}
+                type="button"
+                style={{ maxWidth: 320 }}
+              >
+                Anterior
+              </button>
+            </>
+          )}
+        </div>
+        {!modoSucursal && (
+          <p className="rk-footer">
+            ¿Ya tienes una cuenta?{' '}
+            <button className="rk-link" onClick={() => navigate('/login')}>
+              Inicia sesión
+            </button>
+          </p>
+        )}
+      </div>
+    </div>
+  )
+
+  const renderClientWelcome = () => (
+    <div className="rk-step3">
+      <div className="rk-step3-bg" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/register-bg.jpg)` }} />
+      <div className="rk-step3-overlay">
+        <img src={VINCCO_LOGO} alt="VINCCO" className="rk-step3-logo rk-step3-logo--lg" />
+        <div className={`rk-step3-body ${animClass}`} key={`s3${direction}`}>
           <h1 className="rk-step3-title">Felicidades, ya eres parte de VINCCO</h1>
           <p className="rk-step3-msg">
-            Para acceder al panel de proveedor y a todas las funcionalidades,
-            debes solicitar la verificación de tu negocio.
+            Para que tu perfil y tus reseñas aparezcan como Cliente verificado, debes solicitar
+            la verificación de tu cuenta.
           </p>
           <p className="rk-welcome-note">
             Una vez aprobada la verificación, recibirás la confirmación en tu correo electrónico.
@@ -1054,11 +1299,20 @@ export default function Register() {
         </div>
         <div className="rk-step3-actions">
           {verificationSent ? (
-            <p className="rk-success-msg"><Icon name="check-circle" size={16} /> Solicitud enviada</p>
+            <>
+              <p className="rk-success-msg"><Icon name="check-circle" size={16} /> Solicitud enviada</p>
+              <button
+                className="rk-btn rk-btn--primary rk-btn--wide"
+                onClick={() => navigate('/')}
+                type="button"
+              >
+                Entrar a VINCCO
+              </button>
+            </>
           ) : (
             <button
               className="rk-btn rk-btn--primary rk-btn--wide"
-              onClick={handleRequestVerification}
+              onClick={abrirVerificacionKYC}
               type="button"
             >
               Solicitar verificación
@@ -1069,7 +1323,7 @@ export default function Register() {
             onClick={handleContinueAsGuest}
             type="button"
           >
-            Continuar como invitado
+            Continuar sin verificación
           </button>
           <button
             className="rk-btn rk-btn--outline"
@@ -1077,38 +1331,6 @@ export default function Register() {
             type="button"
             style={{ maxWidth: 320 }}
           >
-            Anterior
-          </button>
-        </div>
-        <p className="rk-footer">
-          ¿Ya tienes una cuenta?{' '}
-          <button className="rk-link" onClick={() => navigate('/login')}>
-            Inicia sesión
-          </button>
-        </p>
-      </div>
-    </div>
-  )
-
-  const renderConfirmation = () => (
-    <div className="rk-step3">
-      <div className="rk-step3-bg" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/register-negocio.jpg)` }} />
-      <div className="rk-step3-overlay">
-        <img src={VINCCO_LOGO} alt="VINCCO" className="rk-step3-logo rk-step3-logo--lg" />
-        <div className={`rk-step3-body ${animClass}`} key={`s3${direction}`}>
-          <h1 className="rk-step3-title">Bienvenido a VINCCO</h1>
-          <p className="rk-step3-msg">
-            Tu cuenta ha sido creada exitosamente y ya puedes iniciar sesión.
-          </p>
-        </div>
-        <div className="rk-step3-actions">
-          <button
-            className="rk-btn rk-btn--primary rk-btn--wide"
-            onClick={() => { setUserType(accountType); navigate('/login') }}
-          >
-            Iniciar Sesión
-          </button>
-          <button className="rk-btn rk-btn--outline" onClick={prevStep}>
             Anterior
           </button>
         </div>
@@ -1175,18 +1397,36 @@ export default function Register() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.05 }}
         >
+          {modoSucursal && (
+            <button
+              type="button"
+              className="rk-close"
+              onClick={() => navigate('/perfil')}
+              aria-label="Salir del formulario"
+            >
+              <Icon name="x" size={18} />
+            </button>
+          )}
           <img src={VINCCO_LOGO} alt="VINCCO" className="rk-logo-img" />
           <div className={`rk-step ${animClass}`} key={`s${direction}${step}`}>
             {renderNegocioStep()}
           </div>
           <div className="rk-progress">
             <span className="rk-progress-text">
-              Paso {step + 1} de {BUSINESS_TOTAL_STEPS} &mdash; {BUSINESS_STEP_LABELS[step]}
+              Paso {modoSucursal ? step - PASO_INICIAL_SUCURSAL + 1 : step + 1} de{' '}
+              {modoSucursal ? BUSINESS_TOTAL_STEPS - PASO_INICIAL_SUCURSAL : BUSINESS_TOTAL_STEPS}
+              &mdash; {BUSINESS_STEP_LABELS[step]}
             </span>
             <div className="rk-dots">
-              {Array.from({ length: BUSINESS_TOTAL_STEPS }, (_, i) => (
-                <span key={i} className={`rk-dot ${i <= step ? 'rk-dot--on' : ''}`} />
-              ))}
+              {Array.from(
+                { length: modoSucursal ? BUSINESS_TOTAL_STEPS - PASO_INICIAL_SUCURSAL : BUSINESS_TOTAL_STEPS },
+                (_, i) => (
+                  <span
+                    key={i}
+                    className={`rk-dot ${i <= (modoSucursal ? step - PASO_INICIAL_SUCURSAL : step) ? 'rk-dot--on' : ''}`}
+                  />
+                )
+              )}
             </div>
           </div>
           <div className="rk-nav">
@@ -1203,15 +1443,17 @@ export default function Register() {
               {getNavButtonLabel()}
             </button>
           </div>
-          <p className="rk-footer">
-            ¿Ya tienes una cuenta?{' '}
-            <button className="rk-link" onClick={() => navigate('/login')}>
-              Inicia sesión
-            </button>
-          </p>
+          {!modoSucursal && (
+            <p className="rk-footer">
+              ¿Ya tienes una cuenta?{' '}
+              <button className="rk-link" onClick={() => navigate('/login')}>
+                Inicia sesión
+              </button>
+            </p>
+          )}
         </motion.div>
       ) : step === 7 ? (
-        renderConfirmation()
+        renderClientWelcome()
       ) : (
         <motion.div
           className="rk-card"

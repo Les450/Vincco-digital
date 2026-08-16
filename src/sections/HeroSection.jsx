@@ -2,9 +2,53 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import Icon from '../components/icons/Icon'
 
+const VINCCO_LOGO = `${process.env.PUBLIC_URL}/assets/logos/vincco-logo.png`
+
 const fadeUp = {
   initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
+}
+
+// Posiciones en porcentaje sobre el contenedor cuadrado del padrón.
+// Las líneas del SVG y las fichas HTML comparten estas mismas
+// coordenadas para quedar alineadas en cualquier tamaño de pantalla.
+const HUB = { x: 50, y: 54 }
+const NODES = [
+  { key: 'consumidor', x: 50, y: 10, variant: 'gold', icon: 'wallet', label: 'Consumidor', sub: 'Acumula puntos' },
+  { key: 'comercio', x: 12, y: 90, variant: 'orange', icon: 'store', label: 'Comercio', sub: 'Vende y fideliza' },
+  { key: 'proveedor', x: 88, y: 90, variant: 'teal', icon: 'truck', label: 'Proveedor', sub: 'Surte pedidos' },
+]
+
+function PadronDiagram() {
+  return (
+    <div className="vc-hub">
+      <div className="vc-hub-ring" />
+      <svg className="vc-hub-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        {NODES.map((n) => (
+          <line key={n.key} x1={HUB.x} y1={HUB.y} x2={n.x} y2={n.y} />
+        ))}
+      </svg>
+
+      <div className="vc-hub-center">
+        <img src={VINCCO_LOGO} alt="" className="vc-hub-center-img" />
+        <span className="vc-hub-center-word">Vincco</span>
+      </div>
+
+      {NODES.map((n) => (
+        <div
+          key={n.key}
+          className={`vc-hub-node vc-hub-node--${n.variant}`}
+          style={{ top: `${n.y}%`, left: `${n.x}%` }}
+        >
+          <span className="vc-hub-node-icon"><Icon name={n.icon} size={16} /></span>
+          <span className="vc-hub-node-label">
+            <strong>{n.label}</strong>
+            <span>{n.sub}</span>
+          </span>
+        </div>
+      ))}
+    </div>
+  )
 }
 
 export default function HeroSection() {
@@ -12,114 +56,48 @@ export default function HeroSection() {
 
   return (
     <section className="vc-hero">
-      <div className="vc-hero-bg">
-        <div className="vc-hero-grid" />
-        <div className="vc-hero-glow vc-animate-pulse" />
-        <div className="vc-hero-glow-2" />
-      </div>
-
       <div className="vc-hero-container">
         <motion.div
           className="vc-hero-content"
           initial="initial"
           animate="animate"
-          variants={{
-            animate: { transition: { staggerChildren: 0.1 } },
-          }}
+          variants={{ animate: { transition: { staggerChildren: 0.1 } } }}
         >
           <motion.div variants={fadeUp} className="vc-hero-badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-            </svg>
-            Ecosistema Digital de Integración Económica
+            <span className="vc-hero-badge-dot">V</span>
+            Red económica de Nueva Guinea, Nicaragua
           </motion.div>
 
           <motion.h1 variants={fadeUp} className="vc-hero-title">
-            Impulsamos la economía local con <span>tecnología</span>
+            Un solo padrón digital para <em>la economía local</em>
           </motion.h1>
 
           <motion.p variants={fadeUp} className="vc-hero-subtitle">
-            Conectamos consumidores, negocios y proveedores en un ecosistema
-            de puntos, fidelización, inventario inteligente y cotizaciones en tiempo real.
+            Vincco conecta a consumidores, comercios y proveedores de la zona
+            en un mismo registro: puntos que se acumulan, inventario que se
+            controla y cotizaciones que se resuelven en minutos.
           </motion.p>
 
           <motion.div variants={fadeUp} className="vc-hero-actions">
             <button className="vc-btn vc-btn-primary" onClick={() => navigate('/register')}>
-              Empieza gratis
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
+              Registrá tu negocio
+              <Icon name="arrow-right" size={16} />
             </button>
-            <button className="vc-btn vc-btn-secondary" onClick={() => navigate('/register')}>
-              Registrar negocio
+            <button
+              className="vc-btn vc-btn-secondary"
+              onClick={() => document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              Ver cómo funciona
             </button>
           </motion.div>
         </motion.div>
 
         <motion.div
-          className="vc-hero-visual"
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7, delay: 0.25, ease: 'easeOut' }}
         >
-          <div className="vc-hero-dashboard">
-            <div className="vc-hero-dash-header">
-              <div className="vc-hero-dash-dots">
-                <span className="vc-hero-dash-dot" />
-                <span className="vc-hero-dash-dot" />
-                <span className="vc-hero-dash-dot" />
-              </div>
-              <span className="vc-hero-dash-title">Panel Vincco</span>
-            </div>
-
-            <div className="vc-hero-dash-body">
-              <div className="vc-dash-card vc-animate-float">
-                <div className="vc-dash-card-icon"><Icon name="star" filled size={20} /></div>
-                <div className="vc-dash-card-label">Puntos</div>
-                <div className="vc-dash-card-value">2,450</div>
-              </div>
-
-              <div className="vc-dash-card vc-animate-float-2">
-                <div className="vc-dash-card-icon"><Icon name="bar-chart-2" size={20} /></div>
-                <div className="vc-dash-card-label">Pedidos</div>
-                <div className="vc-dash-card-value">128</div>
-              </div>
-
-              <div className="vc-dash-card vc-animate-float-3">
-                <div className="vc-dash-card-icon"><Icon name="file-text" size={20} /></div>
-                <div className="vc-dash-card-label">Cotizaciones</div>
-                <div className="vc-dash-card-value">34</div>
-              </div>
-
-              <div className="vc-dash-card vc-animate-float">
-                <div className="vc-dash-card-icon"><Icon name="bell" size={20} /></div>
-                <div className="vc-dash-card-label">Notificaciones</div>
-                <div className="vc-dash-card-value">6</div>
-              </div>
-
-              <div className="vc-dash-card vc-dash-card--wide vc-dash-card--row vc-animate-float-2">
-                <div className="vc-dash-avatar">JD</div>
-                <div style={{ flex: 1 }}>
-                  <div className="vc-dash-card-label">Ranking</div>
-                  <div className="vc-rank">
-                    <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>#3 de 150 negocios</span>
-                  </div>
-                </div>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2">
-                  <polyline points="18 15 12 9 6 15" />
-                </svg>
-              </div>
-
-              <div className="vc-dash-card vc-dash-card--wide vc-animate-float-3">
-                <div className="vc-dash-card-label">Reseñas recientes</div>
-                <div style={{ display: 'flex', gap: 4, marginTop: 6 }}>
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Icon key={i} name="star" filled size={14} style={{ color: '#fea02f' }} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          <PadronDiagram />
         </motion.div>
       </div>
     </section>

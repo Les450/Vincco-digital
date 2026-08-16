@@ -6,7 +6,6 @@ export default function CTASection() {
 
   return (
     <section className="vc-cta">
-      <div className="vc-cta-glow vc-animate-pulse" />
       <div className="vc-cta-content">
         <motion.h2
           className="vc-cta-title"
@@ -34,13 +33,13 @@ export default function CTASection() {
           transition={{ delay: 0.2 }}
         >
           <button className="vc-btn vc-btn-primary" onClick={() => navigate('/register')}>
-            Registrar negocio
+            Registrá tu negocio
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </button>
-          <button className="vc-btn vc-btn-secondary" onClick={() => navigate('/login')} style={{ borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)' }}>
-            Crear cuenta gratis
+          <button className="vc-btn vc-btn-secondary" onClick={() => navigate('/login')} style={{ borderColor: 'rgba(255,255,255,0.22)', color: 'rgba(255,255,255,0.85)' }}>
+            Creá tu cuenta
           </button>
         </motion.div>
       </div>

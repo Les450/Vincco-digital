@@ -62,7 +62,8 @@ const PROPIAS = [
   'notificacion', 'notificaciones', 'calendario', 'menu', 'pantalla', 'app',
   'aplicacion', 'cordoba', 'cordobas', 'precio', 'precios', 'producto',
   'productos', 'cliente', 'clientes', 'vitrina', 'cobertura', 'sesion',
-  'contrasena',
+  'contrasena', 'verificado', 'verificada', 'verificacion', 'verificar',
+  'verificarme', 'formalizado', 'formalizar',
 ]
 
 function contieneAlguna(textoN, lista) {

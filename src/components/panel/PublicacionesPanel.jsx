@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import Icon from '../icons/Icon'
+import useStore from '../../store/puntos_usestore'
 import { TIPOS_PUBLICACION } from '../../data/publicationTypes'
+import { useCategoriasInventario } from '../../data/categoriasInventario'
+import { agregarInventarioDesdePublicacion, eliminarInventarioDePublicacion, claveInventario } from '../../data/inventario'
+import ModalAccionBloqueada from '../verificacion/ModalAccionBloqueada'
 
 const STORAGE_KEYS = Object.fromEntries(TIPOS_PUBLICACION.map((t) => [t.id, t.storageKey]))
 
@@ -35,9 +39,20 @@ function ImagenUpload({ form, setForm, fileInputRef, handleImage, icon, texto, s
   )
 }
 
-function FormularioPromocion({ form, setForm, fileInputRef, handleImage }) {
+function FormularioPromocion({ form, setForm, fileInputRef, handleImage, categorias }) {
   return (
     <>
+      <div className="panel-form-grupo">
+        <label className="panel-form-label">Tipo de promoción</label>
+        <select
+          className="panel-form-select"
+          value={form.tipo}
+          onChange={(e) => setForm({ ...form, tipo: e.target.value })}
+        >
+          <option value="normal">Normal</option>
+          <option value="limitada">Limitada</option>
+        </select>
+      </div>
       <ImagenUpload form={form} setForm={setForm} fileInputRef={fileInputRef} handleImage={handleImage} icon="flame" texto="Subí la imagen de tu promoción" sub="Recomendado: 1200×600px" modificador="promo" />
       <div className="panel-form-row">
         <div className="panel-form-grupo">
@@ -47,6 +62,18 @@ function FormularioPromocion({ form, setForm, fileInputRef, handleImage }) {
         <div className="panel-form-grupo">
           <label className="panel-form-label">% Descuento</label>
           <input className="panel-form-input" type="number" min="0" max="100" placeholder="Ej: 50" value={form.descuento} onChange={(e) => setForm({ ...form, descuento: e.target.value })} />
+        </div>
+      </div>
+      <div className="panel-form-row">
+        <div className="panel-form-grupo">
+          <label className="panel-form-label">Categoría</label>
+          <select className="panel-form-select" value={form.categoriaPromocion} onChange={(e) => setForm({ ...form, categoriaPromocion: e.target.value })}>
+            {categorias.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+        <div className="panel-form-grupo">
+          <label className="panel-form-label">Unidades disponibles</label>
+          <input className="panel-form-input" type="number" min="0" placeholder="Ej: 20" value={form.unidades} onChange={(e) => setForm({ ...form, unidades: e.target.value })} />
         </div>
       </div>
       <div className="panel-form-grupo">
@@ -71,7 +98,7 @@ function FormularioPromocion({ form, setForm, fileInputRef, handleImage }) {
   )
 }
 
-function FormularioProducto({ form, setForm, fileInputRef, handleImage }) {
+function FormularioProducto({ form, setForm, fileInputRef, handleImage, categorias }) {
   return (
     <>
       <ImagenUpload form={form} setForm={setForm} fileInputRef={fileInputRef} handleImage={handleImage} icon="package" texto="Subí la imagen del producto" sub="Recomendado: 800×800px" modificador="producto" />
@@ -93,7 +120,7 @@ function FormularioProducto({ form, setForm, fileInputRef, handleImage }) {
         <div className="panel-form-grupo">
           <label className="panel-form-label">Categoría</label>
           <select className="panel-form-select" value={form.categoriaProducto} onChange={(e) => setForm({ ...form, categoriaProducto: e.target.value })}>
-            {['Herramientas', 'Materiales', 'Alimentos', 'Limpieza', 'Electrónicos', 'Ropa', 'Otros'].map(c => <option key={c} value={c}>{c}</option>)}
+            {categorias.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
         <div className="panel-form-grupo">
@@ -105,80 +132,40 @@ function FormularioProducto({ form, setForm, fileInputRef, handleImage }) {
   )
 }
 
-function FormularioLimitada({ form, setForm, fileInputRef, handleImage }) {
-  return (
-    <>
-      <ImagenUpload form={form} setForm={setForm} fileInputRef={fileInputRef} handleImage={handleImage} icon="zap" texto="Subí la imagen de la oferta limitada" sub="Recomendado: 1200×600px" modificador="limitada" />
-      <div className="panel-form-row">
-        <div className="panel-form-grupo">
-          <label className="panel-form-label">Título</label>
-          <input className="panel-form-input" type="text" placeholder="Ej: Semana de la Moda" value={form.titulo} onChange={(e) => setForm({ ...form, titulo: e.target.value })} />
-        </div>
-        <div className="panel-form-grupo">
-          <label className="panel-form-label">Unidades disponibles</label>
-          <input className="panel-form-input" type="number" min="0" placeholder="Ej: 20" value={form.unidades} onChange={(e) => setForm({ ...form, unidades: e.target.value })} />
-        </div>
-      </div>
-      <div className="panel-form-grupo">
-        <label className="panel-form-label">Descripción</label>
-        <textarea className="panel-form-textarea" rows={2} placeholder="Describí tu oferta limitada..." value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} />
-      </div>
-      <div className="panel-form-row">
-        <div className="panel-form-grupo">
-          <label className="panel-form-label">Válido hasta</label>
-          <input className="panel-form-input" type="date" value={form.validoHasta} onChange={(e) => setForm({ ...form, validoHasta: e.target.value })} />
-        </div>
-        <div className="panel-form-grupo">
-          <label className="panel-form-label">Descuento</label>
-          <input className="panel-form-input" type="text" placeholder="Ej: 30% OFF / 2x1" value={form.descuento} onChange={(e) => setForm({ ...form, descuento: e.target.value })} />
-        </div>
-      </div>
-    </>
-  )
-}
-
-function FormularioDestacada({ form, setForm, fileInputRef, handleImage }) {
-  return (
-    <>
-      <ImagenUpload form={form} setForm={setForm} fileInputRef={fileInputRef} handleImage={handleImage} icon="trending-up" texto="Subí la imagen de la publicación destacada" sub="Recomendado: 1200×600px" modificador="destacada" />
-      <div className="panel-form-row">
-        <div className="panel-form-grupo">
-          <label className="panel-form-label">Título</label>
-          <input className="panel-form-input" type="text" placeholder="Ej: Nueva línea de temporada" value={form.titulo} onChange={(e) => setForm({ ...form, titulo: e.target.value })} />
-        </div>
-        <div className="panel-form-grupo">
-          <label className="panel-form-label">Categoría</label>
-          <input className="panel-form-input" type="text" placeholder="Ej: Restaurante, Ropa..." value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })} />
-        </div>
-      </div>
-      <div className="panel-form-grupo">
-        <label className="panel-form-label">Descripción</label>
-        <textarea className="panel-form-textarea" rows={2} placeholder="Contá por qué debería destacarse..." value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} />
-      </div>
-    </>
-  )
-}
-
 const FORMULARIOS = {
   promocion: FormularioPromocion,
   producto: FormularioProducto,
-  limitada: FormularioLimitada,
-  destacada: FormularioDestacada,
 }
 
 const EMPTY_FORM = {
-  promocion: { titulo: '', descripcion: '', imagen: null, descuento: '', validoHasta: '', terminos: '', puntos: '' },
+  promocion: { tipo: 'normal', titulo: '', descripcion: '', imagen: null, descuento: '', validoHasta: '', terminos: '', puntos: '', unidades: '', categoriaPromocion: 'Otros' },
   producto: { titulo: '', descripcion: '', imagen: null, precio: '', categoriaProducto: 'Herramientas', stock: '' },
-  limitada: { titulo: '', descripcion: '', imagen: null, descuento: '', validoHasta: '', unidades: '' },
-  destacada: { titulo: '', descripcion: '', imagen: null, categoria: '' },
 }
 
 export default function PublicacionesPanel() {
+  const userType = useStore((s) => s.userType)
+  const sucursalId = useStore((s) => s.sucursalActiva[s.userType])
+  const inventarioClave = claveInventario(sucursalId)
+  // Publicar (crear una promoción o un producto nuevo) requiere
+  // cuenta verificada. Ver, editar y borrar lo que ya está
+  // publicado no se toca: la regla es sobre publicar, no sobre
+  // administrar lo que ya es público.
+  const verificado = useStore((s) => s.estadosVerificacion[userType]) === 'aprobada'
+  const [bloqueoAbierto, setBloqueoAbierto] = useState(false)
+
   const [tipoActivo, setTipoActivo] = useState(TIPOS_PUBLICACION[0].id)
-  const [lista, setLista] = useStorage(STORAGE_KEYS[tipoActivo], [])
+  // Cada sucursal guarda sus publicaciones aparte ("pn_promociones:n1"),
+  // igual que el inventario. Si el dueño cambia de sucursal, la lista
+  // recarga sola porque la clave cambia.
+  const clavePublicaciones = sucursalId
+    ? `${STORAGE_KEYS[tipoActivo]}:${sucursalId}`
+    : STORAGE_KEYS[tipoActivo]
+  const [lista, setLista] = useStorage(clavePublicaciones, [])
+  const [filtroPromo, setFiltroPromo] = useState('todas')
   const [mostrarForm, setMostrarForm] = useState(false)
   const [editando, setEditando] = useState(null)
   const [detallePub, setDetallePub] = useState(null)
+  const [categorias] = useCategoriasInventario()
   const fileInputRef = useRef(null)
   const [form, setForm] = useState(EMPTY_FORM[tipoActivo])
 
@@ -186,14 +173,15 @@ export default function PublicacionesPanel() {
     setForm(EMPTY_FORM[tipoActivo])
     setMostrarForm(false)
     setEditando(null)
+    setFiltroPromo('todas')
   }, [tipoActivo])
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS[tipoActivo])
+    const saved = localStorage.getItem(clavePublicaciones)
     if (saved) { try { setLista(JSON.parse(saved)) } catch {} }
     else setLista([])
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tipoActivo])
+  }, [clavePublicaciones])
 
   const handleImage = (e) => {
     const file = e.target.files[0]
@@ -207,13 +195,14 @@ export default function PublicacionesPanel() {
     e.preventDefault()
     if (!form.titulo) return
 
-    const item = { id: Date.now(), tipo: tipoActivo, fecha: new Date().toISOString().slice(0, 10), ...form }
+    const item = { id: editando || Date.now(), tipo: tipoActivo, fecha: new Date().toISOString().slice(0, 10), ...form }
 
     if (editando) {
       setLista((prev) => prev.map((p) => p.id === editando ? { ...p, ...item } : p))
     } else {
       setLista((prev) => [item, ...prev])
     }
+    agregarInventarioDesdePublicacion({ ...item, tipoPublicacion: tipoActivo, tipoPromocion: form.tipo }, inventarioClave)
     setMostrarForm(false)
     setEditando(null)
     setForm(EMPTY_FORM[tipoActivo])
@@ -221,6 +210,14 @@ export default function PublicacionesPanel() {
 
   const eliminar = (id) => {
     setLista((prev) => prev.filter((p) => p.id !== id))
+    eliminarInventarioDePublicacion(id, inventarioClave)
+  }
+
+  const abrirNuevo = () => {
+    if (!verificado) { setBloqueoAbierto(true); return }
+    setEditando(null)
+    setForm(EMPTY_FORM[tipoActivo])
+    setMostrarForm(true)
   }
 
   const abrirEditar = (item) => {
@@ -232,6 +229,10 @@ export default function PublicacionesPanel() {
 
   const tipoInfo = TIPOS_PUBLICACION.find((t) => t.id === tipoActivo)
   const Formulario = FORMULARIOS[tipoActivo]
+
+  const listaFiltrada = tipoActivo === 'promocion' && filtroPromo !== 'todas'
+    ? lista.filter((p) => p.tipo === filtroPromo)
+    : lista
 
   return (
     <div className="panel-seccion">
@@ -263,11 +264,31 @@ export default function PublicacionesPanel() {
       <div className="panel-pub-bar">
         <span className="panel-pub-bar-info">
           <Icon name={tipoInfo.icon} size={16} style={{ color: tipoInfo.color }} />
-          {' '}{tipoInfo.label} · {lista.length} publicaciones
+          {' '}{tipoInfo.label} · {listaFiltrada.length} {listaFiltrada.length === 1 ? 'publicación' : 'publicaciones'}
+          {tipoActivo === 'promocion' && filtroPromo !== 'todas' && (
+            <span className="panel-pub-bar-total">de {lista.length} en total</span>
+          )}
         </span>
-        <button className="panel-btn panel-btn-primary" onClick={() => { setEditando(null); setForm(EMPTY_FORM[tipoActivo]); setMostrarForm(true) }}>
-          + Nueva
-        </button>
+        <div className="panel-pub-bar-acciones">
+          {tipoActivo === 'promocion' && (
+            <div className="panel-pub-filtro">
+              <Icon name="chevron-down" size={14} className="panel-pub-filtro-flecha" />
+              <select
+                className="panel-form-select panel-pub-filtro-select"
+                value={filtroPromo}
+                onChange={(e) => setFiltroPromo(e.target.value)}
+                aria-label="Filtrar promociones"
+              >
+                <option value="todas">Todas</option>
+                <option value="normal">Promoción normal</option>
+                <option value="limitada">Promoción limitada</option>
+              </select>
+            </div>
+          )}
+          <button className="panel-btn panel-btn-primary" onClick={abrirNuevo}>
+            + Nueva
+          </button>
+        </div>
       </div>
 
       {mostrarForm && (
@@ -279,7 +300,7 @@ export default function PublicacionesPanel() {
             <h3 className="panel-form-titulo">{editando ? 'Editar' : 'Nueva'} publicación</h3>
           </div>
 
-          <Formulario form={form} setForm={setForm} fileInputRef={fileInputRef} handleImage={handleImage} />
+          <Formulario form={form} setForm={setForm} fileInputRef={fileInputRef} handleImage={handleImage} categorias={categorias} />
 
           <div className="panel-form-acciones">
             <button type="button" className="panel-btn panel-btn-secundario" onClick={() => { setMostrarForm(false); setEditando(null) }}>Cancelar</button>
@@ -288,17 +309,21 @@ export default function PublicacionesPanel() {
         </form>
       )}
 
-      {lista.length === 0 && !mostrarForm ? (
+      {listaFiltrada.length === 0 && !mostrarForm ? (
         <div className="panel-vacio">
           <div className="panel-vacio-icono"><Icon name={tipoInfo.icon} size={40} style={{ color: tipoInfo.color }} /></div>
-          <p>No tenés {tipoInfo.label.toLowerCase()} aún.</p>
-          <button className="panel-btn panel-btn-primary" onClick={() => { setEditando(null); setForm(EMPTY_FORM[tipoActivo]); setMostrarForm(true) }}>
+          {tipoActivo === 'promocion' && filtroPromo !== 'todas' && lista.length > 0 ? (
+            <p>No tenés promociones {filtroPromo === 'limitada' ? 'limitadas' : 'normales'} aún.</p>
+          ) : (
+            <p>No tenés {tipoInfo.label.toLowerCase()} aún.</p>
+          )}
+          <button className="panel-btn panel-btn-primary" onClick={abrirNuevo}>
             Crear {tipoInfo.label.slice(0, -1)}
           </button>
         </div>
       ) : (
         <div className="panel-pub-grid">
-          {[...lista].sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).map((item) => (
+          {[...listaFiltrada].sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).map((item) => (
             <div key={item.id} className="panel-pub-card" style={{ '--card-accent': tipoInfo.color }}>
               <div className="panel-pub-card-imagen">
                 {item.imagen ? (
@@ -319,24 +344,15 @@ export default function PublicacionesPanel() {
                 {tipoActivo === 'promocion' && item.descuento && (
                   <div className="panel-pub-card-promo">
                     <span className="panel-pub-card-badge">-{item.descuento}%</span>
-                    {item.puntos && <span className="panel-pub-card-pts"><Icon name="star" filled size={11} /> {item.puntos} pts</span>}
+                    {item.tipo === 'limitada'
+                      ? item.unidades && <span className="panel-pub-card-stock">Solo {item.unidades} uds.</span>
+                      : item.puntos && <span className="panel-pub-card-pts"><Icon name="star" filled size={11} /> {item.puntos} pts</span>}
                   </div>
                 )}
                 {tipoActivo === 'producto' && item.precio && (
                   <div className="panel-pub-card-promo">
                     <span className="panel-pub-card-precio">C${item.precio}</span>
                     {item.stock && <span className="panel-pub-card-stock">{item.stock} en stock</span>}
-                  </div>
-                )}
-                {tipoActivo === 'limitada' && (
-                  <div className="panel-pub-card-promo">
-                    {item.descuento && <span className="panel-pub-card-badge">{item.descuento}</span>}
-                    {item.unidades && <span className="panel-pub-card-stock">Solo {item.unidades} uds.</span>}
-                  </div>
-                )}
-                {tipoActivo === 'destacada' && item.categoria && (
-                  <div className="panel-pub-card-promo">
-                    <span className="panel-pub-card-badge">{item.categoria}</span>
                   </div>
                 )}
 
@@ -377,7 +393,9 @@ export default function PublicacionesPanel() {
               {tipoActivo === 'promocion' && (
                 <div className="panel-pub-detail-promo">
                   {detallePub.descuento && <span className="panel-pub-detail-badge">-{detallePub.descuento}% OFF</span>}
-                  {detallePub.puntos && <span className="panel-pub-detail-pts">{detallePub.puntos} pts por compra</span>}
+                  {detallePub.tipo === 'limitada'
+                    ? detallePub.unidades && <span className="panel-pub-detail-stock">Solo {detallePub.unidades} unidades</span>
+                    : detallePub.puntos && <span className="panel-pub-detail-pts">{detallePub.puntos} pts por compra</span>}
                   {detallePub.validoHasta && <span className="panel-pub-detail-fecha">Válido hasta {detallePub.validoHasta}</span>}
                 </div>
               )}
@@ -387,18 +405,6 @@ export default function PublicacionesPanel() {
                   {detallePub.stock && <span className="panel-pub-detail-stock">{detallePub.stock} unidades disponibles</span>}
                 </div>
               )}
-              {tipoActivo === 'limitada' && (
-                <div className="panel-pub-detail-promo">
-                  {detallePub.descuento && <span className="panel-pub-detail-badge">{detallePub.descuento}</span>}
-                  {detallePub.unidades && <span className="panel-pub-detail-stock">Solo {detallePub.unidades} unidades</span>}
-                  {detallePub.validoHasta && <span className="panel-pub-detail-fecha">Hasta {detallePub.validoHasta}</span>}
-                </div>
-              )}
-              {tipoActivo === 'destacada' && detallePub.categoria && (
-                <div className="panel-pub-detail-promo">
-                  <span className="panel-pub-detail-badge">{detallePub.categoria}</span>
-                </div>
-              )}
 
               <div className="panel-card-meta" style={{ marginTop: 16 }}>
                 <span><Icon name="calendar" size={13} /> {detallePub.fecha}</span>
@@ -406,6 +412,14 @@ export default function PublicacionesPanel() {
             </div>
           </div>
         </div>
+      )}
+
+      {bloqueoAbierto && (
+        <ModalAccionBloqueada
+          rol={userType}
+          mensaje={`Para publicar en Vincco necesitás verificar ${userType === 'proveedor' ? 'tu empresa' : 'tu negocio'}.`}
+          onCerrar={() => setBloqueoAbierto(false)}
+        />
       )}
     </div>
   )

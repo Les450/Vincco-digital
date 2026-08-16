@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Icon from '../icons/Icon'
+import useStore from '../../store/puntos_usestore'
 
 // Piezas compartidas por los tres perfiles (cliente, negocio y
 // proveedor). Cada perfil arma su propia pantalla combinandolas,
@@ -209,6 +210,62 @@ export function PerfilHero({
 
       {acciones && <div className="pf-hero-acciones">{acciones}</div>}
     </header>
+  )
+}
+
+/* ── Verificación ────────────────────────────────────────── */
+
+// Aviso del estado de verificación. No se dibuja si ya está
+// aprobada: en ese caso alcanza con el chip "Verificado" del
+// encabezado. Es la misma oferta que la pantalla de "Felicidades,
+// ya eres parte de VINCCO" del registro, para quien la pospuso.
+//
+// El banner ofrece completar el expediente KYC (Ley 977) en el
+// wizard de 4 pasos de VerificacionKYC: a diferencia del RUC solo,
+// ese expediente aplica a los tres roles. Quien ya lo envió ve el
+// estado "en revisión" acá mismo.
+export function VerificacionBanner({ rol, estado, texto }) {
+  const abrirKYC = useStore((s) => s.abrirKYC)
+  const marcarVerificadoDemo = useStore((s) => s.marcarVerificadoDemo)
+
+  if (estado === 'aprobada') return null
+
+  const pendiente = estado === 'pendiente'
+
+  return (
+    <div className={`pf-verif ${pendiente ? 'pf-verif--pendiente' : ''}`}>
+      <span className="pf-verif-icono" aria-hidden="true">
+        <Icon name={pendiente ? 'help-circle' : 'insignia-verificado'} size={18} />
+      </span>
+      <div className="pf-verif-texto">
+        <strong>{pendiente ? 'Tu verificación está en revisión' : 'Todavía no solicitaste la verificación'}</strong>
+        <p>
+          {pendiente
+            ? 'El equipo de Vincco la está revisando. Te llega la confirmación a tu correo electrónico apenas quede aprobada.'
+            : texto}
+        </p>
+      </div>
+      {!pendiente && (
+        <button
+          type="button"
+          className="pf-btn pf-btn--linea pf-verif-btn"
+          onClick={() => abrirKYC(rol)}
+        >
+          Solicitar verificación
+        </button>
+      )}
+      {/* Sin backend no hay equipo real que apruebe la solicitud: este
+          botón simula esa aprobación para seguir probando la cuenta
+          ya verificada, sin tocar localStorage a mano. */}
+      <button
+        type="button"
+        className="pf-btn pf-btn--linea pf-verif-btn"
+        onClick={() => marcarVerificadoDemo(rol)}
+        title="Solo para pruebas: aprueba la verificación sin revisión real"
+      >
+        Marcar verificado (demo)
+      </button>
+    </div>
   )
 }
 

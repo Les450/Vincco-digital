@@ -23,6 +23,50 @@ function armarSugerencias(fragmentos) {
   return fragmentos.slice(1, 4).map((f) => f.entrada.titulo)
 }
 
+/* Convierte UNA entrada ya resuelta (por búsqueda o por id) en la
+   Respuesta que ve la interfaz. La usan responder() y
+   responderPorEntrada(): las dos formas de llegar a una entrada
+   terminan armando la respuesta exactamente igual.
+
+   origenMenu: el id del menú del que salió esta entrada, si vino de
+   tocar una opción. Se lo lleva la respuesta como "volverA" para que
+   la interfaz pueda dibujar el botón de volver. */
+function armarRespuestaDeEntrada(entrada, { sugerencias = [], origenMenu = null } = {}) {
+  // Menú: no se contesta de una, se ofrecen las ramas como botones.
+  if (entrada.tipo === 'menu') {
+    return crearRespuesta({
+      texto: entrada.resumen,
+      opciones: entrada.opciones,
+      fuente: entrada.id,
+    })
+  }
+
+  // La función está documentada pero todavía no existe en la app.
+  // Se dice claramente en vez de explicar pasos imposibles.
+  if (entrada.pendiente) {
+    return crearRespuesta({
+      texto: `${entrada.resumen} Es una función que todavía no está disponible en Vincco.`,
+      nota: entrada.nota,
+      ruta: entrada.ruta,
+      rutaLabel: entrada.rutaLabel,
+      sugerencias,
+      volverA: origenMenu,
+      fuente: entrada.id,
+    })
+  }
+
+  return crearRespuesta({
+    texto: entrada.resumen,
+    pasos: entrada.pasos?.length ? entrada.pasos : null,
+    ruta: entrada.ruta || null,
+    rutaLabel: entrada.rutaLabel || null,
+    nota: entrada.nota || null,
+    sugerencias,
+    volverA: origenMenu,
+    fuente: entrada.id,
+  })
+}
+
 export async function responder(pregunta, contexto) {
   const { fragmentos = [] } = contexto
 
@@ -39,30 +83,25 @@ export async function responder(pregunta, contexto) {
   }
 
   const { entrada } = fragmentos[0]
+  return armarRespuestaDeEntrada(entrada, { sugerencias: armarSugerencias(fragmentos) })
+}
 
-  // La función está documentada pero todavía no existe en la app.
-  // Se dice claramente en vez de explicar pasos imposibles.
-  if (entrada.pendiente) {
+/* Entra directo a UNA entrada ya elegida, sin buscar: así llega
+   Kiara cuando el usuario toca una opción de un menú en vez de
+   escribir. Puede devolver otro menú (submenú) o una respuesta
+   final; a la interfaz le da igual, arma lo que le llegue. */
+export async function responderPorEntrada(entrada, contexto = {}) {
+  const { origenMenu = null } = contexto
+
+  if (!entrada) {
     return crearRespuesta({
-      texto: `${entrada.resumen} Es una función que todavía no está disponible en Vincco.`,
-      nota: entrada.nota,
-      ruta: entrada.ruta,
-      rutaLabel: entrada.rutaLabel,
-      sugerencias: armarSugerencias(fragmentos),
-      fuente: entrada.id,
+      texto: 'Esa opción ya no está disponible. Preguntame de nuevo y te ayudo.',
+      seguro: false,
     })
   }
 
-  return crearRespuesta({
-    texto: entrada.resumen,
-    pasos: entrada.pasos?.length ? entrada.pasos : null,
-    ruta: entrada.ruta || null,
-    rutaLabel: entrada.rutaLabel || null,
-    nota: entrada.nota || null,
-    sugerencias: armarSugerencias(fragmentos),
-    fuente: entrada.id,
-  })
+  return armarRespuestaDeEntrada(entrada, { origenMenu })
 }
 
-const motorLocal = { nombre, responder }
+const motorLocal = { nombre, responder, responderPorEntrada }
 export default motorLocal

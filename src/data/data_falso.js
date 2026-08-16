@@ -13,8 +13,165 @@ export const negocios = [
 ]
 
 export const proveedores = [
-  { id: 1, nombre: "Distribuidora Norte", categoria: "alimentos", rating: 4.7 },
-  { id: 2, nombre: "Materiales La Unión", categoria: "construcción", rating: 4.3 },
+  { id: 1, nombre: "Distribuidora Norte", categoria: "alimentos", rating: 4.7, whatsapp: "+50588442200", ubicacion: "Nueva Guinea, RACCS", color: "#007a7b" },
+  { id: 2, nombre: "Materiales La Unión", categoria: "construcción", rating: 4.3, whatsapp: "+50588773344", ubicacion: "El Rama, RACCS", color: "#c05900" },
+]
+
+/* ── Cotizaciones recibidas ────────────────────────────────────
+   Son las respuestas que los proveedores socios envian al negocio
+   despues de que este les pide precio. El negocio no las crea: las
+   recibe y decide si acepta, rechaza o consulta. El campo "solicitud"
+   recuerda lo que pidio el negocio (ej: "Solicitaste 50 lb de arroz")
+   para que la bandeja tenga contexto de que compra se esta cerrando.
+
+   Estados: 'pendiente' | 'aceptada' | 'rechazada'. El estado 'vencida'
+   no se guarda: se deriva cuando un 'pendiente' supera su fecha vence.
+   ─────────────────────────────────────────────────────────────── */
+export const cotizacionesRecibidas = [
+  {
+    id: 101,
+    numero: 'COT-00125',
+    proveedor: 'Distribuidora Norte',
+    negocio: 'Ferretería Don Chico',
+    fecha: '2026-08-10',
+    vence: '2026-08-24',
+    estado: 'pendiente',
+    solicitud: 'Solicitaste 40 bolsas de cemento gris y varilla',
+    productos: [
+      { nombre: 'Cemento gris 50 kg', cantidad: 40, unidad: 'bolsa', precio: 235 },
+      { nombre: 'Varilla corrugada 3/8"', cantidad: 60, unidad: 'varilla', precio: 85 },
+      { nombre: 'Cautín eléctrico 60W', cantidad: 10, unidad: 'unidad', precio: 320 },
+    ],
+    descuento: 350,
+    envio: 150,
+    entrega: '2 días hábiles',
+    formaPago: 'Contado al recibir',
+    condiciones: 'Precios válidos por 10 días. Pedido mínimo de C$2,000.',
+    motivo: null,
+  },
+  {
+    id: 102,
+    numero: 'COT-00124',
+    proveedor: 'Materiales La Unión',
+    negocio: 'Ferretería Don Chico',
+    fecha: '2026-08-09',
+    vence: '2026-08-23',
+    estado: 'pendiente',
+    solicitud: 'Solicitaste reponer herramienta manual',
+    productos: [
+      { nombre: 'Martillo de uña', cantidad: 12, unidad: 'unidad', precio: 180 },
+      { nombre: 'Cinta métrica 5 m', cantidad: 24, unidad: 'unidad', precio: 60 },
+      { nombre: 'Nivel de burbuja 60 cm', cantidad: 15, unidad: 'unidad', precio: 95 },
+    ],
+    descuento: 0,
+    envio: 100,
+    entrega: '3 días hábiles',
+    formaPago: 'Crédito a 15 días',
+    condiciones: 'Descuento por volumen desde 10 unidades por línea.',
+    motivo: null,
+  },
+  {
+    id: 103,
+    numero: 'COT-00120',
+    proveedor: 'Distribuidora Norte',
+    negocio: 'Ferretería Don Chico',
+    fecha: '2026-08-06',
+    vence: '2026-08-20',
+    estado: 'aceptada',
+    solicitud: 'Solicitaste reabastecimiento de inventario',
+    productos: [
+      { nombre: 'Cemento gris 50 kg', cantidad: 60, unidad: 'bolsa', precio: 235 },
+      { nombre: 'Alambre de amarre', cantidad: 30, unidad: 'rollo', precio: 120 },
+      { nombre: 'Clavos de 2"', cantidad: 20, unidad: 'lb', precio: 45 },
+    ],
+    descuento: 600,
+    envio: 200,
+    entrega: 'Mañana a las 8:00 AM',
+    formaPago: 'Contado al recibir',
+    condiciones: 'El precio incluye traslado hasta tu negocio.',
+    motivo: null,
+  },
+  {
+    id: 104,
+    numero: 'COT-00118',
+    proveedor: 'Materiales La Unión',
+    negocio: 'Ferretería Don Chico',
+    fecha: '2026-08-02',
+    vence: '2026-08-16',
+    estado: 'aceptada',
+    solicitud: 'Solicitaste pintura y accesorios',
+    productos: [
+      { nombre: 'Pintura esmalte 1 gl', cantidad: 12, unidad: 'gl', precio: 180 },
+      { nombre: 'Brocha de 2"', cantidad: 20, unidad: 'unidad', precio: 40 },
+      { nombre: 'Disolvente 1 gl', cantidad: 15, unidad: 'gl', precio: 35 },
+    ],
+    descuento: 0,
+    envio: 0,
+    entrega: 'Retiro en sucursal',
+    formaPago: 'Contado al recibir',
+    condiciones: '',
+    motivo: null,
+  },
+  {
+    id: 105,
+    numero: 'COT-00115',
+    proveedor: 'Distribuidora Norte',
+    negocio: 'Ferretería Don Chico',
+    fecha: '2026-07-28',
+    vence: '2026-08-11',
+    estado: 'rechazada',
+    solicitud: 'Solicitaste cotización de generador',
+    productos: [
+      { nombre: 'Generador 5.5 kVA', cantidad: 1, unidad: 'unidad', precio: 18500 },
+      { nombre: 'Cable THW 12', cantidad: 40, unidad: 'metro', precio: 25 },
+    ],
+    descuento: 500,
+    envio: 300,
+    entrega: '4 días hábiles',
+    formaPago: '50% de anticipo',
+    condiciones: 'Precio por unidad con garantía de 6 meses.',
+    motivo: 'Precio elevado',
+  },
+  {
+    id: 106,
+    numero: 'COT-00112',
+    proveedor: 'Materiales La Unión',
+    negocio: 'Ferretería Don Chico',
+    fecha: '2026-07-25',
+    vence: '2026-08-08',
+    estado: 'rechazada',
+    solicitud: 'Solicitaste bandejas portaherramientas',
+    productos: [
+      { nombre: 'Bandeja portaherramientas', cantidad: 8, unidad: 'unidad', precio: 120 },
+    ],
+    descuento: 0,
+    envio: 50,
+    entrega: '2 días hábiles',
+    formaPago: 'Contado al recibir',
+    condiciones: '',
+    motivo: 'Ya no necesito los productos',
+  },
+  {
+    id: 107,
+    numero: 'COT-00109',
+    proveedor: 'Distribuidora Norte',
+    negocio: 'Ferretería Don Chico',
+    fecha: '2026-07-20',
+    vence: '2026-08-03',
+    estado: 'pendiente',
+    solicitud: 'Solicitaste materiales para obra',
+    productos: [
+      { nombre: 'Cemento gris 50 kg', cantidad: 100, unidad: 'bolsa', precio: 250 },
+      { nombre: 'Arena lavada', cantidad: 200, unidad: 'metro', precio: 18 },
+      { nombre: 'Piedrín', cantidad: 150, unidad: 'metro', precio: 22 },
+    ],
+    descuento: 800,
+    envio: 400,
+    entrega: '4 días hábiles',
+    formaPago: 'Crédito a 15 días',
+    condiciones: 'Cotización sujeta a cambio de precio por la fecha.',
+    motivo: null,
+  },
 ]
 
 export const categorias = [
@@ -106,12 +263,18 @@ export const categoriasNegocioAsociado = [
   "Pulpería", "Ferretería", "Farmacia", "Boutique", "Restaurante", "Cafetería", "Agroservicio", "Tecnología", "Otro",
 ]
 
+// Estados: 'pendiente' (el proveedor la mandó, el negocio no respondió
+// todavía) | 'aceptada' (el negocio la aprobó, ya están asociados) |
+// 'rechazada' (el negocio la rechazó). Un negocio queda asociado de
+// verdad recién cuando pasa a 'aceptada': antes de eso es solo una
+// solicitud esperando respuesta, no una relación unilateral del
+// proveedor.
 export const negociosAsociados = [
-  { id: 1, nombre: "Pulpería El Buen Precio", categoria: "Pulpería", propietario: "María Gutiérrez", whatsapp: "+505 8811 2233", correo: "pulperiabuenprecio@gmail.com", direccion: "Barrio San Pedro, contiguo a la escuela", municipio: "Nueva Guinea", departamento: "RACCS", descripcion: "Pulpería de barrio con productos de primera necesidad y abarrotes.", imagen: null, estado: "Activo", color: "#007a7b" },
-  { id: 2, nombre: "Ferretería Central", categoria: "Ferretería", propietario: "Carlos Espinoza", whatsapp: "+505 8822 3344", correo: "ferreteriacentral@gmail.com", direccion: "Frente al parque central", municipio: "Nueva Guinea", departamento: "RACCS", descripcion: "Herramientas, materiales de construcción y accesorios eléctricos.", imagen: null, estado: "Activo", color: "#c05900" },
-  { id: 3, nombre: "Farmacia San José", categoria: "Farmacia", propietario: "Ana Lucía Morales", whatsapp: "+505 8833 4455", correo: "farmaciasanjose@gmail.com", direccion: "Del mercado municipal, 1c al norte", municipio: "Nueva Guinea", departamento: "RACCS", descripcion: "Medicamentos genéricos y de marca, atención todos los días.", imagen: null, estado: "Pendiente", color: "#005c5e" },
-  { id: 4, nombre: "Boutique Estilo", categoria: "Boutique", propietario: "Jennifer Rocha", whatsapp: "+505 8844 5566", correo: "boutiqueestilo@gmail.com", direccion: "Barrio Rigoberto López, calle principal", municipio: "Nueva Guinea", departamento: "RACCS", descripcion: "Ropa y accesorios de moda para toda la familia.", imagen: null, estado: "Activo", color: "#a34b00" },
-  { id: 5, nombre: "Restaurante La Terraza", categoria: "Restaurante", propietario: "Roberto Sánchez", whatsapp: "+505 8855 6677", correo: "laterraza.restaurante@gmail.com", direccion: "Salida hacia El Rama, km 1", municipio: "Nueva Guinea", departamento: "RACCS", descripcion: "Comida típica nicaragüense y platillos a la carta.", imagen: null, estado: "Activo", color: "#dd6600" },
+  { id: 1, nombre: "Pulpería El Buen Precio", categoria: "Pulpería", propietario: "María Gutiérrez", whatsapp: "+505 8811 2233", correo: "pulperiabuenprecio@gmail.com", direccion: "Barrio San Pedro, contiguo a la escuela", municipio: "Nueva Guinea", departamento: "RACCS", descripcion: "Pulpería de barrio con productos de primera necesidad y abarrotes.", imagen: null, estado: "aceptada", color: "#007a7b" },
+  { id: 2, nombre: "Ferretería Central", categoria: "Ferretería", propietario: "Carlos Espinoza", whatsapp: "+505 8822 3344", correo: "ferreteriacentral@gmail.com", direccion: "Frente al parque central", municipio: "Nueva Guinea", departamento: "RACCS", descripcion: "Herramientas, materiales de construcción y accesorios eléctricos.", imagen: null, estado: "aceptada", color: "#c05900" },
+  { id: 3, nombre: "Farmacia San José", categoria: "Farmacia", propietario: "Ana Lucía Morales", whatsapp: "+505 8833 4455", correo: "farmaciasanjose@gmail.com", direccion: "Del mercado municipal, 1c al norte", municipio: "Nueva Guinea", departamento: "RACCS", descripcion: "Medicamentos genéricos y de marca, atención todos los días.", imagen: null, estado: "pendiente", color: "#005c5e" },
+  { id: 4, nombre: "Boutique Estilo", categoria: "Boutique", propietario: "Jennifer Rocha", whatsapp: "+505 8844 5566", correo: "boutiqueestilo@gmail.com", direccion: "Barrio Rigoberto López, calle principal", municipio: "Nueva Guinea", departamento: "RACCS", descripcion: "Ropa y accesorios de moda para toda la familia.", imagen: null, estado: "aceptada", color: "#a34b00" },
+  { id: 5, nombre: "Restaurante La Terraza", categoria: "Restaurante", propietario: "Roberto Sánchez", whatsapp: "+505 8855 6677", correo: "laterraza.restaurante@gmail.com", direccion: "Salida hacia El Rama, km 1", municipio: "Nueva Guinea", departamento: "RACCS", descripcion: "Comida típica nicaragüense y platillos a la carta.", imagen: null, estado: "aceptada", color: "#dd6600" },
 ]
 
 /* ── Centro de ayuda ──────────────────────────────────────── */
@@ -380,6 +543,8 @@ export const camposPerfil = {
   // El nombre no se marca porque ya sale en grande en el encabezado.
   usuario: [
     { id: 'nombre', label: 'Nombre completo', tipo: 'text', icono: 'user' },
+    { id: 'cedula', label: 'Cédula de identidad', tipo: 'text', icono: 'key', privado: true },
+    { id: 'edad', label: 'Edad', tipo: 'number', icono: 'user', privado: true },
     { id: 'telefono', label: 'Teléfono', tipo: 'tel', icono: 'smartphone', privado: true },
     { id: 'correo', label: 'Correo electrónico', tipo: 'email', icono: 'mail', ancho: true, privado: true },
     { id: 'municipio', label: 'Municipio', tipo: 'text', icono: 'map-pin', privado: true },
@@ -389,9 +554,11 @@ export const camposPerfil = {
     { id: 'nombre', label: 'Nombre del negocio', tipo: 'text', icono: 'store' },
     { id: 'categoria', label: 'Categoría', tipo: 'text', icono: 'tag' },
     { id: 'propietario', label: 'Propietario', tipo: 'text', icono: 'user' },
+    { id: 'cedula', label: 'Cédula del propietario', tipo: 'text', icono: 'key' },
+    { id: 'edad', label: 'Edad del propietario', tipo: 'number', icono: 'user' },
     { id: 'telefono', label: 'Teléfono / WhatsApp', tipo: 'tel', icono: 'smartphone' },
     { id: 'correo', label: 'Correo electrónico', tipo: 'email', icono: 'mail' },
-    { id: 'ruc', label: 'RUC o cédula', tipo: 'text', icono: 'file-text' },
+    { id: 'ruc', label: 'RUC', tipo: 'text', icono: 'file-text' },
     { id: 'direccion', label: 'Dirección', tipo: 'text', icono: 'map-pin', ancho: true },
     { id: 'descripcion', label: 'Descripción del negocio', tipo: 'textarea', icono: 'book-open', ancho: true },
   ],
@@ -399,6 +566,8 @@ export const camposPerfil = {
     { id: 'nombre', label: 'Nombre de la empresa', tipo: 'text', icono: 'truck' },
     { id: 'categoria', label: 'Rubro que abastece', tipo: 'text', icono: 'box' },
     { id: 'contacto', label: 'Persona de contacto', tipo: 'text', icono: 'user' },
+    { id: 'cedula', label: 'Cédula de contacto', tipo: 'text', icono: 'key' },
+    { id: 'edad', label: 'Edad de contacto', tipo: 'number', icono: 'user' },
     { id: 'telefono', label: 'Teléfono / WhatsApp', tipo: 'tel', icono: 'smartphone' },
     { id: 'correo', label: 'Correo electrónico', tipo: 'email', icono: 'mail' },
     { id: 'ruc', label: 'RUC', tipo: 'text', icono: 'file-text' },
@@ -406,6 +575,11 @@ export const camposPerfil = {
     { id: 'descripcion', label: 'Qué distribuye', tipo: 'textarea', icono: 'book-open', ancho: true },
   ],
 }
+
+// Fuente unica del ranking del negocio: la metrica de arriba del perfil
+// y el reconocimiento "Ranking de tu categoria" de abajo leen de aca,
+// para que nunca muestren un puesto distinto entre si.
+export const RANKING_NEGOCIO = { puesto: 3, total: 500, categoria: 'ferreterías' }
 
 // Bloque de metricas que encabeza cada perfil.
 export const metricasPerfil = {
@@ -421,7 +595,7 @@ export const metricasPerfil = {
   negocio: [
     { id: 'ventas', icono: 'trending-up', valor: numero(48600), unidad: MONEDA.nombrePlural, label: 'Ventas del mes', detalle: '+18% vs. julio' },
     { id: 'clientes', icono: 'users', valor: '186', label: 'Clientes con puntos', detalle: '24 nuevos' },
-    { id: 'ranking', icono: 'award', valor: '#3', label: 'Ranking de ferreterías', detalle: 'subió 2 puestos' },
+    { id: 'ranking', icono: 'award', valor: `#${RANKING_NEGOCIO.puesto}`, label: `Ranking de ${RANKING_NEGOCIO.categoria}`, detalle: 'subió 2 puestos' },
     { id: 'resenas', icono: 'star', valor: '4.8', label: 'Calificación', detalle: '52 reseñas' },
   ],
   proveedor: [
@@ -440,10 +614,16 @@ export const insigniasPerfil = {
     { id: 'u3', icono: 'users', label: 'Embajador', descripcion: 'Invitá a 5 personas para desbloquearla', activa: false },
   ],
   negocio: [
-    { id: 'n1', icono: 'check-circle', label: 'Negocio verificado', descripcion: 'Documentación validada por Vincco', activa: true },
-    { id: 'n2', icono: 'zap', label: 'Respuesta rápida', descripcion: 'Responde cotizaciones en menos de 2 horas', activa: true },
-    { id: 'n3', icono: 'crown', label: 'Top 3 del mes', descripcion: 'Entre los mejores de su categoría', activa: true },
-    { id: 'n4', icono: 'shield', label: 'Formalizado', descripcion: 'Subí tu RUC para desbloquearla', activa: false },
+    { id: 'n1', icono: 'insignia-verificado', label: 'Negocio verificado', descripcion: 'Documentación validada por Vincco', activa: true },
+    { id: 'n2', icono: 'insignia-veloz', label: 'Respuesta rápida', descripcion: 'Responde cotizaciones en menos de 2 horas', activa: true },
+    // Se desbloquea cuando el negocio queda entre los 6 primeros de su categoria.
+    {
+      id: 'n3',
+      icono: 'insignia-ranking',
+      label: 'Ranking de tu categoría',
+      descripcion: `Puesto ${RANKING_NEGOCIO.puesto} de ${RANKING_NEGOCIO.total} en tu categoría`,
+      activa: RANKING_NEGOCIO.puesto <= 6,
+    },
   ],
   proveedor: [
     { id: 'p1', icono: 'check-circle', label: 'Proveedor verificado', descripcion: 'Documentación validada por Vincco', activa: true },
@@ -503,12 +683,27 @@ export const favoritosPerfil = [
    Estados: 'autorizado' | 'pendiente' | 'rechazado'
    ───────────────────────────────────────────────────────────── */
 export const permisosVitrina = [
-  { id: 1, negocio: 'Ferretería Don Chico', proveedor: 'Distribuidora Norte', rubro: 'Cemento y agregados', estado: 'autorizado', fecha: '12 jul 2026', color: '#c05900' },
-  { id: 2, negocio: 'Pulpería La Esquina', proveedor: 'Distribuidora Norte', rubro: 'Abarrotes', estado: 'pendiente', fecha: '2 ago 2026', color: '#005c5e' },
-  { id: 3, negocio: 'Agroservicios El Campo', proveedor: 'Distribuidora Norte', rubro: 'Material eléctrico', estado: 'autorizado', fecha: '28 jun 2026', color: '#8f5a00' },
-  { id: 4, negocio: 'Boutique Estilo', proveedor: 'Distribuidora Norte', rubro: 'Textiles', estado: 'rechazado', fecha: '5 jul 2026', color: '#a34b00' },
-  { id: 5, negocio: 'Ferretería Don Chico', proveedor: 'Materiales La Unión', rubro: 'Hierro y varilla', estado: 'pendiente', fecha: '4 ago 2026', color: '#00374e' },
+  { id: 1, negocio: 'Ferretería Don Chico', proveedor: 'Distribuidora Norte',
+    rubro: 'Cemento y agregados', estado: 'autorizado', fecha: '12 jul 2026', color: '#c05900' },
+  { id: 2, negocio: 'Pulpería La Esquina', proveedor: 'Distribuidora Norte',
+    rubro: 'Abarrotes', estado: 'pendiente', fecha: '2 ago 2026', color: '#005c5e' },
+  { id: 3, negocio: 'Agroservicios El Campo', proveedor: 'Distribuidora Norte',
+    rubro: 'Material eléctrico', estado: 'autorizado', fecha: '28 jun 2026', color: '#8f5a00' },
+  { id: 4, negocio: 'Boutique Estilo', proveedor: 'Distribuidora Norte',
+    rubro: 'Textiles', estado: 'rechazado', fecha: '5 jul 2026', color: '#a34b00' },
+  { id: 5, negocio: 'Ferretería Don Chico', proveedor: 'Materiales La Unión',
+    rubro: 'Hierro y varilla', estado: 'pendiente', fecha: '4 ago 2026', color: '#00374e' },
 ]
+
+// Ranking mensual del negocio dentro de su categoria: la posicion
+// y el total de negocios que compiten. Cuando exista backend esto
+// llegaria como rankingPosition / totalBusinesses; por ahora vive
+// en la capa de datos. La posicion coincide con la metrica del
+// perfil de negocio ("#3" en metricasPerfil).
+export const rankingNegocio = {
+  posicion: 3,
+  total: 75,
+}
 
 // Ultimas reseñas que recibio el comercio.
 export const resenasPerfil = [

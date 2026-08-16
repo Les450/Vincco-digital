@@ -37,17 +37,6 @@ function useTabs() {
       ),
     },
     {
-      id: 'publicaciones',
-      label: 'Publicar',
-      path: '/publicaciones',
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 20h9" />
-          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-        </svg>
-      ),
-    },
-    {
       label: 'Calendario',
       path: '/calendario',
       icon: (
@@ -72,10 +61,14 @@ function useTabs() {
     },
   ]
 
-  // Publicar solo aplica a negocios y proveedores: se quita del nav de
-  // clientes. Se filtra por id, no por label: los textos son cortos para
-  // que entren en pantallas de 360px y pueden cambiar sin romper esto.
-  return esSocio ? tabs : tabs.filter(t => t.id !== 'publicaciones')
+  // Negocio y proveedor: sin Favoritos, eso es solo para el cliente.
+  // Publicar ya no vive en esta barra para ningun rol: se hace desde
+  // el Panel (seccion "Publicaciones"), que es donde negocio y
+  // proveedor hacen el resto del trabajo.
+  if (esSocio) {
+    return tabs.filter((t) => t.label !== 'Favoritos')
+  }
+  return tabs
 }
 
 export default function BottomNav() {
@@ -87,11 +80,10 @@ export default function BottomNav() {
     <nav className="bottom-nav">
       {TABS.map((tab) => {
         const isActive = location.pathname === tab.path
-        const isFab = tab.id === 'publicaciones'
         return (
           <button
             key={tab.path}
-            className={`bottom-nav-btn ${isFab ? 'bottom-nav-btn--fab ' : ''}${isActive ? 'bottom-nav-btn--active' : ''}`}
+            className={`bottom-nav-btn ${isActive ? 'bottom-nav-btn--active' : ''}`}
             onClick={() => navigate(tab.path)}
             type="button"
           >

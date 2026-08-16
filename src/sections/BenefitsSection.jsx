@@ -1,104 +1,83 @@
 import { motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
 import Icon from '../components/icons/Icon'
 
-const BENEFITS = [
+// Cada actor tiene su color oficial (consumidor=dorado, comercio=naranja,
+// proveedor=turquesa): agrupar los beneficios así es más honesto que una
+// grilla de 6 íconos anónimos, porque es literalmente cómo funciona Vincco.
+const COLUMNS = [
   {
-    icon: 'target',
-    title: 'Fidelización inteligente',
-    desc: 'Programa de puntos que conecta consumidores con negocios locales. Cada compra suma y cada punto acerca a tu próxima recompensa.',
-    link: 'Saber más',
+    variant: 'gold',
+    actor: 'Consumidor',
+    title: 'Tu dinero rinde en el barrio',
+    items: [
+      { icon: 'wallet', title: 'Fidelización por puntos', desc: 'Cada compra en un comercio afiliado suma puntos que se canjean por descuentos y recompensas.' },
+      { icon: 'map-pin', title: 'Directorio verificado', desc: 'Encontrá comercios y proveedores confiables de Nueva Guinea, todos con reseñas reales.' },
+    ],
   },
   {
-    icon: 'package',
-    title: 'Inventario en tiempo real',
-    desc: 'Controla tu stock desde cualquier lugar. Alertas automáticas cuando los niveles están bajos y reportes detallados de tus productos.',
-    link: 'Saber más',
+    variant: 'orange',
+    actor: 'Comercio',
+    title: 'Vendé más, controlá mejor',
+    items: [
+      { icon: 'package', title: 'Inventario en tiempo real', desc: 'Alertas automáticas cuando el stock baja y reportes claros de lo que más se mueve.' },
+      { icon: 'award', title: 'Ranking que premia la calidad', desc: 'Los comercios mejor calificados destacan en el directorio y atraen más clientes.' },
+    ],
   },
   {
-    icon: 'file-text',
-    title: 'Cotizaciones al instante',
-    desc: 'Conecta proveedores con negocios de forma rápida. Solicita y recibe cotizaciones en minutos, no en días.',
-    link: 'Saber más',
-  },
-  {
-    icon: 'bar-chart-2',
-    title: 'Dashboard centralizado',
-    desc: 'Todos tus datos en un solo lugar. Ventas, inventario, clientes y más con gráficos claros y fáciles de entender.',
-    link: 'Saber más',
-  },
-  {
-    icon: 'award',
-    title: 'Ranking de negocios',
-    desc: 'Competencia sana que impulsa la calidad. Los mejores negocios destacan y atraen más clientes.',
-    link: 'Saber más',
-  },
-  {
-    icon: 'handshake',
-    title: 'Red de colaboración',
-    desc: 'Negocios, proveedores y clientes trabajando juntos. Un ecosistema donde todos ganan y la economía local crece.',
-    link: 'Saber más',
+    variant: 'teal',
+    actor: 'Proveedor',
+    title: 'Pedidos sin salir a buscarlos',
+    items: [
+      { icon: 'file-text', title: 'Cotizaciones al instante', desc: 'Los comercios piden precios y vos respondés en minutos, no en días.' },
+      { icon: 'truck', title: 'Pedidos de la zona', desc: 'Recibí solicitudes directas de comercios verificados cerca de tu bodega.' },
+    ],
   },
 ]
 
-const container = {
-  animate: { transition: { staggerChildren: 0.08 } },
-}
-
-const item = {
-  initial: { opacity: 0, y: 40 },
-  animate: { opacity: 1, y: 0 },
+const fadeUp = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
 }
 
 export default function BenefitsSection() {
   return (
-    <section className="vc-section">
+    <section className="vc-section" id="beneficios">
       <div className="vc-section-header">
-        <motion.span
-          className="vc-section-eyebrow"
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          Beneficios
-        </motion.span>
-        <motion.h2
-          className="vc-section-title"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          Todo lo que necesitas en un solo ecosistema
+        <motion.span className="vc-section-eyebrow" {...fadeUp}>Un ecosistema, tres actores</motion.span>
+        <motion.h2 className="vc-section-title" {...fadeUp}>
+          Lo que Vincco resuelve para cada quien
         </motion.h2>
-        <motion.p
-          className="vc-section-subtitle"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          Vincco reúne todas las herramientas que tu negocio necesita para crecer
+        <motion.p className="vc-section-subtitle" {...fadeUp}>
+          Ningún actor de la economía local queda afuera del mismo padrón
         </motion.p>
       </div>
 
       <motion.div
-        className="vc-benefits-grid"
-        variants={container}
-        initial="initial"
-        whileInView="animate"
-        viewport={{ once: true, margin: '-100px' }}
+        className="vc-benefits"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.5 }}
       >
-        {BENEFITS.map((b, i) => (
-          <motion.div key={i} className="vc-benefit-card" variants={item}>
-            <div className="vc-benefit-icon"><Icon name={b.icon} size={26} /></div>
-            <h3 className="vc-benefit-title">{b.title}</h3>
-            <p className="vc-benefit-desc">{b.desc}</p>
-            <a href="#!" className="vc-benefit-link">
-              {b.link}
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </a>
-          </motion.div>
+        {COLUMNS.map((col) => (
+          <div key={col.actor} className={`vc-benefit-col vc-benefit-col--${col.variant}`}>
+            <div className="vc-benefit-col-header">
+              <span className="vc-benefit-col-dot" />
+              <span className="vc-benefit-col-actor">{col.actor}</span>
+            </div>
+            <h3 className="vc-benefit-col-title">{col.title}</h3>
+
+            {col.items.map((it) => (
+              <div key={it.title} className="vc-benefit-item">
+                <span className="vc-benefit-item-icon"><Icon name={it.icon} size={17} /></span>
+                <div>
+                  <h4 className="vc-benefit-item-title">{it.title}</h4>
+                  <p className="vc-benefit-item-desc">{it.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         ))}
       </motion.div>
     </section>

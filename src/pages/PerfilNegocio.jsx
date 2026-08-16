@@ -2,8 +2,10 @@ import { useNavigate } from 'react-router-dom'
 import useStore from '../store/puntos_usestore'
 import Icon from '../components/icons/Icon'
 import IconRed, { REDES } from '../components/icons/IconRed'
+import SucursalSelector from '../components/panel/SucursalSelector'
 import {
   PerfilHero,
+  VerificacionBanner,
   Seccion,
   Metricas,
   BloqueDatos,
@@ -17,6 +19,7 @@ import {
   actividadPerfil,
   horarioPerfil,
   resenasPerfil,
+  RANKING_NEGOCIO,
 } from '../data/data_falso'
 
 // Perfil del comercio. Aca el perfil no es un dato personal: es la
@@ -41,6 +44,7 @@ export default function PerfilNegocio() {
   const guardarFoto = useStore((s) => s.guardarFoto)
   const quitarFoto = useStore((s) => s.quitarFoto)
   const redesNegocio = useStore((s) => s.redesNegocio)
+  const estadoVerificacion = useStore((s) => s.estadosVerificacion.negocio)
 
   const idsConectadas = Object.keys(REDES).filter((id) => redesNegocio[id])
 
@@ -55,10 +59,12 @@ export default function PerfilNegocio() {
         onFoto={(foto) => guardarFoto('negocio', foto)}
         onQuitarFoto={() => quitarFoto('negocio')}
         chips={[
-          { label: 'Verificado', icono: 'check-circle', destacado: true },
           { label: perfil.categoria, icono: 'tag' },
-          { label: '4.8 · 52 reseñas', icono: 'star' },
+          ...(estadoVerificacion === 'aprobada'
+            ? [{ label: 'Negocio verificado', icono: 'check-circle', destacado: true }]
+            : []),
           { label: 'Abierto ahora', icono: 'clock' },
+          { label: `#${RANKING_NEGOCIO.puesto} de ${RANKING_NEGOCIO.total} en tu categoría`, icono: 'award' },
         ]}
         extra={
           <div className="pf-ficha">
@@ -89,6 +95,16 @@ export default function PerfilNegocio() {
           </>
         }
       />
+
+      <VerificacionBanner
+        rol="negocio"
+        estado={estadoVerificacion}
+        texto="Sin verificar podés ver todo el panel, pero no podés publicar ni recibir cotizaciones. Solicitá la verificación de tu negocio para desbloquearlo."
+      />
+
+      <div className="pf-esquina">
+        <SucursalSelector />
+      </div>
 
       <div className="pf-body">
         <Metricas items={metricasPerfil.negocio} />
@@ -168,7 +184,11 @@ export default function PerfilNegocio() {
             descripcion="Distinciones de tu comercio"
             className="pf-seccion--lateral"
           >
-            <Insignias items={insigniasPerfil.negocio} />
+            <Insignias
+              items={insigniasPerfil.negocio.map((i) =>
+                i.id === 'n1' ? { ...i, activa: estadoVerificacion === 'aprobada' } : i
+              )}
+            />
           </Seccion>
         </div>
 

@@ -7,8 +7,8 @@
    Cualquier cambio hecho acá se pierde en la próxima compilación.
    Para cambiar lo que sabe Kiara, editá src/Chatbot/guiausuario.md.
 
-   Generado: 2026-08-08
-   37 entradas · 9 secciones
+   Generado: 2026-08-16
+   43 entradas · 10 secciones
    ══════════════════════════════════════════════════════════════ */
 
 export const SECCIONES = [
@@ -81,6 +81,17 @@ export const SECCIONES = [
     ]
   },
   {
+    "id": "verificacion",
+    "titulo": "Verificación de cuentas",
+    "descripcion": "Qué significa estar verificado y qué cambia mientras no lo estás",
+    "icono": "shield-check",
+    "roles": [
+      "usuario",
+      "negocio",
+      "proveedor"
+    ]
+  },
+  {
     "id": "cuenta",
     "titulo": "Mi cuenta",
     "descripcion": "Perfil, configuración, privacidad y contraseña",
@@ -132,7 +143,9 @@ export const ENTRADAS = [
       "darme de alta"
     ],
     "nota": "Cliente lleva menos pasos que Negocio o Proveedor, porque a esos dos se les piden datos del comercio.",
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "quien-es-el-dueno-de-vincco",
@@ -149,7 +162,9 @@ export const ENTRADAS = [
     "rutaLabel": null,
     "claves": [],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "registrar-negocio",
@@ -176,7 +191,9 @@ export const ENTRADAS = [
       "mi comercio"
     ],
     "nota": "El RUC no es obligatorio para empezar, pero sin él no se desbloquea la insignia de Formalizado.",
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "registrar-proveedor",
@@ -203,7 +220,9 @@ export const ENTRADAS = [
       "abastecer"
     ],
     "nota": "La zona de cobertura es lo que permite que un negocio te encuentre cuando filtra por su municipio.",
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "recuperar-contrasena",
@@ -226,7 +245,9 @@ export const ENTRADAS = [
       "no puedo entrar"
     ],
     "nota": "Mientras tanto, escribí a soporte desde el Centro de ayuda.",
-    "pendiente": true
+    "pendiente": true,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "ganar-puntos",
@@ -251,7 +272,9 @@ export const ENTRADAS = [
       "como funcionan los puntos"
     ],
     "nota": "Cada negocio decide cuántos puntos da por compra, así que no todos dan lo mismo.",
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "canjear-recompensas",
@@ -278,7 +301,9 @@ export const ENTRADAS = [
       "usar mis puntos"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "niveles",
@@ -307,7 +332,9 @@ export const ENTRADAS = [
       "categoria"
     ],
     "nota": "El nivel es interno de Vincco: se mide por los puntos que ganás comprando con la plataforma, no por antigüedad.",
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "vencimiento-puntos",
@@ -333,7 +360,9 @@ export const ENTRADAS = [
       "perder puntos"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "buscar-negocios",
@@ -358,7 +387,9 @@ export const ENTRADAS = [
       "categorias"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "favoritos",
@@ -381,7 +412,9 @@ export const ENTRADAS = [
       "mis negocios favoritos"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "negocios-cercanos",
@@ -406,7 +439,9 @@ export const ENTRADAS = [
       "kilometros"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "publicar-producto",
@@ -433,7 +468,9 @@ export const ENTRADAS = [
       "anunciar"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "editar-inventario",
@@ -461,7 +498,9 @@ export const ENTRADAS = [
       "productos"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "alerta-stock",
@@ -486,7 +525,9 @@ export const ENTRADAS = [
       "umbral"
     ],
     "nota": "Una ferretería y una pulpería no manejan los mismos volúmenes, por eso cada quien pone su número.",
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "actualizar-precios",
@@ -511,7 +552,9 @@ export const ENTRADAS = [
       "precios"
     ],
     "nota": "Todos los precios en Vincco van en córdobas.",
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "puntos-que-doy",
@@ -537,7 +580,9 @@ export const ENTRADAS = [
       "recompensar clientes"
     ],
     "nota": "Mientras más puntos das, más le conviene al cliente elegirte a vos.",
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "pedir-cotizacion",
@@ -564,7 +609,9 @@ export const ENTRADAS = [
       "cotizacion"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "responder-cotizacion",
@@ -589,7 +636,9 @@ export const ENTRADAS = [
       "solicitudes"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "tiempo-respuesta",
@@ -614,7 +663,9 @@ export const ENTRADAS = [
       "insignia respuesta"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "zona-cobertura",
@@ -640,7 +691,9 @@ export const ENTRADAS = [
       "a donde llego"
     ],
     "nota": "Sin cobertura definida no aparecés cuando un negocio filtra por su zona.",
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "vitrina-clientes",
@@ -668,7 +721,9 @@ export const ENTRADAS = [
       "autorizar proveedor"
     ],
     "nota": "Un proveedor no puede autorizarse solo: la decisión es siempre del negocio.",
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "negocios-asociados",
@@ -677,7 +732,7 @@ export const ENTRADAS = [
       "proveedor"
     ],
     "titulo": "¿Dónde veo los negocios que abastezco?",
-    "resumen": "En la pantalla de Negocios asociados.",
+    "resumen": "En la pantalla de Negocios asociados. Ahí ves los que ya te aceptaron y los que todavía no respondieron tu solicitud.",
     "pasos": [],
     "ruta": "/negocios-asociados",
     "rutaLabel": "Negocios asociados",
@@ -688,7 +743,36 @@ export const ENTRADAS = [
       "negocios que atiendo"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
+  },
+  {
+    "id": "agregar-negocio-asociado",
+    "seccion": "proveedores",
+    "roles": [
+      "proveedor"
+    ],
+    "titulo": "¿Cómo agrego un negocio a mis asociados?",
+    "resumen": "Le mandás una solicitud de asociación, no lo agregás directo: el negocio tiene que aceptarla primero.",
+    "pasos": [
+      "Andá a Negocios asociados y tocá \"Solicitar asociación\"",
+      "Completá los datos del negocio (nombre y WhatsApp son obligatorios)",
+      "Enviá la solicitud: le llega un aviso al negocio",
+      "Esperá a que el negocio la acepte o la rechace desde sus Avisos"
+    ],
+    "ruta": "/negocios-asociados",
+    "rutaLabel": "Negocios asociados",
+    "claves": [
+      "agregar negocio asociado",
+      "solicitar asociacion",
+      "nuevo negocio asociado",
+      "pedir asociacion"
+    ],
+    "nota": "Mientras está pendiente, no le podés mandar otra solicitud al mismo negocio ni enviarle una cotización — recién se habilita cuando la acepta. Si te rechaza, podés volver a intentar más adelante. Necesitás tu cuenta verificada para solicitar asociaciones.",
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "ranking",
@@ -711,7 +795,9 @@ export const ENTRADAS = [
       "clasificacion"
     ],
     "nota": "El ranking se calcula por categoría, así que competís con negocios parecidos al tuyo.",
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "resenas",
@@ -736,7 +822,9 @@ export const ENTRADAS = [
       "comentarios"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "insignias",
@@ -763,7 +851,155 @@ export const ENTRADAS = [
       "badge"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
+  },
+  {
+    "id": "verificacion-menu",
+    "seccion": "verificacion",
+    "roles": [
+      "usuario",
+      "negocio",
+      "proveedor"
+    ],
+    "titulo": "¿Cómo hago para estar verificado en Vincco?",
+    "resumen": "Depende de qué tipo de cuenta tenés. ¿Cuál de estas sos?",
+    "pasos": [],
+    "ruta": null,
+    "rutaLabel": null,
+    "claves": [
+      "verificado",
+      "verificacion",
+      "estar verificado",
+      "cuenta verificada",
+      "verificar mi cuenta",
+      "ser verificado",
+      "como me verifico",
+      "quiero verificarme",
+      "miembro verificado",
+      "revision de cuenta",
+      "solicitar verificacion",
+      "verificacion pendiente",
+      "continuar sin verificacion",
+      "que puedo hacer sin verificar",
+      "cuenta sin verificar"
+    ],
+    "nota": null,
+    "pendiente": false,
+    "tipo": "menu",
+    "opciones": [
+      {
+        "id": "verificacion-cliente",
+        "texto": "Quiero ser cliente verificado de Vincco"
+      },
+      {
+        "id": "verificacion-negocio",
+        "texto": "Quiero ser negocio verificado de Vincco"
+      },
+      {
+        "id": "verificacion-proveedor",
+        "texto": "Quiero ser proveedor verificado de Vincco"
+      }
+    ]
+  },
+  {
+    "id": "verificacion-cliente",
+    "seccion": "verificacion",
+    "roles": [
+      "usuario",
+      "negocio",
+      "proveedor"
+    ],
+    "titulo": "Quiero ser cliente verificado de Vincco",
+    "resumen": "Al terminar tu registro, Vincco te muestra la pantalla \"Felicidades, ya eres parte de VINCCO\" con un botón para solicitar la verificación de tu cuenta. Como cliente no se te pide RUC ni ningún documento: es un solo botón.",
+    "pasos": [
+      "Al completar el registro, tocá \"Solicitar verificación\" en esa pantalla",
+      "Si en ese momento preferís entrar de una vez, tocá \"Continuar sin verificación\": podés pedirla después",
+      "Para pedirla más tarde, andá a Mi perfil y tocá \"Solicitar verificación\" en el aviso que aparece ahí",
+      "Esperá la revisión del equipo de Vincco"
+    ],
+    "ruta": "/perfil",
+    "rutaLabel": "Mi perfil",
+    "claves": [
+      "cliente verificado",
+      "verificado como cliente",
+      "solicitar verificacion cliente",
+      "verificacion pendiente cliente",
+      "que pasa si no soy cliente verificado"
+    ],
+    "nota": "La revisión tarda entre 24 y 48 horas y te llega la confirmación a tu correo electrónico. Mientras no estés verificado podés seguir usando la app y agregar productos a favoritos sin ningún límite, pero no participás en los rankings de clientes, no sumás puntos y tu perfil no muestra la insignia de verificado.",
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
+  },
+  {
+    "id": "verificacion-negocio",
+    "seccion": "verificacion",
+    "roles": [
+      "usuario",
+      "negocio",
+      "proveedor"
+    ],
+    "titulo": "Quiero ser negocio verificado de Vincco",
+    "resumen": "Al terminar tu registro, Vincco te muestra la pantalla \"Felicidades, ya eres parte de VINCCO\" con un botón para solicitar la verificación de tu negocio. Ahí se te pide tu número de RUC.",
+    "pasos": [
+      "Al completar el registro, tocá \"Solicitar verificación\" en esa pantalla",
+      "Cargá tu número de RUC si ya lo tenés",
+      "Si todavía no tenés RUC, tocá \"No tengo RUC, continuar igual\": la solicitud se envía igual y el equipo de Vincco te contacta para ver cómo verificarte",
+      "Si preferís entrar de una vez sin pedir nada, tocá \"Continuar sin verificación\": podés solicitarla después desde Mi perfil",
+      "Esperá la revisión del equipo de Vincco"
+    ],
+    "ruta": "/perfil",
+    "rutaLabel": "Mi perfil",
+    "claves": [
+      "negocio verificado",
+      "verificar mi negocio",
+      "solicitar verificacion negocio",
+      "verificacion pendiente negocio",
+      "ruc negocio",
+      "que pasa si no verifico mi negocio",
+      "no puedo publicar",
+      "no recibo cotizaciones"
+    ],
+    "nota": "La revisión tarda entre 24 y 48 horas y te llega la confirmación a tu correo electrónico. Mientras no estés verificado podés ver y usar todo tu Panel, el Calendario, los Avisos y el menú — nada de eso se bloquea —, pero no podés publicar productos ni promociones, ni recibir y responder cotizaciones de tus proveedores.",
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
+  },
+  {
+    "id": "verificacion-proveedor",
+    "seccion": "verificacion",
+    "roles": [
+      "usuario",
+      "negocio",
+      "proveedor"
+    ],
+    "titulo": "Quiero ser proveedor verificado de Vincco",
+    "resumen": "Al terminar tu registro, Vincco te muestra la pantalla \"Felicidades, ya eres parte de VINCCO\" con un botón para solicitar la verificación de tu empresa. Ahí se te pide tu número de RUC.",
+    "pasos": [
+      "Al completar el registro, tocá \"Solicitar verificación\" en esa pantalla",
+      "Cargá tu número de RUC si ya lo tenés",
+      "Si todavía no tenés RUC, tocá \"No tengo RUC, continuar igual\": la solicitud se envía igual y el equipo de Vincco te contacta para ver cómo verificarte",
+      "Si preferís entrar de una vez sin pedir nada, tocá \"Continuar sin verificación\": podés solicitarla después desde Mi perfil",
+      "Esperá la revisión del equipo de Vincco"
+    ],
+    "ruta": "/perfil",
+    "rutaLabel": "Mi perfil",
+    "claves": [
+      "proveedor verificado",
+      "verificar mi empresa",
+      "solicitar verificacion proveedor",
+      "verificacion pendiente proveedor",
+      "ruc proveedor",
+      "que pasa si no verifico mi empresa",
+      "no puedo enviar cotizaciones",
+      "no puedo agregar negocios asociados"
+    ],
+    "nota": "La revisión tarda entre 24 y 48 horas y te llega la confirmación a tu correo electrónico. Mientras no estés verificado podés ver y usar todo tu Panel, el Calendario, los Avisos y el menú — nada de eso se bloquea —, pero no podés publicar tus productos, no podés enviar cotizaciones a los negocios ni agregar negocios nuevos en Negocios Asociados.",
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "editar-perfil",
@@ -791,7 +1027,9 @@ export const ENTRADAS = [
       "foto de perfil"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "ocultar-datos",
@@ -817,7 +1055,9 @@ export const ENTRADAS = [
       "tapar mis datos"
     ],
     "nota": "Vincco recuerda tu elección: si los dejás ocultos, siguen ocultos la próxima vez que entrés.",
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "cambiar-contrasena",
@@ -838,7 +1078,9 @@ export const ENTRADAS = [
       "modificar contrasena"
     ],
     "nota": null,
-    "pendiente": true
+    "pendiente": true,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "configuracion",
@@ -865,7 +1107,9 @@ export const ENTRADAS = [
       "settings"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "cerrar-sesion",
@@ -887,7 +1131,9 @@ export const ENTRADAS = [
       "logout"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "barra-abajo",
@@ -903,7 +1149,6 @@ export const ENTRADAS = [
       "Inicio: el feed principal con promociones y negocios",
       "Favoritos: los negocios que marcaste",
       "Premios o Panel: tus puntos si sos cliente, tu panel si sos negocio o proveedor",
-      "Publicar: para subir publicaciones",
       "Calendario y Avisos: eventos y notificaciones"
     ],
     "ruta": "/home",
@@ -917,7 +1162,9 @@ export const ENTRADAS = [
       "tabs"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "menu-hamburguesa",
@@ -940,7 +1187,9 @@ export const ENTRADAS = [
       "tres rayas"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "notificaciones",
@@ -967,7 +1216,37 @@ export const ENTRADAS = [
       "mensajes"
     ],
     "nota": "Si apagaste un tipo de aviso en Configuración, esas notificaciones dejan de aparecer acá.",
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
+  },
+  {
+    "id": "responder-asociacion",
+    "seccion": "la-app",
+    "roles": [
+      "negocio"
+    ],
+    "titulo": "¿Cómo acepto o rechazo una solicitud de asociación de un proveedor?",
+    "resumen": "Cuando un proveedor quiere asociarse con tu negocio, te llega un aviso a Avisos con dos botones: Aceptar y Rechazar. Se responde ahí mismo, sin ir a ninguna otra pantalla.",
+    "pasos": [
+      "Tocá Avisos en la barra de abajo",
+      "Buscá el aviso de \"Solicitud de asociación\"",
+      "Tocá Aceptar si querés trabajar con ese proveedor, o Rechazar si no",
+      "Al proveedor le llega un aviso avisándole tu respuesta"
+    ],
+    "ruta": "/notificaciones",
+    "rutaLabel": "Notificaciones",
+    "claves": [
+      "solicitud de asociacion",
+      "proveedor quiere asociarse",
+      "aceptar proveedor",
+      "rechazar proveedor",
+      "nueva solicitud"
+    ],
+    "nota": "Solo al aceptar quedan asociados de verdad: recién ahí el proveedor te puede enviar cotizaciones y aparecés en su lista de negocios asociados. Nadie queda asociado a la fuerza ni sin que lo apruebes vos.",
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "calendario",
@@ -990,7 +1269,9 @@ export const ENTRADAS = [
       "recordatorios"
     ],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
     "id": "moneda",
@@ -1013,24 +1294,28 @@ export const ENTRADAS = [
       "en que moneda"
     ],
     "nota": "Vincco opera en Nicaragua. Aunque en Configuración podés elegir ver dólares, los montos se siguen mostrando en córdobas hasta que haya un tipo de cambio del día.",
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   },
   {
-    "id": "cuanto-tiempo-dura-la-revision-para-ser-un-miembro-verificad",
+    "id": "quien-creo-vincco",
     "seccion": "la-app",
     "roles": [
       "usuario",
       "negocio",
       "proveedor"
     ],
-    "titulo": "¿cuanto tiempo dura la revision para ser un miembro verificado de Vincco?",
-    "resumen": "El plaso varia,pero es entre 24h a 48h,apenas este listo el equipo de Vincco se pondra en contacto con tigo.",
+    "titulo": "¿Quien  creo VINCCO?",
+    "resumen": "> VINCCO fue creada por el grupo de desarrolladores Impulso Digital.",
     "pasos": [],
     "ruta": null,
     "rutaLabel": null,
     "claves": [],
     "nota": null,
-    "pendiente": false
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
   }
 ]
 

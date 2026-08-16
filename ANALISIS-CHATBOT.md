@@ -1,11 +1,9 @@
 # Análisis de arquitectura — Asistente de IA para Vincco
 
 > Documento de análisis previo a la implementación. **No contiene código.**
-> Fecha del análisis: agosto 2026 · Basado en el estado real del repositorio, no en `ESTRUCTURA.md`.
+> Fecha del análisis: agosto 2026 · Basado en lo que hay e vincco,7/8/2026
 
----
-
-## 0. Advertencia previa: `ESTRUCTURA.md` está desactualizado
+## ESTRUCTURA.md` está desactualizado,hay que actualizar para que el chat bot sepa contestar
 
 Antes de nada, esto es importante porque el chatbot va a alimentarse de la documentación del proyecto: **el archivo `ESTRUCTURA.md` describe la Fase 6 y el proyecto ya va bastante más adelante.** Si el asistente lee ese documento como fuente de verdad, va a mentirle al usuario.
 

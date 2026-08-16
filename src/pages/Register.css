@@ -50,6 +50,7 @@
 }
 
 .rk-card {
+  position: relative;
   background: #ffffff;
   border-radius: 28px;
   padding: 36px 28px 30px;
@@ -62,6 +63,29 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+/* X para salir del flujo (modo sucursal): vuelve al perfil sin guardar */
+.rk-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1.5px solid #dfe8ee;
+  background: #ffffff;
+  color: #003f5a;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+
+.rk-close:hover {
+  background: #f2f7fa;
+  border-color: #b9cdda;
+  transform: scale(1.05);
 }
 
 .rk-step {
@@ -694,6 +718,28 @@
 
 .rk-step3-body {
   max-width: 400px;
+}
+
+/* X para salir del flujo en la pantalla final (modo sucursal) */
+.rk-step3-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.rk-step3-close:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: scale(1.05);
 }
 
 .rk-step3 .rk-step3-logo {

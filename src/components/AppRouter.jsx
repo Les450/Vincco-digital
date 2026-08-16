@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom'
 import BottomNav from '../components/BottomNav'
+import VerificacionKYC from './verificacion/VerificacionKYC'
 import useStore from '../store/puntos_usestore'
 import Home from '../pages/Home'
 
@@ -8,6 +9,7 @@ import Home from '../pages/Home'
 // El resto se carga solo cuando el usuario entra a esa ruta, asi el
 // bundle inicial no arrastra Register (1200+ lineas), los paneles ni Ayuda.
 const Landing = lazy(() => import('../pages/Landing'))
+const Bienvenida = lazy(() => import('../pages/Bienvenida'))
 const Register = lazy(() => import('../pages/Register'))
 const Directorio = lazy(() => import('../pages/Directorio'))
 const MisPuntos = lazy(() => import('../pages/Mispuntos'))
@@ -72,7 +74,7 @@ const SHELL_ROUTES = [
 
 function AppContent() {
   const location = useLocation()
-  const hideNav = location.pathname === '/login' || location.pathname === '/register'
+  const hideNav = location.pathname === '/login' || location.pathname === '/register' || location.pathname === '/bienvenida'
 
   const chatAbierto = useStore((s) => s.chat.abierto)
   const mostrarAsistente = useStore((s) => s.configuraciones[s.userType]?.mostrarAsistente !== false)
@@ -96,9 +98,16 @@ function AppContent() {
             <Route key={path} path={path} element={<Shell>{element}</Shell>} />
           ))}
           <Route path="/login" element={<Landing />} />
+          <Route path="/bienvenida" element={<Bienvenida />} />
           <Route path="/register" element={<Register />} />
         </Routes>
       </Suspense>
+
+      {/* Verificación KYC (Ley 977): pantalla completa que aparece
+          desde el registro, el perfil y las acciones bloqueadas,
+          sin que ninguna de esas pantallas tenga que saber de ella. */}
+      <VerificacionKYC />
+
       {!hideNav && <BottomNav />}
 
       {/* Kiara se monta por encima del router: aparece en todas las

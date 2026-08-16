@@ -81,6 +81,21 @@ if (fs.existsSync(router)) {
   }
 }
 
+/* ── Opciones de menú que apuntan a un id que no existe ─────
+   Un menú roto es un botón que no lleva a ninguna parte. Se avisa
+   igual que con las rutas: es barato de revisar y caro de dejar
+   pasar. */
+const idsExistentes = new Set(entradas.map((e) => e.id))
+const opcionesRotas = entradas.flatMap((e) =>
+  (e.opciones || [])
+    .filter((o) => !idsExistentes.has(o.id))
+    .map((o) => `"${e.titulo}" -> Opción "${o.texto}" apunta a "${o.id}", que no existe`)
+)
+if (opcionesRotas.length) {
+  console.log(amarillo(`\n  Opciones de menú rotas en guiausuario.md:`))
+  opcionesRotas.forEach((o) => console.log(rojo(`    · ${o}`)))
+}
+
 /* ── Escribe el archivo incorporado ─────────────────────── */
 
 const fecha = new Date().toISOString().slice(0, 10)

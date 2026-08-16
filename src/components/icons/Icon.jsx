@@ -1,4 +1,20 @@
 const PATHS = {
+  sun: (
+    <>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2" />
+      <path d="M12 20v2" />
+      <path d="m4.93 4.93 1.41 1.41" />
+      <path d="m17.66 17.66 1.41 1.41" />
+      <path d="M2 12h2" />
+      <path d="M20 12h2" />
+      <path d="m6.34 17.66-1.41 1.41" />
+      <path d="m19.07 4.93-1.41 1.41" />
+    </>
+  ),
+  moon: (
+    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z" />
+  ),
   package: (
     <>
       <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
@@ -458,6 +474,30 @@ const PATHS = {
     <>
       <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
       <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+    </>
+  ),
+  // Insignias de reconocimiento del perfil: iconos propios (no
+  // reciclados de otras partes de la app) para que cada distincion
+  // se sienta especifica en vez de un icono generico reutilizado.
+  'insignia-verificado': (
+    <>
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      <polyline points="8.5 12.5 11 15 16 9" />
+    </>
+  ),
+  'insignia-veloz': (
+    <>
+      <line x1="9" y1="2" x2="15" y2="2" />
+      <line x1="12" y1="2" x2="12" y2="4" />
+      <circle cx="12" cy="14" r="8" />
+      <polyline points="12 10 12 14 16 16" />
+    </>
+  ),
+  'insignia-ranking': (
+    <>
+      <rect x="3" y="13" width="5" height="8" rx="1" />
+      <rect x="9.5" y="9" width="5" height="12" rx="1" />
+      <rect x="16" y="15" width="5" height="6" rx="1" />
     </>
   ),
 }

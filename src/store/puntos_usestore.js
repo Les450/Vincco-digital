@@ -17,6 +17,142 @@ import {
    ───────────────────────────────────────────────────────────── */
 
 const CLAVE_CONFIG = 'vincco:configuraciones'
+const CLAVE_NOTIFICACIONES = 'vincco:notificaciones'
+const CLAVE_SUCURSALES = 'vincco:sucursales'
+const CLAVE_SUCURSAL_ACTIVA = 'vincco:sucursal-activa'
+const CLAVE_VERIFICACION = 'vincco:verificacion'
+const CLAVE_KYC = 'vincco:kyc'
+
+// Sucursales de ejemplo por rol. Cada sucursal administra su propio
+// panel (inventario y publicaciones aparte). El dia que haya backend,
+// esto sale de un GET /sucursales y se olvida de aqui.
+const SUCURSALES_INICIALES = {
+  negocio: [
+    { id: 'n1', nombre: 'Sucursal Central', direccion: 'Frente al parque central, Nueva Guinea' },
+    { id: 'n2', nombre: 'Sucursal El Rama', direccion: 'Calle principal, El Rama' },
+  ],
+  proveedor: [
+    { id: 'p1', nombre: 'Bodega Central', direccion: 'Nueva Guinea, RACCS' },
+    { id: 'p2', nombre: 'Bodega El Rama', direccion: 'El Rama, RACCS' },
+  ],
+}
+
+// Los avisos se guardan en localStorage, igual que la configuracion,
+// para que lo eliminado siga eliminado y lo leído siga leído al
+// recargar la pagina. Mientras no hay backend, este es el piso de datos.
+function leerNotificaciones() {
+  try {
+    const guardado = JSON.parse(window.localStorage.getItem(CLAVE_NOTIFICACIONES))
+    if (Array.isArray(guardado)) return guardado
+  } catch {
+    // Modo privado o JSON corrupto: se arranca con los generados
+  }
+  return generarNotificaciones().notificaciones
+}
+
+function escribirNotificaciones(notificaciones) {
+  try {
+    window.localStorage.setItem(CLAVE_NOTIFICACIONES, JSON.stringify(notificaciones))
+  } catch {
+    // Si no se puede guardar, los cambios duran solo esta sesión
+  }
+}
+
+function leerSucursales() {
+  try {
+    const guardado = JSON.parse(window.localStorage.getItem(CLAVE_SUCURSALES) || '{}')
+    if (guardado && Array.isArray(guardado.negocio)) return guardado
+  } catch {}
+  return SUCURSALES_INICIALES
+}
+
+function escribirSucursales(sucursales) {
+  try {
+    window.localStorage.setItem(CLAVE_SUCURSALES, JSON.stringify(sucursales))
+  } catch {}
+}
+
+function leerSucursalActiva() {
+  try {
+    const guardado = JSON.parse(window.localStorage.getItem(CLAVE_SUCURSAL_ACTIVA) || '{}')
+    const validoNegocio = guardado?.negocio && SUCURSALES_INICIALES.negocio.some((s) => s.id === guardado.negocio)
+    const validoProveedor = guardado?.proveedor && SUCURSALES_INICIALES.proveedor.some((s) => s.id === guardado.proveedor)
+    return {
+      negocio: validoNegocio ? guardado.negocio : SUCURSALES_INICIALES.negocio[0].id,
+      proveedor: validoProveedor ? guardado.proveedor : SUCURSALES_INICIALES.proveedor[0].id,
+    }
+  } catch {}
+  return {
+    negocio: SUCURSALES_INICIALES.negocio[0].id,
+    proveedor: SUCURSALES_INICIALES.proveedor[0].id,
+  }
+}
+
+function escribirSucursalActiva(sucursalActiva) {
+  try {
+    window.localStorage.setItem(CLAVE_SUCURSAL_ACTIVA, JSON.stringify(sucursalActiva))
+  } catch {}
+}
+
+/* ── Verificación de cuenta ───────────────────────────────────
+   Un estado por rol: 'sin_solicitar' | 'pendiente' | 'aprobada'.
+   Los tres roles arrancan en la cuenta demo ya "aprobada" (son las
+   cuentas de ejemplo que ya venían usando la app). Un registro
+   nuevo (Register.jsx) pisa el estado del rol que eligió: queda en
+   "pendiente" si pidió verificarse o en "sin_solicitar" si eligió
+   continuar sin hacerlo.
+
+   Sin backend, nadie puede aprobar una solicitud de verdad: queda
+   en "pendiente" hasta que exista un panel de administración o un
+   proceso de revisión real que la apruebe. Está separado del resto
+   de "perfiles" a propósito, para no tocar esa forma existente. */
+const ESTADOS_VERIFICACION_INICIALES = {
+  usuario: 'aprobada',
+  negocio: 'aprobada',
+  proveedor: 'aprobada',
+}
+
+function leerVerificacion() {
+  try {
+    const guardado = JSON.parse(window.localStorage.getItem(CLAVE_VERIFICACION) || '{}')
+    return { ...ESTADOS_VERIFICACION_INICIALES, ...guardado }
+  } catch {}
+  return ESTADOS_VERIFICACION_INICIALES
+}
+
+function escribirVerificacion(estadosVerificacion) {
+  try {
+    window.localStorage.setItem(CLAVE_VERIFICACION, JSON.stringify(estadosVerificacion))
+  } catch {}
+}
+
+// Expediente KYC (Ley 977): el borrador de la verificación completa,
+// guardado por paso para poder retomarla después. El flag "abierto"
+// no se persiste: cada visita arranca con el wizard cerrado.
+const KYC_INICIAL = { abierto: false, rol: null, desde: 'perfil', paso: 1, formulario: {} }
+
+function leerKYC() {
+  try {
+    const guardado = JSON.parse(window.localStorage.getItem(CLAVE_KYC) || '{}')
+    return {
+      ...KYC_INICIAL,
+      rol: guardado.rol || null,
+      desde: guardado.desde || 'perfil',
+      paso: guardado.paso || 1,
+      formulario: guardado.formulario || {},
+    }
+  } catch {}
+  return KYC_INICIAL
+}
+
+function escribirKYC(kyc) {
+  try {
+    window.localStorage.setItem(
+      CLAVE_KYC,
+      JSON.stringify({ rol: kyc.rol, desde: kyc.desde, paso: kyc.paso, formulario: kyc.formulario })
+    )
+  } catch {}
+}
 
 // Valores con los que arranca alguien que nunca tocó nada.
 // Criterio: lo que protege al usuario va encendido de fábrica
@@ -234,15 +370,15 @@ function generarEventosCalendario() {
 
 const useStore = create((set) => ({
   usuario: {
-    nombre: 'Leslie',
+    nombre: 'Lesbin',
     puntos: 340,
     nivel: 'Bronce'
   },
   negocio: {
-    nombre: 'Ferretería Don Chico',
+    nombre: 'Vincco Negocio',
     categoria: 'ferretería',
-    telefono: '1234-5678',
-    direccion: 'Managua, Nicaragua',
+    telefono: '+505 5717 8100',
+    direccion: 'Nueva Guinea, RACCS',
   },
   isLoggedIn: false,
   userType: 'usuario',
@@ -272,63 +408,181 @@ const useStore = create((set) => ({
   // y el proveedor no tiene "propietario" sino persona de contacto.
   perfiles: {
     usuario: {
-      nombre: 'Leslie Martínez',
-      telefono: '+505 8877 4411',
-      correo: 'leslie.martinez@gmail.com',
+      nombre: 'Lesbin Leonardo Díaz Medina',
+      cedula: '616-151206-1006K',
+      edad: 19,
+      telefono: '+505 5717 8100',
+      correo: 'lesbinleonardo@gmail.com',
       municipio: 'Nueva Guinea',
-      barrio: 'Barrio San Pedro',
-      miembroDesde: 'marzo 2026',
+      barrio: 'Barrio Rigoberto López',
+      miembroDesde: 'agosto 2026',
       foto: null,
     },
     negocio: {
-      nombre: 'Ferretería Don Chico',
+      nombre: 'Vincco Negocio',
       categoria: 'Ferretería',
-      propietario: 'Francisco Duarte',
-      telefono: '+505 8855 6677',
-      correo: 'ferreteriadonchico@gmail.com',
-      ruc: 'J0310000123456',
-      direccion: 'Frente al parque central, Nueva Guinea',
-      descripcion: 'Ferretería con más de 12 años en Nueva Guinea. Materiales de construcción, herramienta manual y accesorios eléctricos.',
-      miembroDesde: 'enero 2026',
+      propietario: 'Lesbin Leonardo Díaz Medina',
+      cedula: '616-151206-1006K',
+      edad: 19,
+      telefono: '+505 5717 8100',
+      correo: 'lesbinleonardo@gmail.com',
+      ruc: 'J0310000456789',
+      direccion: 'Nueva Guinea, RACCS',
+      descripcion: 'Negocio de prueba en Nueva Guinea, parte de la red de comercios asociados a Vincco.',
+      miembroDesde: 'agosto 2026',
       foto: null,
     },
     proveedor: {
-      nombre: 'Distribuidora Norte',
+      nombre: 'Vincco Proveedor',
       categoria: 'Construcción',
-      contacto: 'Roberto Sánchez',
-      telefono: '+505 8844 2200',
-      correo: 'ventas@distribuidoranorte.com',
-      ruc: 'J0310000998877',
-      cobertura: 'Nueva Guinea, El Rama y Muelle de los Bueyes',
-      descripcion: 'Distribuimos cemento, hierro, herramienta manual y material eléctrico a ferreterías y constructoras de la RACCS.',
-      miembroDesde: 'febrero 2026',
+      contacto: 'Lesbin Leonardo Díaz Medina',
+      cedula: '616-151206-1006K',
+      edad: 19,
+      telefono: '+505 5717 8100',
+      correo: 'lesbinleonardo@gmail.com',
+      ruc: 'J0310000456790',
+      cobertura: 'Nueva Guinea y alrededores, RACCS',
+      descripcion: 'Proveedor de prueba en Nueva Guinea, RACCS, parte de la red de proveedores asociados a Vincco.',
+      miembroDesde: 'agosto 2026',
       foto: null,
     },
   },
-  ...generarNotificaciones(),
+  estadosVerificacion: leerVerificacion(),
+  kyc: leerKYC(),
+  notificaciones: leerNotificaciones(),
+  sucursales: leerSucursales(),
+  sucursalActiva: leerSucursalActiva(),
   ...generarEventosCalendario(),
-  agregarPuntos: (cantidad) => set((state) => ({
-    usuario: {
-      ...state.usuario,
-      puntos: state.usuario.puntos + cantidad
+  // Un cliente sin verificar no suma puntos: es la regla antifraude
+  // que pidió el dueño de Vincco, para que crear cuentas falsas no
+  // sirva para acumular puntos. Todavía no hay ninguna pantalla que
+  // llame a esto (no hay una acción real de "comprar" conectada),
+  // pero el freno queda puesto acá para cuando la haya.
+  agregarPuntos: (cantidad) => set((state) => {
+    if (state.estadosVerificacion.usuario !== 'aprobada') return {}
+    return {
+      usuario: {
+        ...state.usuario,
+        puntos: state.usuario.puntos + cantidad
+      }
     }
-  })),
+  }),
   setLoggedIn: (val) => set({ isLoggedIn: val }),
   setUserType: (tipo) => set({ userType: tipo }),
-  setNegocio: (data) => set({ negocio: data }),
-  marcarNotificacionLeida: (id) => set((state) => ({
-    notificaciones: state.notificaciones.map((n) =>
+  setNegocio: (datos) => set((state) => ({ negocio: { ...state.negocio, ...datos } })),
+  // Cambia la sucursal activa de un rol. El dato vive por rol porque
+  // un proveedor y un comercio administran sucursales distintas.
+  cambiarSucursal: (rol, id) => set((state) => {
+    if (!state.sucursales[rol]?.some((s) => s.id === id)) return {}
+    const sucursalActiva = { ...state.sucursalActiva, [rol]: id }
+    escribirSucursalActiva(sucursalActiva)
+    return { sucursalActiva }
+  }),
+  // Agrega una sucursal nueva y la deja activa: el dueño puede
+  // empezar a cargar el panel de esa sucursal de inmediato.
+  agregarSucursal: (rol, datos) => {
+    const id = `s${Date.now()}`
+    set((state) => {
+      const sucursales = {
+        ...state.sucursales,
+        [rol]: [...(state.sucursales[rol] || []), { id, ...datos }],
+      }
+      escribirSucursales(sucursales)
+      const sucursalActiva = { ...state.sucursalActiva, [rol]: id }
+      escribirSucursalActiva(sucursalActiva)
+      return { sucursales, sucursalActiva }
+    })
+    return id
+  },
+  marcarNotificacionLeida: (id) => set((state) => {
+    const notificaciones = state.notificaciones.map((n) =>
       n.id === id ? { ...n, leida: true } : n
     )
-  })),
-  marcarTodasLeidas: () => set((state) => ({
-    notificaciones: state.notificaciones.map((n) => ({ ...n, leida: true }))
-  })),
-  agregarNegocioAsociado: (datos) => {
-    const nuevo = { id: Date.now(), estado: 'Activo', ...datos }
-    set((state) => ({ negociosAsociados: [nuevo, ...state.negociosAsociados] }))
-    return nuevo.id
+    escribirNotificaciones(notificaciones)
+    return { notificaciones }
+  }),
+  marcarTodasLeidas: () => set((state) => {
+    const notificaciones = state.notificaciones.map((n) => ({ ...n, leida: true }))
+    escribirNotificaciones(notificaciones)
+    return { notificaciones }
+  }),
+  // Elimina los avisos cuyos id vienen en el arreglo. La pagina solo
+  // le pasa ids del propio usuario, asi nadie puede borrar ajenos.
+  eliminarNotificaciones: (ids) => set((state) => {
+    const aEliminar = new Set(ids)
+    const notificaciones = state.notificaciones.filter((n) => !aEliminar.has(n.id))
+    escribirNotificaciones(notificaciones)
+    return { notificaciones }
+  }),
+  /* ── Negocios asociados: pedido y aceptación ─────────────────
+     Asociarse no es un acto unilateral del proveedor: es una
+     solicitud que el negocio tiene que aceptar. Por eso pedir uno
+     nuevo no lo agrega a la lista como asociado — lo agrega en
+     estado "pendiente" y avisa al negocio por Avisos, que ya existe
+     y es donde el negocio la acepta o la rechaza (Notificaciones.jsx).
+     Recién con "aceptada" es una asociación de verdad. */
+  solicitarAsociacionNegocio: (datos) => {
+    const id = Date.now()
+    const nuevo = { id, estado: 'pendiente', ...datos }
+    set((state) => {
+      const nombreProveedor = state.perfiles.proveedor?.nombre || 'Un proveedor'
+      const notificaciones = [
+        {
+          id: `sol-asoc-${id}`,
+          tipo: 'solicitud_asociacion',
+          icono: 'handshake',
+          titulo: 'Solicitud de asociación',
+          descripcion: `${nombreProveedor} quiere asociarse con tu negocio como proveedor.`,
+          fecha: new Date().toISOString(),
+          leida: false,
+          ruta: '/avisos',
+          userType: 'negocio',
+          negocioAsociadoId: id,
+        },
+        ...state.notificaciones,
+      ]
+      escribirNotificaciones(notificaciones)
+      return {
+        negociosAsociados: [nuevo, ...state.negociosAsociados],
+        notificaciones,
+      }
+    })
+    return id
   },
+  // El negocio responde una solicitud desde Avisos. Al proveedor le
+  // llega de vuelta un aviso con el resultado, así no tiene que
+  // quedarse revisando la lista para enterarse.
+  responderAsociacionNegocio: (id, aceptar) => set((state) => {
+    const solicitud = state.negociosAsociados.find((n) => n.id === id)
+    if (!solicitud || solicitud.estado !== 'pendiente') return {}
+
+    const negociosAsociados = state.negociosAsociados.map((n) =>
+      n.id === id ? { ...n, estado: aceptar ? 'aceptada' : 'rechazada' } : n
+    )
+    const notificaciones = [
+      {
+        id: `resp-asoc-${id}`,
+        tipo: 'respuesta_asociacion',
+        icono: aceptar ? 'check-circle' : 'x',
+        titulo: aceptar ? 'Asociación aceptada' : 'Asociación rechazada',
+        descripcion: aceptar
+          ? `${solicitud.nombre} aceptó tu solicitud de asociación. Ya podés cotizarle.`
+          : `${solicitud.nombre} rechazó tu solicitud de asociación.`,
+        fecha: new Date().toISOString(),
+        leida: false,
+        ruta: '/negocios-asociados',
+        userType: 'proveedor',
+      },
+      ...state.notificaciones,
+    ]
+    escribirNotificaciones(notificaciones)
+    return { negociosAsociados, notificaciones }
+  }),
+  // Termina una asociación ya aceptada. No hace falta la ceremonia
+  // de aviso y respuesta: es reversible con solo volver a pedirla.
+  quitarAsociacionNegocio: (id) => set((state) => ({
+    negociosAsociados: state.negociosAsociados.filter((n) => n.id !== id),
+  })),
   // Actualiza solo los campos que vienen en datos y conserva el resto
   // (id, estado y color no se tocan desde el formulario)
   editarNegocioAsociado: (id, datos) => set((state) => ({
@@ -359,6 +613,105 @@ const useStore = create((set) => ({
       [rol]: { ...state.perfiles[rol], foto: null },
     },
   })),
+  // Pide la verificación de la cuenta: se usa al terminar el
+  // registro, desde el perfil para quien la pospuso, y desde
+  // cualquier acción bloqueada (publicar, cotizar, etc). Sin backend
+  // no hay quién la apruebe todavía: queda "pendiente" hasta que
+  // exista un panel de administración que la revise.
+  //
+  // datos.ruc es opcional: negocio y proveedor lo cargan acá si ya
+  // lo tienen. Si no lo tienen, igual pueden solicitar — el equipo
+  // de Vincco los contacta para ver cómo verificarlos.
+  solicitarVerificacion: (rol, datos = {}) => set((state) => {
+    const estadosVerificacion = { ...state.estadosVerificacion, [rol]: 'pendiente' }
+    escribirVerificacion(estadosVerificacion)
+    const cambios = { estadosVerificacion }
+    if (datos.ruc && (rol === 'negocio' || rol === 'proveedor')) {
+      cambios.perfiles = {
+        ...state.perfiles,
+        [rol]: { ...state.perfiles[rol], ruc: datos.ruc },
+      }
+    }
+    return cambios
+  }),
+  // "Continuar sin verificación" al terminar el registro. Deja
+  // explícito que todavía no la pidió (distinto de "pendiente"),
+  // para que el perfil pueda ofrecerle solicitarla más adelante.
+  continuarSinVerificar: (rol) => set((state) => {
+    const estadosVerificacion = { ...state.estadosVerificacion, [rol]: 'sin_solicitar' }
+    escribirVerificacion(estadosVerificacion)
+    return { estadosVerificacion }
+  }),
+  // Accion de prueba/demo: no existe en un flujo real (ahi la
+  // aprobacion la da el equipo de Vincco), pero sin backend hace
+  // falta una forma de resetear las cuentas de prueba a "aprobada"
+  // sin editar localStorage a mano.
+  marcarVerificadoDemo: (rol) => set((state) => {
+    const estadosVerificacion = { ...state.estadosVerificacion, [rol]: 'aprobada' }
+    escribirVerificacion(estadosVerificacion)
+    return { estadosVerificacion }
+  }),
+
+  /* ── Expediente KYC (Ley 977) ─────────────────────────────
+     La verificación ya no es solo el RUC: es un expediente de
+     4 pasos que se arma en VerificacionKYC (identificación,
+     documentos, datos tributarios y datos según el rol). El
+     borrador se guarda por paso en "vincco:kyc" para retomarlo;
+     al enviar, se apoya en solicitarVerificacion y el rol queda
+     "pendiente" (24-48 horas hábiles de revisión). */
+  abrirKYC: (rol, desde = 'perfil') => set((state) => ({
+    kyc: {
+      ...state.kyc,
+      abierto: true,
+      rol,
+      desde,
+      // Si ya hay un borrador para este rol, se retoma en el paso
+      // donde quedó; si es otro rol, se arranca de cero.
+      paso: state.kyc.rol === rol ? state.kyc.paso : 1,
+    },
+  })),
+  cerrarKYC: () => set((state) => ({ kyc: { ...state.kyc, abierto: false } })),
+  // Guarda los campos del expediente al cambiar de paso o de
+  // campo: el wizard la llama en cada cambio para no perder nada.
+  guardarKYC: (datos) => set((state) => {
+    const kyc = {
+      ...state.kyc,
+      formulario: { ...state.kyc.formulario, ...datos },
+    }
+    escribirKYC(kyc)
+    return { kyc }
+  }),
+  guardarPasoKYC: (paso) => set((state) => {
+    const kyc = { ...state.kyc, paso }
+    escribirKYC(kyc)
+    return { kyc }
+  }),
+  // Cambió de rol dentro del wizard: el expediente es por rol
+  // (cada uno pide datos distintos), así que se arranca de cero.
+  cambiarRolKYC: (rol) => set((state) => {
+    if (state.kyc.rol === rol) return {}
+    const kyc = { ...state.kyc, rol, paso: 1, formulario: {} }
+    escribirKYC(kyc)
+    return { kyc }
+  }),
+  // Envía la solicitud: igual que solicitarVerificacion, marca el
+  // rol en "pendiente" y copia el RUC al perfil si lo hay. El
+  // borrador se conserva por si la revisión pide correcciones.
+  enviarKYC: () => set((state) => {
+    const { rol, formulario } = state.kyc
+    if (!rol) return {}
+    const estadosVerificacion = { ...state.estadosVerificacion, [rol]: 'pendiente' }
+    escribirVerificacion(estadosVerificacion)
+    const cambios = { estadosVerificacion }
+    const ruc = formulario.rucNegocio || formulario.ruc
+    if (ruc && (rol === 'negocio' || rol === 'proveedor')) {
+      cambios.perfiles = {
+        ...state.perfiles,
+        [rol]: { ...state.perfiles[rol], ruc },
+      }
+    }
+    return cambios
+  }),
   // Conecta o actualiza una red del negocio
   guardarRed: (id, valor) => set((state) => ({
     redesNegocio: { ...state.redesNegocio, [id]: valor.trim() }
@@ -429,8 +782,8 @@ const useStore = create((set) => ({
     ),
   })),
 
-  enviarNotificacionCompra: () => set((state) => ({
-    notificaciones: [
+  enviarNotificacionCompra: () => set((state) => {
+    const notificaciones = [
       {
         id: Date.now(),
         tipo: 'notificacion_compra_proveedor',
@@ -443,8 +796,10 @@ const useStore = create((set) => ({
         userType: 'negocio',
       },
       ...state.notificaciones,
-    ],
-  })),
+    ]
+    escribirNotificaciones(notificaciones)
+    return { notificaciones }
+  }),
 }))
 
 export default useStore

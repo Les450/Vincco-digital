@@ -35,6 +35,19 @@
    Todo lo demás (párrafos sueltos, texto antes del primer ##)
    se ignora, así que podés escribir introducciones y comentarios
    sin romper nada.
+
+   ─────────────────────────────────────────────────────────────
+   MENÚS (preguntas que dependen de quién pregunta)
+
+   <!-- roles: todos | id: mi-menu | tipo: menu -->
+
+   Texto de arriba de los botones.
+
+   - Opción: id-de-otra-entrada | Texto del botón
+
+   Cada "- Opción:" apunta al id de OTRA entrada de esta guía. Ver
+   el detalle completo en guiausuario.md, sección "Cuando una
+   pregunta abarca varios perfiles".
    ══════════════════════════════════════════════════════════════ */
 
 // Convierte "¿Cómo gano puntos?" en "como-gano-puntos"
@@ -102,6 +115,18 @@ function leerDato(linea, entrada) {
     return true
   }
 
+  // "- Opción: id-de-la-entrada | Texto que ve el usuario en el botón"
+  // Convierte una entrada en menú: en vez de responder de una, ofrece
+  // estas opciones como botones. Cada id tiene que ser el de OTRA
+  // entrada de la guía (puede ser otro menú, para submenús).
+  if (etiqueta === 'opcion' || etiqueta === 'opción') {
+    const [idParte, ...resto] = valor.split('|')
+    const id = aId((idParte || '').trim())
+    const texto = resto.join('|').trim()
+    if (id && texto) entrada.opciones.push({ id, texto })
+    return true
+  }
+
   // Marca sin valor: "- Todavía no disponible"
   const sinTildes = etiqueta.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   if (sinTildes.startsWith('todavia no') || sinTildes === 'pendiente') {
@@ -159,6 +184,9 @@ export function parsearGuia(markdown) {
       // pero responde bastante peor. Se avisa.
       problemas.push(`"${entrada.titulo}" no tiene "Buscar por:", va a costar encontrarla`)
     }
+    if (entrada.tipo === 'menu' && !entrada.opciones.length) {
+      problemas.push(`"${entrada.titulo}" es un menú (tipo: menu) pero no tiene ninguna "- Opción:"`)
+    }
     entradas.push(entrada)
     entrada = null
   }
@@ -213,6 +241,8 @@ export function parsearGuia(markdown) {
         claves: [],
         nota: null,
         pendiente: false,
+        tipo: 'pregunta',
+        opciones: [],
       }
       esperandoResumen = true
       continue
@@ -235,6 +265,8 @@ export function parsearGuia(markdown) {
       if (datos.id) destino.id = aId(datos.id)
       // Los roles de la sección son el valor por defecto de sus entradas
       if (datos.roles) destino.roles = normalizarRoles(listaDeTexto(datos.roles))
+      // <!-- tipo: menu --> convierte la entrada en un menú de opciones
+      if (datos.tipo && entrada) entrada.tipo = datos.tipo.trim().toLowerCase()
       continue
     }
 

@@ -13,13 +13,26 @@
      nombre: string
 
      async responder(pregunta, contexto) -> Respuesta
+       Pregunta libre, escrita por el usuario. contexto trae
+       "fragmentos", lo que encontró la búsqueda en la guía.
+
+     async responderPorEntrada(entrada, contexto) -> Respuesta
+       Entrada YA elegida, sin buscar: así llega Kiara cuando el
+       usuario toca una opción de un menú en vez de escribir.
+       contexto trae "origenMenu", el id del menú del que salió.
 
    ─────────────────────────────────────────────────────────────
-   contexto = {
+   contexto (de responder) = {
      rol:        'usuario' | 'negocio' | 'proveedor'
      ruta:       la pantalla donde está parado el usuario
      fragmentos: [{ entrada, puntaje }] de la capa de conocimiento
      historial:  últimos turnos de la conversación
+   }
+
+   contexto (de responderPorEntrada) = {
+     rol:        'usuario' | 'negocio' | 'proveedor'
+     ruta:       la pantalla donde está parado el usuario
+     origenMenu: id del menú del que salió esta entrada, o null
    }
 
    Respuesta = {
@@ -29,6 +42,12 @@
      rutaLabel:    string — cómo se llama esa pantalla
      nota:         string — advertencia, opcional
      sugerencias:  string[] — qué más puede preguntar
+     opciones:     { id, texto }[] — menú de respuesta rápida. Si viene
+                   con algo, la interfaz dibuja botones en vez de dejar
+                   escribir: el id es el de OTRA entrada de la guía
+     volverA:      string — id del menú del que salió esta respuesta,
+                   para dibujar un botón "Volver al menú". null si esta
+                   respuesta no vino de ningún menú
      fuente:       string — de qué entrada de la guía salió
      seguro:       boolean — false si el motor no está confiado
    }
@@ -52,6 +71,8 @@ export const RESPUESTA_BASE = {
   rutaLabel: null,
   nota: null,
   sugerencias: [],
+  opciones: null,
+  volverA: null,
   fuente: null,
   seguro: true,
 }

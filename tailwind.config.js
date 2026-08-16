@@ -4,6 +4,11 @@ module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
+  // "dark" solo se usa vía class="dark" en public/index.html, fuera del
+  // glob de `content` de arriba. Sin este safelist, Tailwind purga la
+  // regla .dark de @layer base por no encontrar la clase en el código
+  // escaneado, y el tema oscuro de los componentes shadcn se rompe.
+  safelist: ["dark"],
   prefix: "",
   theme: {
     container: {

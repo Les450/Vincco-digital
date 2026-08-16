@@ -57,12 +57,17 @@ function CarouselSpotlights() {
 
 const slideContainerStyle = {
   display: 'flex',
+  width: '100%',
   transition: 'transform 0.5s ease-in-out',
 }
 
 const slideStyle = {
-  minWidth: '100%',
+  width: '100%',
+  flex: '0 0 100%',
   boxSizing: 'border-box',
+  overflow: 'hidden',
+  display: 'flex',
+  flexDirection: 'column',
 }
 
 const dotsContainerStyle = {
@@ -88,7 +93,7 @@ export default function CarouselAnuncios({ slides }) {
     <section style={cardStyle}>
       <CarouselSpotlights />
       <div style={contentStyle}>
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{
             ...slideContainerStyle,
             transform: `translateX(-${current * 100}%)`,

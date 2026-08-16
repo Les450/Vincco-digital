@@ -86,9 +86,9 @@ const GRUPO_NOTIFICACIONES_CANAL = {
 }
 
 const GRUPO_APP = {
-  id: 'app',
-  titulo: 'La app',
-  descripcion: 'Cómo se ve la app',
+  id: 'accesibilidad',
+  titulo: 'Accesibilidades',
+  descripcion: 'Cómo se ve',
   icono: 'sliders',
   ajustes: [
     {
@@ -103,7 +103,7 @@ const GRUPO_APP = {
       tipo: 'switch',
       icono: 'search',
       label: 'Texto más grande',
-      ayuda: 'Aumenta el tamaño de las letras en toda la app',
+      ayuda: 'Aumenta el tamaño de las letras en toda la página',
     },
     {
       id: 'altoContraste',
@@ -120,10 +120,11 @@ const GRUPO_APP = {
    Vincco es Nicaragua: el idioma arranca en español y la moneda en
    córdobas, y así queda para quien no toca nada.
 
-   El inglés está para el turista o el proveedor de afuera. El dólar
-   está como preferencia guardada, no como conversión: sin un tipo de
-   cambio real, convertir sería inventar precios. Hasta que exista esa
-   tasa, los montos se siguen mostrando en córdobas.  */
+   El inglés está para el turista o el proveedor de afuera. Elegir
+   dólar no cambia lo que se guarda (siempre son córdobas): solo
+   convierte lo que se MUESTRA, con el tipo de cambio fijo de
+   TIPO_CAMBIO_USD en utils/moneda.js, que se actualiza a mano hasta
+   que exista un feed de tasa de cambio del día.  */
 const GRUPO_REGION = {
   id: 'region',
   titulo: 'Idioma y moneda',
@@ -145,7 +146,7 @@ const GRUPO_REGION = {
       tipo: 'opciones',
       icono: 'wallet',
       label: 'Moneda',
-      ayuda: `Los montos se muestran en ${MONEDA.nombrePlural} hasta que haya un tipo de cambio del día`,
+      ayuda: `Los montos se guardan en ${MONEDA.nombrePlural}; elegir dólares solo cambia como se muestran, con un tipo de cambio fijo de referencia`,
       opciones: [
         { valor: 'NIO', label: 'Córdobas (C$)' },
         { valor: 'USD', label: 'Dólares (US$)' },

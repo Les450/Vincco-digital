@@ -3,16 +3,25 @@ import { useNavigate, useLocation, Navigate } from 'react-router-dom'
 import useStore from '../store/puntos_usestore'
 import Icon from '../components/icons/Icon'
 import PublicacionesPanel from '../components/panel/PublicacionesPanel'
+import PapeleriaPanel from '../components/panel/PapeleriaPanel'
+import { moverAPapelera } from '../data/papelera'
+import { claveInventario } from '../data/inventario'
 import './Panel.css'
 
-const SECCIONES = [
+// Base de secciones. El proveedor no ve las que pertenecen al
+// negocio (Proveedores, Cotizaciones y Directorio son de su panel):
+// se filtran abajo segun el rol activo.
+const SECCIONES_BASE = [
   { id: 'publicaciones', label: 'Publicaciones', icon: 'megaphone' },
   { id: 'proveedores', label: 'Proveedores', icon: 'package' },
   { id: 'cotizaciones', label: 'Cotizaciones', icon: 'dollar-sign' },
   { id: 'reseñas', label: 'Reseñas y Ranking', icon: 'star' },
   { id: 'directorio', label: 'Directorio', icon: 'file-text' },
   { id: 'inventario', label: 'Inventario', icon: 'bar-chart-2' },
+  { id: 'papeleria', label: 'Papelería', icon: 'trash-2' },
 ]
+
+const SECCIONES_NEGOCIO = ['proveedores', 'cotizaciones', 'directorio']
 
 const CATEGORIAS_INVENTARIO = [
   'Todas', 'Herramientas', 'Materiales', 'Alimentos', 'Limpieza', 'Electrónicos', 'Ropa', 'Otros',
@@ -21,13 +30,38 @@ const CATEGORIAS_INVENTARIO = [
 const UNIDADES = ['unidad', 'kg', 'lb', 'litro', 'caja', 'paquete', 'metros']
 
 function InventarioSection() {
-  const [items, setItems] = useState([
-    { id: 1, nombre: 'Martillo', categoria: 'Herramientas', cantidad: 25, unidad: 'unidad', precio: 180, stockMinimo: 5 },
-    { id: 2, nombre: 'Cemento gris', categoria: 'Materiales', cantidad: 80, unidad: 'kg', precio: 250, stockMinimo: 20 },
-    { id: 3, nombre: 'Arroz granza', categoria: 'Alimentos', cantidad: 12, unidad: 'lb', precio: 22, stockMinimo: 30 },
-    { id: 4, nombre: 'Cloro galón', categoria: 'Limpieza', cantidad: 6, unidad: 'litro', precio: 55, stockMinimo: 10 },
-    { id: 5, nombre: 'Cautín eléctrico', categoria: 'Herramientas', cantidad: 3, unidad: 'unidad', precio: 320, stockMinimo: 2 },
-  ])
+  const sucursalId = useStore((s) => s.sucursalActiva[s.userType])
+  const clave = claveInventario(sucursalId)
+
+  const [items, setItems] = useState(() => {
+    const saved = localStorage.getItem(clave)
+    if (saved) {
+      try { return JSON.parse(saved) } catch {}
+    }
+    return [
+      { id: 1, nombre: 'Martillo', categoria: 'Herramientas', cantidad: 25, unidad: 'unidad', precio: 180, stockMinimo: 5 },
+      { id: 2, nombre: 'Cemento gris', categoria: 'Materiales', cantidad: 80, unidad: 'kg', precio: 250, stockMinimo: 20 },
+      { id: 3, nombre: 'Arroz granza', categoria: 'Alimentos', cantidad: 12, unidad: 'lb', precio: 22, stockMinimo: 30 },
+      { id: 4, nombre: 'Cloro galón', categoria: 'Limpieza', cantidad: 6, unidad: 'litro', precio: 55, stockMinimo: 10 },
+      { id: 5, nombre: 'Cautín eléctrico', categoria: 'Herramientas', cantidad: 3, unidad: 'unidad', precio: 320, stockMinimo: 2 },
+    ]
+  })
+
+  // Si el dueño cambia de sucursal, el inventario se recarga de la
+  // clave de esa sucursal: cada una administra su propio panel.
+  useEffect(() => {
+    const saved = localStorage.getItem(clave)
+    if (saved) {
+      try { setItems(JSON.parse(saved)) } catch {}
+    } else {
+      setItems([])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clave])
+
+  useEffect(() => {
+    localStorage.setItem(clave, JSON.stringify(items))
+  }, [items, clave])
 
   const [filtroCategoria, setFiltroCategoria] = useState('Todas')
   const [mostrarForm, setMostrarForm] = useState(false)
@@ -76,6 +110,8 @@ function InventarioSection() {
   }
 
   const eliminar = (id) => {
+    const item = items.find((i) => i.id === id)
+    if (item) moverAPapelera(item, 'inventario')
     setItems((prev) => prev.filter((i) => i.id !== id))
   }
 
@@ -220,6 +256,9 @@ export default function PanelSocio() {
   const location = useLocation()
   const userType = useStore((s) => s.userType)
   const usuario = useStore((s) => s.usuario)
+  const sucursales = useStore((s) => s.sucursales[userType] || [])
+  const sucursalActivaId = useStore((s) => s.sucursalActiva[userType])
+  const sucursal = sucursales.find((s) => s.id === sucursalActivaId) || sucursales[0]
   const seccionInicial = location.pathname === '/publicaciones' ? 'publicaciones' : 'publicaciones'
   const [seccionActiva, setSeccionActiva] = useState(seccionInicial)
 
@@ -231,14 +270,19 @@ export default function PanelSocio() {
 
   const esSocio = userType === 'negocio' || userType === 'proveedor'
 
+  // El panel de socio es compartido, pero cada rol administra lo
+  // suyo: el proveedor no gestiona proveedores ni recibe cotizaciones
+  // (eso es del negocio), asi que su navegacion queda mas corta.
+  const SECCIONES = userType === 'proveedor'
+    ? SECCIONES_BASE.filter((s) => !SECCIONES_NEGOCIO.includes(s.id))
+    : SECCIONES_BASE
+
   // Navegar dentro del render es un efecto secundario que React
   // desaconseja. <Navigate> hace la redireccion de forma declarativa
   // y replace evita ensuciar el historial del navegador.
   if (!esSocio) {
     return <Navigate to="/home" replace />
   }
-
-  const nombreTipo = userType === 'negocio' ? 'Negocio' : 'Proveedor'
 
   const acento = userType === 'negocio'
     ? { '--panel-accent': '#c05900', '--panel-accent-hover': '#a34b00' }
@@ -253,7 +297,7 @@ export default function PanelSocio() {
         <div className="panel-header-info">
           <h1 className="panel-header-titulo">Panel de Socio</h1>
           <p className="panel-header-tipo">
-            {usuario.nombre} · {nombreTipo}
+            {sucursal?.nombre || usuario.nombre}
           </p>
         </div>
       </div>
@@ -274,7 +318,8 @@ export default function PanelSocio() {
       <div className="panel-contenido">
         {seccionActiva === 'publicaciones' && <PublicacionesPanel />}
         {seccionActiva === 'inventario' && <InventarioSection />}
-        {seccionActiva !== 'publicaciones' && seccionActiva !== 'inventario' && (
+        {seccionActiva === 'papeleria' && <PapeleriaPanel />}
+        {seccionActiva !== 'publicaciones' && seccionActiva !== 'inventario' && seccionActiva !== 'papeleria' && (
           <SeccionPlaceholder
             id={seccionActiva}
             label={SECCIONES.find((s) => s.id === seccionActiva)?.label || ''}

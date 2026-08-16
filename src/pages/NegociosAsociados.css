@@ -89,6 +89,35 @@
   box-shadow: 0 6px 18px rgba(192, 89, 0, 0.45);
 }
 
+.na-header-acciones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.na-btn-cotizaciones {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 13px;
+  font-family: inherit;
+  padding: 11px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.na-btn-cotizaciones:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
 /* ── Estado vacío ─────────────────────────────────────── */
 
 .na-vacio {
@@ -204,6 +233,42 @@
 
 /* ── Formulario ───────────────────────────────────────── */
 
+.na-form-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 0 24px;
+  padding: 10px 13px;
+  border-radius: 10px;
+  background: #eef4f9;
+  color: #3d5164;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.na-form-aviso svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.na-form-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 8px 24px 0;
+  padding: 10px 13px;
+  border-radius: 10px;
+  background: #fdf0ee;
+  color: #b3261e;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.na-form-error svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
 .na-form {
   padding: 22px 24px 24px;
   display: flex;
@@ -302,6 +367,28 @@
   cursor: pointer;
 }
 
+.na-btn-quitar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px dashed #e3b3ac;
+  border-radius: 10px;
+  background: none;
+  color: #b3261e;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.na-btn-quitar:hover {
+  background: #fdf0ee;
+}
+
 .na-form-acciones {
   display: flex;
   justify-content: flex-end;
@@ -356,17 +443,989 @@
     flex-wrap: wrap;
   }
 
-  .na-btn-agregar {
+  .na-header-acciones {
     flex: 1 1 100%;
+  }
+
+  .na-header-acciones .na-btn-agregar,
+  .na-header-acciones .na-btn-cotizaciones {
+    flex: 1 1 50%;
     box-sizing: border-box;
-    width: 100%;
-    text-align: center;
+    justify-content: center;
     white-space: normal;
+    text-align: center;
     padding: 12px 14px;
     font-size: 13px;
   }
 
   .na-form-row {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ── Formulario de cotización ────────────────────────── */
+
+.na-modal--cotizacion {
+  max-width: 640px;
+}
+
+.na-form--cotizacion {
+  padding: 22px 24px 24px;
+}
+
+.na-form-cot-productos-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.na-form-cot-productos-titulo {
+  font-size: 13px;
+  font-weight: 700;
+  color: #3d5164;
+}
+
+.na-form-cot-fila {
+  display: grid;
+  grid-template-columns: 1.2fr 0.9fr 0.8fr 0.7fr auto;
+  gap: 8px;
+  align-items: end;
+  margin-bottom: 8px;
+}
+
+.na-form-cot-fila input,
+.na-form-cot-fila select {
+  border: 1.5px solid #e4eaef;
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #0b1b26;
+  outline: none;
+}
+
+.na-form-cot-fila input:focus,
+.na-form-cot-fila select:focus {
+  border-color: #007a7b;
+}
+
+.na-form-cot-input-cant {
+  max-width: 110px;
+}
+
+.na-form-cot-input-precio {
+  max-width: 90px;
+}
+
+.na-form-cot-quitar {
+  border: none;
+  border-radius: 8px;
+  background: #f4f8fb;
+  color: #94a3b8;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 36px;
+  transition: all 0.15s;
+}
+
+.na-form-cot-quitar:hover {
+  background: #e4eaef;
+  color: #b3261e;
+}
+
+.na-form-cot-totales {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 14px 8px;
+  background: #f4f8fb;
+  border-radius: 14px;
+  border: 1.5px solid #e4eaef;
+}
+
+.na-form-cot-total-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.na-form-cot-total-line span {
+  font-size: 13px;
+  color: #3d5164;
+}
+
+.na-form-cot-total-line b {
+  font-size: 13px;
+  color: #0b1b26;
+}
+
+.na-form-cot-total-line--grande {
+  border-top: 1.5px solid #e4eaef;
+  margin-top: 4px;
+  padding-top: 8px;
+}
+
+.na-form-cot-total-line--grande span {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0b1b26;
+}
+
+.na-form-cot-total-line--grande b {
+  font-size: 15px;
+  font-weight: 700;
+  color: #007a7b;
+}
+
+.na-form-cot-total-line input {
+  width: 110px;
+  border: 1.5px solid #e4eaef;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #0b1b26;
+  text-align: right;
+  outline: none;
+}
+
+.na-form-cot-total-line input:focus {
+  border-color: #007a7b;
+}
+
+.na-btn--sm {
+  border: none;
+  border-radius: 999px;
+  background: #f4f8fb;
+  color: #3d5164;
+  font-weight: 600;
+  font-size: 12px;
+  font-family: inherit;
+  padding: 8px 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+}
+
+.na-btn--sm:hover {
+  background: #e4eaef;
+}
+
+@media (max-width: 860px) {
+  .na-form-cot-fila {
+    grid-template-columns: 1fr;
+  }
+
+  .na-form-cot-input-cant,
+  .na-form-cot-input-precio {
+    max-width: 100%;
+  }
+
+  .na-form-cot-quitar {
+    width: 36px;
+    height: 38px;
+  }
+}
+
+/* -- Cotizaciones enviadas (drawer del proveedor) --------------- */
+
+.na-cot-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 22, 32, 0.55);
+  backdrop-filter: blur(3px);
+  z-index: 120;
+}
+
+.na-cot-overlay--detalle {
+  z-index: 130;
+}
+
+.na-cot-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(480px, 100%);
+  background: #f4f7fa;
+  z-index: 121;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -18px 0 48px rgba(5, 22, 32, 0.28);
+}
+
+/* Cabecera con identidad del panel de proveedor */
+.na-cot-head {
+  flex-shrink: 0;
+  padding: 22px 20px 18px;
+  background: linear-gradient(135deg, #003f5a 0%, #00707a 120%);
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.na-cot-head-kicker {
+  display: inline-block;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  opacity: 0.72;
+  margin-bottom: 6px;
+}
+
+.na-cot-head-titulo {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.na-cot-head-count {
+  min-width: 26px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  display: inline-grid;
+  place-items: center;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.na-cot-head-desc {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.na-cot-head-cerrar {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.na-cot-head-cerrar:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.na-cot-cuerpo {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 16px 24px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Contadores de resumen: el pulso de la bandeja */
+.na-cot-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.na-cot-stat {
+  border-radius: 13px;
+  padding: 11px 6px 10px;
+  text-align: center;
+  background: #ffffff;
+  border: 1px solid #e4eaef;
+  border-top: 3px solid transparent;
+}
+
+.na-cot-stat-num {
+  display: block;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.na-cot-stat-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-top: 3px;
+}
+
+.na-cot-stat--total { border-top-color: #003f5a; }
+.na-cot-stat--total .na-cot-stat-num { color: #003f5a; }
+.na-cot-stat--pendiente { border-top-color: #007a7b; }
+.na-cot-stat--pendiente .na-cot-stat-num { color: #007a7b; }
+.na-cot-stat--aceptada { border-top-color: #15803d; }
+.na-cot-stat--aceptada .na-cot-stat-num { color: #15803d; }
+.na-cot-stat--rechazada { border-top-color: #b3261e; }
+.na-cot-stat--rechazada .na-cot-stat-num { color: #b3261e; }
+
+/* Filtros por estado */
+.na-cot-filtros {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 14px;
+  scrollbar-width: none;
+}
+
+.na-cot-filtros::-webkit-scrollbar {
+  display: none;
+}
+
+.na-cot-filtro {
+  flex-shrink: 0;
+  border: 1.5px solid #dfe6ec;
+  background: #ffffff;
+  color: #4a5b6b;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  border-radius: 999px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.na-cot-filtro--activo {
+  background: #003f5a;
+  border-color: #003f5a;
+  color: #ffffff;
+}
+
+/* Tarjeta tipo oficio: folio, destino y riel de estado */
+.na-cot-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.na-cot-card {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #e4eaef;
+  border-radius: 16px;
+  padding: 14px 15px 12px;
+  box-shadow: 0 3px 10px rgba(15, 40, 55, 0.05);
+  overflow: hidden;
+}
+
+/* Riel vertical que comunica el estado del documento */
+.na-cot-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #8aa0b0;
+}
+
+.na-cot-card--pendiente::before { background: #007a7b; }
+.na-cot-card--aceptada::before { background: #15803d; }
+.na-cot-card--rechazada::before { background: #b3261e; }
+.na-cot-card--vencida::before { background: #b45309; }
+
+.na-cot-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.na-cot-destino {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.na-cot-avatar {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Sora', 'Inter', sans-serif;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.12);
+}
+
+.na-cot-avatar--lg {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  font-size: 16px;
+}
+
+.na-cot-destino-info {
+  min-width: 0;
+}
+
+.na-cot-destino-para {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8a9aa9;
+}
+
+.na-cot-destino-nombre {
+  margin: 1px 0 2px;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0b1b26;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.na-cot-destino-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: #6d7e8e;
+}
+
+.na-cot-folio {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: #42576a;
+}
+
+.na-cot-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #b7c3cd;
+}
+
+.na-cot-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+
+.na-cot-badge--pendiente { background: rgba(0, 122, 123, 0.12); color: #006a6b; }
+.na-cot-badge--aceptada { background: rgba(21, 128, 61, 0.14); color: #157a3d; }
+.na-cot-badge--rechazada { background: rgba(179, 38, 30, 0.12); color: #a3211b; }
+.na-cot-badge--vencida { background: rgba(180, 83, 9, 0.14); color: #9d4a0d; }
+
+.na-cot-solicitud {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 11px 0 0;
+  padding: 8px 10px;
+  background: #f1f5f8;
+  border-radius: 9px;
+  font-size: 12px;
+  color: #4a5b6b;
+  line-height: 1.45;
+}
+
+.na-cot-solicitud-barra {
+  display: none;
+}
+
+.na-cot-solicitud svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  opacity: 0.55;
+}
+
+.na-cot-card-pie {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 11px;
+  border-top: 1px dashed #e4eaef;
+}
+
+.na-cot-productos {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 11.5px;
+  color: #6d7e8e;
+}
+
+.na-cot-productos-num {
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #003f5a;
+}
+
+.na-cot-total {
+  margin-left: auto;
+  text-align: right;
+  min-width: 0;
+}
+
+.na-cot-total-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #8a9aa9;
+}
+
+.na-cot-total-num {
+  display: block;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0b1b26;
+  white-space: nowrap;
+}
+
+.na-cot-btn-detalle {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  color: #007a7b;
+  font-weight: 700;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.na-cot-btn-detalle:hover {
+  background: rgba(0, 122, 123, 0.08);
+}
+
+/* Estado vac�o */
+.na-cot-vacio {
+  text-align: center;
+  padding: 44px 22px;
+  background: #ffffff;
+  border: 1.5px dashed #d4dde5;
+  border-radius: 18px;
+}
+
+.na-cot-vacio--chico {
+  padding: 30px 18px;
+}
+
+.na-cot-vacio-icono {
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: rgba(0, 112, 122, 0.1);
+  color: #007a7b;
+  display: grid;
+  place-items: center;
+}
+
+.na-cot-vacio h3 {
+  margin: 0 0 8px;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 16px;
+  color: #0b1b26;
+}
+
+.na-cot-vacio p {
+  margin: 0 auto 18px;
+  max-width: 330px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #6d7e8e;
+}
+
+.na-cot-vacio-btn {
+  border: none;
+  border-radius: 999px;
+  background: #007a7b;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 13px;
+  font-family: inherit;
+  padding: 11px 22px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.na-cot-vacio-btn:hover {
+  background: #006768;
+}
+
+/* -- Detalle de cotizaci�n enviada ---------------------- */
+
+.na-cot-detail {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, calc(100% - 32px));
+  max-height: calc(100% - 48px);
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 22px;
+  overflow: hidden;
+  z-index: 131;
+  box-shadow: 0 24px 64px rgba(5, 22, 32, 0.35);
+}
+
+.na-cot-detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #003f5a 0%, #00707a 120%);
+  color: #ffffff;
+}
+
+.na-cot-detail-folio {
+  display: block;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.na-cot-detail-titulo .na-cot-badge {
+  margin-top: 6px;
+}
+
+.na-cot-detail-cerrar {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.na-cot-detail-cerrar:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.na-cot-detail-cuerpo {
+  overflow-y: auto;
+  padding: 18px 20px 22px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.na-cot-detail-destino {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 15px;
+}
+
+.na-cot-detail-negocio {
+  margin: 2px 0 0;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0b1b26;
+}
+
+.na-cot-detail-datos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding-bottom: 15px;
+}
+
+.na-cot-dato {
+  background: #f1f5f8;
+  border-radius: 11px;
+  padding: 9px 12px;
+  min-width: 0;
+}
+
+.na-cot-dato-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #8a9aa9;
+  margin-bottom: 3px;
+}
+
+.na-cot-dato-valor {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0b1b26;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.na-cot-dato-valor svg {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.na-cot-detail-solicitud {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 15px;
+  padding: 9px 12px;
+  background: #f1f5f8;
+  border-radius: 10px;
+  font-size: 12.5px;
+  color: #4a5b6b;
+  line-height: 1.5;
+}
+
+.na-cot-detail-solicitud svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  opacity: 0.55;
+}
+
+.na-cot-detail-seccion {
+  margin-bottom: 15px;
+}
+
+.na-cot-detail-subtitulo {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #007a7b;
+}
+
+.na-cot-tabla-wrap {
+  overflow-x: auto;
+  border: 1px solid #e4eaef;
+  border-radius: 12px;
+}
+
+.na-cot-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  min-width: 400px;
+}
+
+.na-cot-tabla th {
+  text-align: left;
+  background: #f1f5f8;
+  color: #4a5b6b;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e4eaef;
+  white-space: nowrap;
+}
+
+.na-cot-tabla td {
+  padding: 9px 12px;
+  border-bottom: 1px solid #edf1f5;
+  color: #0b1b26;
+  vertical-align: top;
+}
+
+.na-cot-tabla tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.na-cot-tabla td:last-child {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.na-cot-totales {
+  margin-bottom: 15px;
+  padding: 12px 14px;
+  background: #f1f5f8;
+  border-radius: 12px;
+}
+
+.na-cot-total-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 13px;
+  color: #4a5b6b;
+  padding: 3px 0;
+}
+
+.na-cot-total-line b {
+  color: #0b1b26;
+  font-variant-numeric: tabular-nums;
+}
+
+.na-cot-total-line--descuento b {
+  color: #b3261e;
+}
+
+.na-cot-total-line--grande {
+  margin-top: 5px;
+  padding-top: 9px;
+  border-top: 1px dashed #cfd9e1;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0b1b26;
+}
+
+.na-cot-total-line--grande b {
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 17px;
+  color: #003f5a;
+}
+
+.na-cot-condiciones {
+  margin-bottom: 15px;
+  padding: 12px 14px;
+  border: 1px solid #e4eaef;
+  border-radius: 12px;
+}
+
+.na-cot-condiciones-titulo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #8a9aa9;
+  margin-bottom: 5px;
+}
+
+.na-cot-condiciones p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #42576a;
+}
+
+/* Notas de estado: qu� significa el estado de la cotizaci�n */
+.na-cot-nota {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 11px 13px;
+  border-radius: 12px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+
+.na-cot-nota svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.na-cot-nota--pendiente { background: rgba(0, 122, 123, 0.1); color: #005c5e; }
+.na-cot-nota--aceptada { background: rgba(21, 128, 61, 0.12); color: #14693a; }
+.na-cot-nota--rechazada { background: rgba(179, 38, 30, 0.1); color: #92201a; }
+.na-cot-nota--vencida { background: rgba(180, 83, 9, 0.12); color: #8a4308; }
+
+.na-cot-detail-acciones {
+  display: flex;
+  gap: 10px;
+}
+
+.na-cot-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-radius: 12px;
+  border: none;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.na-cot-btn:hover {
+  transform: translateY(-1px);
+}
+
+.na-cot-btn--whatsapp {
+  background: linear-gradient(135deg, #128c4b, #0f7a40);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(18, 140, 75, 0.3);
+}
+
+.na-cot-btn--cerrar {
+  background: #ffffff;
+  border: 1.5px solid #dfe6ec;
+  color: #42576a;
+}
+
+/* -- Responsive del drawer ------------------------------ */
+
+@media (max-width: 480px) {
+  .na-cot-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .na-cot-detail-datos {
+    grid-template-columns: 1fr;
+  }
+
+  .na-cot-card-top {
+    flex-direction: column;
   }
 }

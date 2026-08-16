@@ -7,6 +7,7 @@
    ══════════════════════════════════════════════════════════ */
 
 .pf {
+  position: relative;
   font-family: 'Inter', 'Segoe UI', sans-serif;
   min-height: 100vh;
   background: linear-gradient(180deg, #002e43 0%, #003f5a 30%, #3f6f84 100%);
@@ -74,6 +75,21 @@
 
 .pf-hero-volver:hover {
   background: rgba(255, 255, 255, 0.18);
+}
+
+/* Esquina superior derecha: vive fuera del hero (que recorta con
+   overflow) para que el menu de sucursales pueda desplegarse libre */
+.pf-esquina {
+  position: absolute;
+  top: 18px;
+  right: 16px;
+  z-index: 6;
+}
+
+/* El selector de sucursal se apoya en los estilos de Panel.css,
+   pero sobre el fondo oscuro del hero usa la variante de pill */
+.pf-esquina .panel-sucursal-btn {
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
 }
 
 .pf-hero-cuerpo {
@@ -616,6 +632,74 @@
 a.pf-btn {
   text-decoration: none;
   white-space: nowrap;
+}
+
+/* ── Aviso de verificación ───────────────────────────────── */
+
+.pf-verif {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 16px 16px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #fdf3e8;
+  border: 1px solid #f3d9b8;
+}
+
+.pf-verif--pendiente {
+  background: #eef6f5;
+  border-color: #c7e3e0;
+}
+
+.pf-verif-icono {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #c05900;
+}
+
+.pf-verif--pendiente .pf-verif-icono {
+  color: #007a7b;
+}
+
+.pf-verif-texto {
+  flex: 1;
+  min-width: 0;
+}
+
+.pf-verif-texto strong {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 13.5px;
+  color: #24404f;
+}
+
+.pf-verif-texto p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #5a7080;
+}
+
+.pf-verif-btn {
+  flex-shrink: 0;
+  align-self: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .pf-verif {
+    flex-wrap: wrap;
+  }
+
+  .pf-verif-btn {
+    width: 100%;
+  }
 }
 
 /* ── Botón de ojo (privacidad) ───────────────────────────── */

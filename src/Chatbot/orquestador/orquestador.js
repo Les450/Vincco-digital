@@ -1,4 +1,4 @@
-import { buscar, sugerenciasIniciales } from '../conocimiento'
+import { buscar, sugerenciasIniciales, obtenerPorId } from '../conocimiento'
 import { evaluarAlcance, MOTIVO } from './alcance'
 import { crearRespuesta } from '../motores/tipos'
 import motorLocal from '../motores/motorLocal'
@@ -86,6 +86,15 @@ export async function preguntar(pregunta, { rol = 'usuario', ruta = '/', histori
     fragmentos,
     historial: recortarHistorial(historial),
   })
+}
+
+/* Entra directo a una entrada por su id: así llega Kiara cuando el
+   usuario TOCA una opción de un menú en vez de escribir. No pasa por
+   evaluarAlcance() ni por buscar(): tocar un botón no es texto libre,
+   ya se sabe exactamente qué se pidió. */
+export async function elegirOpcion(id, { rol = 'usuario', ruta = '/', origenMenu = null } = {}) {
+  const entrada = obtenerPorId(id, rol)
+  return motor.responderPorEntrada(entrada, { rol, ruta, origenMenu })
 }
 
 // Saludo de bienvenida al abrir el chat por primera vez

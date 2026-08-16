@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useStore from '../store/puntos_usestore'
 import { motion } from 'framer-motion'
-import { Eye, EyeOff, ArrowRight } from 'lucide-react'
+import Icon from '../components/icons/Icon'
 
 const VINCCO_LOGO = `${process.env.PUBLIC_URL}/assets/logos/vincco-logo.png`
 
@@ -137,6 +137,12 @@ function DotMap() {
   )
 }
 
+// Sin backend no hay credenciales reales que validar: esta es la
+// contraseña de las cuentas de prueba (mismo login para los tres
+// roles). Cuando exista un backend de verdad, esto se reemplaza por
+// la llamada de autenticacion y deja de vivir en el codigo.
+const PASSWORD_DEMO = 'Vincco2026'
+
 export default function Landing() {
   const navigate = useNavigate()
   const setLoggedIn = useStore((s) => s.setLoggedIn)
@@ -145,14 +151,19 @@ export default function Landing() {
   const [password, setPassword] = useState('')
   const [userType, setUserTypeLocal] = useState('usuario')
   const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (email && password) {
-      setUserType(userType)
-      setLoggedIn(true)
-      navigate('/')
+    if (!email || !password) return
+    if (password !== PASSWORD_DEMO) {
+      setError('Contraseña incorrecta')
+      return
     }
+    setError('')
+    setUserType(userType)
+    setLoggedIn(true)
+    navigate('/')
   }
 
   return (
@@ -261,9 +272,9 @@ export default function Landing() {
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => { setPassword(e.target.value); setError('') }}
                   autoComplete="current-password"
-                  className="w-full h-[50px] px-4 pr-11 border border-gray-200 rounded-xl text-sm text-gray-900 bg-[#f8f9fb] outline-none transition-all duration-200 placeholder:text-[#b0b7c3] focus:border-[#003f5a] focus:shadow-[0_0_0_3px_rgba(0,63,90,0.12)] focus:bg-white"
+                  className={`w-full h-[50px] px-4 pr-11 border rounded-xl text-sm text-gray-900 bg-[#f8f9fb] outline-none transition-all duration-200 placeholder:text-[#b0b7c3] focus:shadow-[0_0_0_3px_rgba(0,63,90,0.12)] focus:bg-white ${error ? 'border-red-400 focus:border-red-400' : 'border-gray-200 focus:border-[#003f5a]'}`}
                 />
                 <button
                   type="button"
@@ -272,9 +283,12 @@ export default function Landing() {
                   aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   className="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center bg-none border-none text-gray-400 hover:text-gray-500 transition-colors cursor-pointer"
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  <Icon name={showPassword ? 'eye-off' : 'eye'} size={18} />
                 </button>
               </div>
+              {error && (
+                <span className="text-xs font-medium text-red-500 pl-0.5">{error}</span>
+              )}
             </div>
 
             <div className="w-full flex flex-col gap-2">
@@ -306,7 +320,7 @@ export default function Landing() {
               whileTap={{ scale: 0.98 }}
             >
               Iniciar sesión
-              <ArrowRight size={16} />
+              <Icon name="arrow-right" size={16} />
             </motion.button>
           </motion.form>
 
@@ -348,7 +362,7 @@ export default function Landing() {
 
           <motion.button
             className="mt-4 bg-none border-none text-xs text-gray-300 cursor-pointer font-inherit p-0 transition-colors duration-200 hover:text-gray-400"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/bienvenida')}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.55 }}

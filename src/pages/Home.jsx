@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import HeroBanner from '../components/HeroBanner'
 import CarouselAnuncios from '../components/CarouselAnuncios'
 import useStore from '../store/puntos_usestore'
@@ -15,6 +16,7 @@ import {
   pasosProveedores,
   promocionesLimitadas,
   destacadas,
+  rankingNegocio,
 } from '../data/data_falso'
 
 function useLocalData(key, fallback) {
@@ -29,6 +31,15 @@ function useLocalData(key, fallback) {
     } catch {}
   }, [key])
   return data
+}
+
+// Las sucursales guardan sus publicaciones aparte ("pn_promociones:n1").
+// El home del negocio/proveedor muestra los datos de la sucursal activa.
+function useClaveSucursal(base) {
+  const userType = useStore((s) => s.userType)
+  const sucursal = useStore((s) => s.sucursalActiva[userType])
+  const esSocio = userType === 'negocio' || userType === 'proveedor'
+  return esSocio && sucursal ? `${base}:${sucursal}` : base
 }
 
 // Los hex vivian escritos aca y repetidos en Mispuntos.jsx.
@@ -98,6 +109,17 @@ const primaryBtnStyle = {
   fontWeight: 700,
   fontFamily: 'inherit',
   transition: 'all 0.2s',
+}
+
+const ctaBtnStyle = {
+  ...primaryBtnStyle,
+  padding: '14px 32px',
+  fontSize: 14,
+  marginTop: 'auto',
+  width: '100%',
+  maxWidth: 320,
+  background: `linear-gradient(135deg, ${C.orange}, ${C.orangeDark})`,
+  boxShadow: '0 4px 14px rgba(192,89,0,0.3)',
 }
 
 const twoColGrid = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }
@@ -263,8 +285,29 @@ const circleNumStyle = {
   flexShrink: 0,
 }
 
-function SeccionBienvenida({ usuario, userType }) {
+function SeccionBienvenida({ usuario, userType, negocioNombre }) {
   const esSocio = userType === 'negocio' || userType === 'proveedor'
+  const nombreDelSocio = negocioNombre || usuario.nombre
+  const estadoVerificacion = useStore((s) => s.estadosVerificacion[userType])
+
+  // La etiqueta solo se muestra si la cuenta ya esta verificada
+  // (estadoVerificacion === 'aprobada'), nunca por defecto.
+  const etiquetaRol = userType === 'negocio'
+    ? 'Negocio Socio'
+    : userType === 'proveedor'
+      ? 'Proveedor Socio'
+      : 'Cliente'
+
+  const posicion = rankingNegocio?.posicion ?? 0
+  const totalNegocios = rankingNegocio?.total ?? 0
+
+  const textoEstadoVerificacion = !esSocio
+    ? 'Tablero de puntos en negocios'
+    : estadoVerificacion === 'aprobada'
+      ? (userType === 'negocio' ? 'Negocio verificado' : 'Proveedor verificado')
+      : estadoVerificacion === 'pendiente'
+        ? 'Verificación en revisión'
+        : 'Verificación pendiente de solicitar'
 
   return (
     <section style={{
@@ -285,14 +328,16 @@ function SeccionBienvenida({ usuario, userType }) {
         </p>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '6px 0 4px' }}>
           <h3 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: C.textDark, fontFamily: "'Sora', 'Inter', sans-serif", letterSpacing: '-0.01em' }}>
-            {usuario.nombre}
+            {nombreDelSocio}
           </h3>
-          {esSocio && (
+          {estadoVerificacion === 'aprobada' && (
             <span style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: 4,
-              background: `linear-gradient(135deg, ${C.gold}, ${C.goldDark})`,
+              background: esSocio
+                ? `linear-gradient(135deg, ${C.gold}, ${C.goldDark})`
+                : `linear-gradient(135deg, ${C.accent}, ${C.accentDark})`,
               color: '#ffffff',
               fontSize: 10,
               fontWeight: 800,
@@ -300,14 +345,16 @@ function SeccionBienvenida({ usuario, userType }) {
               borderRadius: 999,
               textTransform: 'uppercase',
               letterSpacing: '0.08em',
-              boxShadow: '0 2px 8px rgba(217,140,31,0.35)',
+              boxShadow: esSocio
+                ? '0 2px 8px rgba(217,140,31,0.35)'
+                : '0 2px 8px rgba(13,148,136,0.35)',
             }}>
-              <Icon name="star" filled size={11} /> Socio
+              <Icon name="star" filled size={11} /> {etiquetaRol}
             </span>
           )}
         </div>
         <p style={{ margin: 0, fontSize: 13, color: C.primary, fontWeight: 500 }}>
-          {esSocio ? 'Panel de administración' : 'Tablero de puntos en negocios'}
+          {textoEstadoVerificacion}
         </p>
       </div>
       <div style={{
@@ -323,13 +370,22 @@ function SeccionBienvenida({ usuario, userType }) {
           ? '0 4px 14px rgba(217,140,31,0.3)'
           : '0 4px 14px rgba(13,148,136,0.25)',
       }}>
-        <Icon name="star" filled size={24} style={{ color: '#ffffff' }} />
+        {esSocio ? (
+          <Icon name="trending-up" size={24} style={{ color: '#ffffff' }} />
+        ) : (
+          <Icon name="star" filled size={24} style={{ color: '#ffffff' }} />
+        )}
         <div>
           <p style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#ffffff' }}>
-            {usuario.puntos}
+            {posicion}
+            {totalNegocios > 0 && (
+              <span style={{ fontSize: 13, fontWeight: 700, opacity: 0.85 }}>
+                {' / '}{totalNegocios}
+              </span>
+            )}
           </p>
           <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.8)' }}>
-            puntos
+            {esSocio ? 'Ranking' : 'puntos'}
           </p>
         </div>
       </div>
@@ -436,9 +492,10 @@ function PromoCard({ promo, index }) {
 
 function SeccionPromociones() {
   const scrollRef = useRef(null)
-  const promosLocales = useLocalData('pn_promociones', [])
-  const promosCombinadas = promosLocales.length > 0
-    ? promosLocales.map((p, i) => ({
+  const promosLocales = useLocalData(useClaveSucursal('pn_promociones'), [])
+  const promosNormales = promosLocales.filter((p) => p.tipo !== 'limitada')
+  const promosCombinadas = promosNormales.length > 0
+    ? promosNormales.map((p, i) => ({
         id: p.id,
         badge: p.descuento ? `${p.descuento}% OFF` : 'Promoción',
         categoria: p.titulo,
@@ -547,7 +604,7 @@ function SeccionRecompensas({ userType }) {
 }
 
 function SeccionProductos() {
-  const productosLocales = useLocalData('pn_productos', [])
+  const productosLocales = useLocalData(useClaveSucursal('pn_productos'), [])
 
   if (productosLocales.length === 0) return null
 
@@ -616,14 +673,15 @@ function SeccionProductos() {
 }
 
 function SeccionLimitadas() {
-  const limitadasLocales = useLocalData('pn_limitadas', [])
+  const promosLocales = useLocalData(useClaveSucursal('pn_promociones'), [])
+  const limitadasLocales = promosLocales.filter((p) => p.tipo === 'limitada')
 
   const items = limitadasLocales.length > 0
     ? limitadasLocales.map((p) => ({
         id: p.id,
         titulo: p.titulo,
-        descripcion: p.descripcion || (p.descuento ? `Oferta: ${p.descuento}` : ''),
-        badge: p.descuento || null,
+        descripcion: p.descripcion || (p.descuento ? `Oferta: ${p.descuento}%` : ''),
+        badge: p.descuento ? `${p.descuento}% OFF` : null,
         imagen: p.imagen || null,
         validoHasta: p.validoHasta || null,
       }))
@@ -711,7 +769,7 @@ function SeccionLimitadas() {
 }
 
 function SeccionDestacadas() {
-  const destacadasLocales = useLocalData('pn_destacadas', [])
+  const destacadasLocales = useLocalData(useClaveSucursal('pn_destacadas'), [])
   const { getLikes, isLikedByMe, toggleLike } = useLikes()
 
   const itemsBase = destacadasLocales.length > 0
@@ -802,6 +860,21 @@ function SeccionDestacadas() {
 export default function Home() {
   const usuario = useStore((s) => s.usuario)
   const userType = useStore((s) => s.userType)
+  const negocio = useStore((s) => s.negocio)
+  const perfiles = useStore((s) => s.perfiles)
+  const navigate = useNavigate()
+
+  const irARegistro = (tipo) => {
+    navigate('/register', { state: { tipo } })
+  }
+
+  // Nombre del negocio/proveedor: el que se puso al registrarse.
+  // El perfil editable puede no existir para cuentas demo, asi que
+  // se cae al campo "negocio" del store y por ultimo al usuario.
+  const negocioNombre =
+    perfiles?.[userType]?.nombre ||
+    negocio?.nombre ||
+    usuario.nombre
 
   return (
     <div style={{
@@ -834,8 +907,8 @@ export default function Home() {
       <HeroBanner />
 
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 20px 40px' }}>
-        <SeccionBienvenida usuario={usuario} userType={userType} />
-        <SeccionCategorias />
+        <SeccionBienvenida usuario={usuario} userType={userType} negocioNombre={negocioNombre} />
+        {userType !== 'negocio' && <SeccionCategorias />}
         <SeccionPromociones />
         <SeccionRecompensas userType={userType} />
         <SeccionProductos />
@@ -851,16 +924,6 @@ export default function Home() {
             <p style={{ margin: '0 0 24px', fontSize: 15, color: C.onDarkMuted, lineHeight: 1.7, maxWidth: 480 }}>
               Regístrate, compra en comercios locales, acumula puntos y canjéalos por experiencias y descuentos exclusivos.
             </p>
-            <button style={{
-              ...primaryBtnStyle,
-              padding: '13px 30px',
-              fontSize: 14,
-              marginBottom: 20,
-              background: `linear-gradient(135deg, ${C.orange}, ${C.orangeDark})`,
-              boxShadow: '0 4px 14px rgba(192,89,0,0.3)',
-            }}>
-              Registrarme
-            </button>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {pasosComoFunciona.map((paso) => (
                 <div key={paso.id} style={pasoCardStyle}>
@@ -874,6 +937,14 @@ export default function Home() {
                 </div>
               ))}
             </div>
+            <motion.button
+              onClick={() => irARegistro('usuario')}
+              whileTap={{ scale: 0.94 }}
+              whileHover={{ scale: 1.03 }}
+              style={ctaBtnStyle}
+            >
+              Registrarme
+            </motion.button>
           </>,
           <>
             <div style={{ marginBottom: 20 }}>
@@ -898,6 +969,14 @@ export default function Home() {
                 </div>
               ))}
             </div>
+            <motion.button
+              onClick={() => irARegistro('negocio')}
+              whileTap={{ scale: 0.94 }}
+              whileHover={{ scale: 1.03 }}
+              style={ctaBtnStyle}
+            >
+              Registrarme
+            </motion.button>
           </>,
           <>
             <div style={{ marginBottom: 20 }}>
@@ -922,6 +1001,14 @@ export default function Home() {
                 </div>
               ))}
             </div>
+            <motion.button
+              onClick={() => irARegistro('proveedor')}
+              whileTap={{ scale: 0.94 }}
+              whileHover={{ scale: 1.03 }}
+              style={ctaBtnStyle}
+            >
+              Registrarme
+            </motion.button>
           </>,
         ]} />
         <SeccionLimitadas />

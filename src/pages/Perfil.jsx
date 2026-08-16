@@ -3,6 +3,7 @@ import PerfilUsuario from './PerfilUsuario'
 import PerfilNegocio from './PerfilNegocio'
 import PerfilProveedor from './PerfilProveedor'
 import './Perfil.css'
+import './Panel.css'
 
 // Una sola ruta (/perfil) que decide que pantalla mostrar segun el
 // rol. Cada perfil vive en su propio archivo porque no comparten ni

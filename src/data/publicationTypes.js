@@ -20,22 +20,4 @@ export const TIPOS_PUBLICACION = [
     storageKey: 'pn_productos',
     homeSort: 'recent',
   },
-  {
-    id: 'limitada',
-    label: 'Promociones limitadas',
-    icon: 'zap',
-    color: '#8b5cf6',
-    desc: 'Ofertas exclusivas por tiempo',
-    storageKey: 'pn_limitadas',
-    homeSort: 'recent',
-  },
-  {
-    id: 'destacada',
-    label: 'Destacadas',
-    icon: 'trending-up',
-    color: '#e11d48',
-    desc: 'Se posicionan según los likes de los usuarios',
-    storageKey: 'pn_destacadas',
-    homeSort: 'likes',
-  },
 ]
