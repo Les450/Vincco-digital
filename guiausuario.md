@@ -45,6 +45,39 @@ El primer párrafo es la respuesta corta. Una sola frase.
 
 Todo lo que no siga esta forma (párrafos sueltos, introducciones como esta) se ignora sin romper nada.
 
+**Cuando una pregunta abarca varios perfiles: menú de opciones**
+
+Hay preguntas que no tienen una sola respuesta porque dependen de quién pregunta
+("¿cómo me verifico?" es distinto si sos cliente, negocio o proveedor). Para
+esas, en vez de escribir una respuesta larga que las mezcle todas, se arma un
+**menú**: Kiara ofrece botones y el usuario toca el que le corresponde.
+
+```markdown
+### ¿La pregunta ambigua tal como la haría el usuario?
+
+<!-- roles: todos | id: id-del-menu | tipo: menu -->
+
+El texto que se ve arriba de los botones.
+
+- Opción: id-de-otra-entrada | Texto del primer botón
+- Opción: id-de-otra-entrada-2 | Texto del segundo botón
+
+- Buscar por: las mismas palabras clave de siempre
+```
+
+Cada `- Opción:` apunta al **id** de otra entrada de esta misma guía (el que
+se pone con `<!-- id: ... -->`). Esa entrada se escribe exactamente igual que
+cualquier otra pregunta normal, con sus pasos, su nota, etc. — la única
+diferencia es que se llega a ella tocando un botón en vez de escribiendo.
+
+Al final de esa respuesta, Kiara agrega sola un botón de "Volver al menú": no
+hace falta escribirlo. Y una entrada normal puede a la vez ser el destino de
+un menú Y aparecer en una búsqueda de texto común, así que no hace falta
+duplicar contenido en ningún lado.
+
+Un menú puede incluso apuntar a **otro menú**, para armar submenús, sin tocar
+nada de código: es agregar más entradas y más `- Opción:` acá mismo.
+
 ---
 
 ## Primeros pasos
@@ -399,10 +432,25 @@ Es la lista de negocios que un proveedor puede mostrar públicamente como client
 
 <!-- id: negocios-asociados -->
 
-En la pantalla de Negocios asociados.
+En la pantalla de Negocios asociados. Ahí ves los que ya te aceptaron y los que todavía no respondieron tu solicitud.
 
 - Ir a: /negocios-asociados (Negocios asociados)
 - Buscar por: negocios asociados, mis clientes, a quien abastezco, negocios que atiendo
+
+### ¿Cómo agrego un negocio a mis asociados?
+
+<!-- roles: proveedor | id: agregar-negocio-asociado -->
+
+Le mandás una solicitud de asociación, no lo agregás directo: el negocio tiene que aceptarla primero.
+
+1. Andá a Negocios asociados y tocá "Solicitar asociación"
+2. Completá los datos del negocio (nombre y WhatsApp son obligatorios)
+3. Enviá la solicitud: le llega un aviso al negocio
+4. Esperá a que el negocio la acepte o la rechace desde sus Avisos
+
+- Ir a: /negocios-asociados (Negocios asociados)
+- Buscar por: agregar negocio asociado, solicitar asociacion, nuevo negocio asociado, pedir asociacion
+- Nota: Mientras está pendiente, no le podés mandar otra solicitud al mismo negocio ni enviarle una cotización — recién se habilita cuando la acepta. Si te rechaza, podés volver a intentar más adelante. Necesitás tu cuenta verificada para solicitar asociaciones.
 
 ---
 
@@ -448,6 +496,73 @@ Son logros que se muestran en tu perfil y le dicen al cliente que sos confiable.
 
 - Ir a: /perfil (Mi perfil)
 - Buscar por: insignias, logros, medallas, verificado, badge
+
+---
+
+## Verificación de cuentas
+> Qué significa estar verificado y qué cambia mientras no lo estás
+<!-- roles: todos | icono: shield-check | id: verificacion -->
+
+Vincco verifica cuentas para evitar cuentas falsas y bots. Verificarse es distinto según seas cliente, negocio o proveedor: no es un solo trámite, son tres. A los tres se les ofrece lo mismo apenas terminan de registrarse, y los tres pueden pedirla más tarde si en ese momento la dejaron pasar. No es una pared: mientras no estás verificado seguís pudiendo usar casi toda la app, salvo algunas acciones puntuales que si se dice más abajo.
+
+### ¿Cómo hago para estar verificado en Vincco?
+
+<!-- roles: todos | id: verificacion-menu | tipo: menu -->
+
+Depende de qué tipo de cuenta tenés. ¿Cuál de estas sos?
+
+- Opción: verificacion-cliente | Quiero ser cliente verificado de Vincco
+- Opción: verificacion-negocio | Quiero ser negocio verificado de Vincco
+- Opción: verificacion-proveedor | Quiero ser proveedor verificado de Vincco
+
+- Buscar por: verificado, verificacion, estar verificado, cuenta verificada, verificar mi cuenta, ser verificado, como me verifico, quiero verificarme, miembro verificado, revision de cuenta, solicitar verificacion, verificacion pendiente, continuar sin verificacion, que puedo hacer sin verificar, cuenta sin verificar
+
+### Quiero ser cliente verificado de Vincco
+
+<!-- roles: todos | id: verificacion-cliente -->
+
+Al terminar tu registro, Vincco te muestra la pantalla "Felicidades, ya eres parte de VINCCO" con un botón para solicitar la verificación de tu cuenta. Como cliente no se te pide RUC ni ningún documento: es un solo botón.
+
+1. Al completar el registro, tocá "Solicitar verificación" en esa pantalla
+2. Si en ese momento preferís entrar de una vez, tocá "Continuar sin verificación": podés pedirla después
+3. Para pedirla más tarde, andá a Mi perfil y tocá "Solicitar verificación" en el aviso que aparece ahí
+4. Esperá la revisión del equipo de Vincco
+
+- Ir a: /perfil (Mi perfil)
+- Buscar por: cliente verificado, verificado como cliente, solicitar verificacion cliente, verificacion pendiente cliente, que pasa si no soy cliente verificado
+- Nota: La revisión tarda entre 24 y 48 horas y te llega la confirmación a tu correo electrónico. Mientras no estés verificado podés seguir usando la app y agregar productos a favoritos sin ningún límite, pero no participás en los rankings de clientes, no sumás puntos y tu perfil no muestra la insignia de verificado.
+
+### Quiero ser negocio verificado de Vincco
+
+<!-- roles: todos | id: verificacion-negocio -->
+
+Al terminar tu registro, Vincco te muestra la pantalla "Felicidades, ya eres parte de VINCCO" con un botón para solicitar la verificación de tu negocio. Ahí se te pide tu número de RUC.
+
+1. Al completar el registro, tocá "Solicitar verificación" en esa pantalla
+2. Cargá tu número de RUC si ya lo tenés
+3. Si todavía no tenés RUC, tocá "No tengo RUC, continuar igual": la solicitud se envía igual y el equipo de Vincco te contacta para ver cómo verificarte
+4. Si preferís entrar de una vez sin pedir nada, tocá "Continuar sin verificación": podés solicitarla después desde Mi perfil
+5. Esperá la revisión del equipo de Vincco
+
+- Ir a: /perfil (Mi perfil)
+- Buscar por: negocio verificado, verificar mi negocio, solicitar verificacion negocio, verificacion pendiente negocio, ruc negocio, que pasa si no verifico mi negocio, no puedo publicar, no recibo cotizaciones
+- Nota: La revisión tarda entre 24 y 48 horas y te llega la confirmación a tu correo electrónico. Mientras no estés verificado podés ver y usar todo tu Panel, el Calendario, los Avisos y el menú — nada de eso se bloquea —, pero no podés publicar productos ni promociones, ni recibir y responder cotizaciones de tus proveedores.
+
+### Quiero ser proveedor verificado de Vincco
+
+<!-- roles: todos | id: verificacion-proveedor -->
+
+Al terminar tu registro, Vincco te muestra la pantalla "Felicidades, ya eres parte de VINCCO" con un botón para solicitar la verificación de tu empresa. Ahí se te pide tu número de RUC.
+
+1. Al completar el registro, tocá "Solicitar verificación" en esa pantalla
+2. Cargá tu número de RUC si ya lo tenés
+3. Si todavía no tenés RUC, tocá "No tengo RUC, continuar igual": la solicitud se envía igual y el equipo de Vincco te contacta para ver cómo verificarte
+4. Si preferís entrar de una vez sin pedir nada, tocá "Continuar sin verificación": podés solicitarla después desde Mi perfil
+5. Esperá la revisión del equipo de Vincco
+
+- Ir a: /perfil (Mi perfil)
+- Buscar por: proveedor verificado, verificar mi empresa, solicitar verificacion proveedor, verificacion pendiente proveedor, ruc proveedor, que pasa si no verifico mi empresa, no puedo enviar cotizaciones, no puedo agregar negocios asociados
+- Nota: La revisión tarda entre 24 y 48 horas y te llega la confirmación a tu correo electrónico. Mientras no estés verificado podés ver y usar todo tu Panel, el Calendario, los Avisos y el menú — nada de eso se bloquea —, pero no podés publicar tus productos, no podés enviar cotizaciones a los negocios ni agregar negocios nuevos en Negocios Asociados.
 
 ---
 
@@ -535,8 +650,9 @@ Es el acceso rápido a las cinco pantallas que más usás. Cambia según tu tipo
 1. Inicio: el feed principal con promociones y negocios
 2. Favoritos: los negocios que marcaste
 3. Premios o Panel: tus puntos si sos cliente, tu panel si sos negocio o proveedor
-4. Publicar: para subir publicaciones
-5. Calendario y Avisos: eventos y notificaciones
+4. Calendario y Avisos: eventos y notificaciones
+
+El Panel del negocio concentra todo: publicaciones de productos, inventario, directorio, reseñas y ranking, cotizaciones y proveedores.
 
 - Ir a: /home (Inicio)
 - Buscar por: barra de abajo, menu inferior, botones, navegacion, pestanas, tabs
@@ -564,6 +680,21 @@ En Avisos, el último botón de la barra de abajo.
 - Buscar por: notificaciones, avisos, alertas, campanita, mensajes
 - Nota: Si apagaste un tipo de aviso en Configuración, esas notificaciones dejan de aparecer acá.
 
+### ¿Cómo acepto o rechazo una solicitud de asociación de un proveedor?
+
+<!-- roles: negocio | id: responder-asociacion -->
+
+Cuando un proveedor quiere asociarse con tu negocio, te llega un aviso a Avisos con dos botones: Aceptar y Rechazar. Se responde ahí mismo, sin ir a ninguna otra pantalla.
+
+1. Tocá Avisos en la barra de abajo
+2. Buscá el aviso de "Solicitud de asociación"
+3. Tocá Aceptar si querés trabajar con ese proveedor, o Rechazar si no
+4. Al proveedor le llega un aviso avisándole tu respuesta
+
+- Ir a: /notificaciones (Notificaciones)
+- Buscar por: solicitud de asociacion, proveedor quiere asociarse, aceptar proveedor, rechazar proveedor, nueva solicitud
+- Nota: Solo al aceptar quedan asociados de verdad: recién ahí el proveedor te puede enviar cotizaciones y aparecés en su lista de negocios asociados. Nadie queda asociado a la fuerza ni sin que lo apruebes vos.
+
 ### ¿Para qué sirve el Calendario?
 
 <!-- id: calendario -->
@@ -588,6 +719,6 @@ Todos los montos de Vincco están en córdobas nicaragüenses.
 
 > Anotá acá lo que Kiara todavía no sabe responder
 
-### ¿cuanto tiempo dura la revision para ser un miembro verificado de Vincco?
-> El plaso varia,pero es entre 24h a 48h,apenas este listo el equipo de Vincco se pondra en contacto con tigo.
-- nota:  Si no recives ninguna respuesta en ese plazo,comunicate con el soporte de vincco
+### ¿Quien  creo VINCCO? 
+
+> VINCCO fue creada por el grupo de desarrolladores Impulso Digital.
