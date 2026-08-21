@@ -90,51 +90,67 @@ Todo empieza acá. Vincco tiene tres tipos de cuenta y cada una pide cosas disti
 
 <!-- id: crear-cuenta -->
 
-Entrás a Registrarme, elegís qué tipo de cuenta querés y completás los pasos.
+Toda cuenta nueva en Vincco empieza como cliente: no hay que elegir ningún tipo de cuenta al registrarte.
 
 1. Tocá "Registrarme" en la pantalla de inicio de sesión
-2. Elegí tu perfil: Cliente, Negocio o Proveedor
-3. Completá tu nombre, correo y teléfono
+2. Completá tu correo y contraseña
+3. Completá tu nombre, cédula y datos personales
 4. Seguí los pasos que te va pidiendo el formulario
 
 - Ir a: /register (Registro)
 - Buscar por: crear cuenta, registrarme, registro, nueva cuenta, inscribirme, darme de alta
-- Nota: Cliente lleva menos pasos que Negocio o Proveedor, porque a esos dos se les piden datos del comercio.
+- Nota: Si más adelante querés vender en Vincco (como negocio) o abastecer a otros negocios (como proveedor), no te registrás de nuevo: tu cuenta de cliente se convierte en esa cuenta desde "Socio Vincco", en el menú.
 
-### ¿quien es el dueño de vincco?
-Vincco es desarrolada por Impulso Digital.
+### ¿Quién creó Vincco?
+
+<!-- id: quien-creo-vincco -->
+
+Vincco fue creado por el grupo de desarrolladores Impulso Digital.
+
+- Buscar por: quien creo vincco, dueño de vincco, quien hizo vincco, desarrolladores de vincco, de donde es vincco, impulso digital
 
 ### ¿Cómo registro mi negocio?
 
-<!-- roles: negocio | id: registrar-negocio -->
+<!-- roles: todos | id: registrar-negocio -->
 
-En el registro elegís el perfil de Negocio y agregás los datos de tu comercio.
+Desde tu cuenta de cliente, andá al menú y entrá a "Socio Vincco": ahí tocás "Registrarme" en la tarjeta de Negocio.
 
-1. Tocá "Registrarme" y elegí el perfil Negocio
-2. Completá tus datos personales como propietario
-3. Agregá el nombre del negocio, la categoría y la dirección
-4. Cargá tu RUC o cédula si ya lo tenés
-5. Revisá el resumen y confirmá
+1. Abrí el menú (las tres rayas) y tocá "Socio Vincco"
+2. Tocá "Registrarme" en la tarjeta de Negocio
+3. Completá tus datos personales como propietario
+4. Agregá el nombre del negocio, la categoría y la dirección
+5. Cargá tu RUC o cédula si ya lo tenés
+6. Revisá el resumen y confirmá
 
-- Ir a: /register (Registro)
-- Buscar por: registrar negocio, registrar comercio, dar de alta mi negocio, inscribir negocio, mi comercio
-- Nota: El RUC no es obligatorio para empezar, pero sin él no se desbloquea la insignia de Formalizado.
+- Ir a: /socio-vincco (Socio Vincco)
+- Buscar por: registrar negocio, registrar comercio, dar de alta mi negocio, inscribir negocio, mi comercio, hacerme socio, socio vincco, volverme negocio
+- Nota: El RUC no es obligatorio para empezar, pero sin él no se desbloquea la insignia de Formalizado. No hace falta crear una cuenta nueva: tu cuenta de cliente se convierte en tu cuenta de negocio.
 
 ### ¿Cómo me registro como proveedor?
 
-<!-- roles: proveedor | id: registrar-proveedor -->
+<!-- roles: todos | id: registrar-proveedor -->
 
-Elegís el perfil de Proveedor y cargás tu empresa, tu rubro y tu zona de cobertura.
+Desde tu cuenta de cliente, andá al menú y entrá a "Socio Vincco": ahí tocás "Registrarme" en la tarjeta de Proveedor.
 
-1. Tocá "Registrarme" y elegí el perfil Proveedor
-2. Completá los datos de la empresa y la persona de contacto
-3. Indicá qué rubro abastecés
-4. Definí tu zona de cobertura: en qué municipios entregás
-5. Confirmá el registro
+1. Abrí el menú (las tres rayas) y tocá "Socio Vincco"
+2. Tocá "Registrarme" en la tarjeta de Proveedor
+3. Completá los datos de la empresa y la persona de contacto
+4. Indicá qué rubro abastecés
+5. Definí tu zona de cobertura: en qué municipios entregás
+6. Confirmá el registro
 
-- Ir a: /register (Registro)
-- Buscar por: registrar proveedor, ser proveedor, distribuidora, inscribir empresa, abastecer
-- Nota: La zona de cobertura es lo que permite que un negocio te encuentre cuando filtra por su municipio.
+- Ir a: /socio-vincco (Socio Vincco)
+- Buscar por: registrar proveedor, ser proveedor, distribuidora, inscribir empresa, abastecer, hacerme socio, socio vincco, volverme proveedor
+- Nota: La zona de cobertura es lo que permite que un negocio te encuentre cuando filtra por su municipio. No hace falta crear una cuenta nueva: tu cuenta de cliente se convierte en tu cuenta de proveedor.
+
+### ¿Qué pasa con mi cuenta de cliente cuando me vuelvo negocio o proveedor?
+
+<!-- roles: todos | id: conversion-cuenta -->
+
+Tu cuenta de cliente no se pierde ni se borra: se convierte en tu cuenta nueva. Dejás de operar como cliente y pasás a operar como negocio o proveedor, con los beneficios de ese rol.
+
+- Buscar por: que pasa con mis puntos, pierdo mis favoritos, se borran mis puntos, convertir cuenta, cambiar de cliente a negocio, cambiar de cliente a proveedor
+- Nota: Tu cuenta nueva arranca sin verificar, igual que cualquier registro de negocio o proveedor. Las mismas reglas de verificación aplican: podés ver todo, pero para publicar, recibir cotizaciones o asociarte con otros negocios vas a necesitar verificarte.
 
 ### ¿Cómo recupero mi contraseña?
 
@@ -245,6 +261,21 @@ En la pestaña Favoritos de la barra de abajo.
 - Ir a: /favoritos (Favoritos)
 - Buscar por: favoritos, guardados, corazon, mis negocios favoritos
 
+### ¿Cómo veo el catálogo de un negocio?
+
+<!-- roles: usuario | id: ver-inventario-negocio -->
+
+Desde Favoritos, tocás "Ver inventario" en el negocio que te interesa y ves sus productos, precios y promociones.
+
+1. Tocá Favoritos en la barra de abajo
+2. Elegí el negocio que querés revisar
+3. Tocá "Ver inventario" en su tarjeta
+4. Buscá o filtrá por categoría dentro de su catálogo
+
+- Ir a: /favoritos (Favoritos)
+- Buscar por: ver inventario, catalogo del negocio, ver productos, que vende, precios del negocio, ver promociones, inventario del negocio
+- Nota: Es de solo lectura: mirás lo que el negocio publicó, no podés comprar todavía desde acá.
+
 ### ¿Cómo cambio el radio de negocios cercanos?
 
 <!-- id: negocios-cercanos -->
@@ -339,6 +370,21 @@ Lo decidís vos desde Configuración: cuántos puntos das por cada 100 córdobas
 - Ir a: /config (Configuración)
 - Buscar por: puntos que doy, dar puntos, cuantos puntos, puntos dobles, recompensar clientes
 - Nota: Mientras más puntos das, más le conviene al cliente elegirte a vos.
+
+### ¿Cómo agrego un proveedor a mis asociados?
+
+<!-- roles: negocio | id: agregar-proveedor-asociado -->
+
+Le mandás una invitación desde Conectar, no lo agregás directo: el proveedor tiene que aceptarla primero.
+
+1. Tocá Conectar en la barra de abajo
+2. Buscá el proveedor que te interesa
+3. Tocá "Invitar" en su tarjeta
+4. Esperá a que el proveedor la acepte o la rechace
+
+- Ir a: /proveedores (Conectar)
+- Buscar por: agregar proveedor, invitar proveedor, nuevo proveedor asociado, pedir asociacion a proveedor, conseguir proveedor
+- Nota: Necesitás tu cuenta verificada para enviar invitaciones. Mientras está pendiente, el proveedor todavía no te puede cotizar.
 
 ---
 
@@ -648,14 +694,28 @@ Qué hace cada pantalla y cada botón, para no andar adivinando.
 Es el acceso rápido a las cinco pantallas que más usás. Cambia según tu tipo de cuenta.
 
 1. Inicio: el feed principal con promociones y negocios
-2. Favoritos: los negocios que marcaste
-3. Premios o Panel: tus puntos si sos cliente, tu panel si sos negocio o proveedor
-4. Calendario y Avisos: eventos y notificaciones
+2. Si sos cliente: Favoritos (los negocios que marcaste), Premios, Calendario y Avisos
+3. Si sos negocio o proveedor: Panel, Conectar (los socios de Vincco), Calendario y Avisos
 
-El Panel del negocio concentra todo: publicaciones de productos, inventario, directorio, reseñas y ranking, cotizaciones y proveedores.
+El Panel del negocio o proveedor concentra todo: publicaciones de productos, inventario, reseñas y ranking, cotizaciones.
 
 - Ir a: /home (Inicio)
 - Buscar por: barra de abajo, menu inferior, botones, navegacion, pestanas, tabs
+
+### ¿Qué es Conectar?
+
+<!-- roles: negocio, proveedor | id: conectar -->
+
+Es el botón de la barra de abajo donde ves a todos los socios de Vincco: si tenés un negocio, ahí aparecen los proveedores; si sos proveedor, aparecen los negocios.
+
+1. Tocá Conectar en la barra de abajo
+2. Buscá por nombre, categoría o ubicación
+3. Tocá "Invitar" en el que te interese para pedirle la asociación
+4. Esperá a que responda desde sus Avisos
+
+- Ir a: /proveedores (Conectar)
+- Buscar por: conectar, socios de vincco, buscar proveedores, buscar negocios, directorio de proveedores, directorio de negocios, invitar proveedor, invitar negocio
+- Nota: Necesitás tu cuenta verificada para enviar invitaciones de asociación.
 
 ### ¿Qué hay en el menú del costado?
 
@@ -713,12 +773,3 @@ Todos los montos de Vincco están en córdobas nicaragüenses.
 - Ir a: /config (Configuración)
 - Buscar por: moneda, cordobas, precios, dolares, en que moneda
 - Nota: Vincco opera en Nicaragua. Aunque en Configuración podés elegir ver dólares, los montos se siguen mostrando en córdobas hasta que haya un tipo de cambio del día.
-
----
-
-
-> Anotá acá lo que Kiara todavía no sabe responder
-
-### ¿Quien  creo VINCCO? 
-
-> VINCCO fue creada por el grupo de desarrolladores Impulso Digital.
