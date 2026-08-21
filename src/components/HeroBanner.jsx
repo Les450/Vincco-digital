@@ -27,7 +27,7 @@ const CONTACTOS = [
 // Home de negocios
 const CONTACTOS_NEGOCIO = [
   { label: 'Negocios', icon: 'store', path: '/panel-negocio' },
-  { label: 'Proveedores', icon: 'truck', path: '/panel-negocio?tab=proveedores' },
+  { label: 'Proveedores', icon: 'truck', path: '/proveedores' },
   { label: 'Promociones', icon: 'tag', path: null },
 ]
 
@@ -302,7 +302,7 @@ export default function HeroBanner() {
           .hero-rotating { font-size: 48px !important; height: 58px !important; }
           .hero-description { font-size: 17px !important; }
         }
-        .hero-search-input::placeholder { color: rgba(255,255,255,0.65); }
+        .hero-search-input::placeholder { color: rgba(234, 217, 199, 0.65); }
       `}</style>
 
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
@@ -349,7 +349,7 @@ export default function HeroBanner() {
         <div className="hero-banner-content" style={{
           position: 'relative',
           zIndex: 2,
-          color: '#ffffff',
+          color: '#ead9c7',
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
@@ -414,7 +414,7 @@ export default function HeroBanner() {
             fontSize: 15,
             lineHeight: 1.6,
             maxWidth: 520,
-            color: 'rgba(255,255,255,0.85)',
+            color: 'rgba(234, 217, 199, 0.85)',
           }}>
             Descubre negocios locales, gana recompensas por cada compra y fortalece la economía de tu comunidad desde un solo lugar.
           </p>
@@ -439,18 +439,18 @@ export default function HeroBanner() {
                 flex: 1,
                 minWidth: 0,
                 borderRadius: 999,
-                border: '1px solid rgba(255,255,255,0.25)',
-                background: 'rgba(255,255,255,0.12)',
+                border: '1px solid rgba(234, 217, 199, 0.25)',
+                background: 'rgba(234, 217, 199, 0.12)',
                 backdropFilter: 'blur(6px)',
                 padding: '14px 20px',
                 fontSize: 14,
-                color: '#ffffff',
+                color: '#ead9c7',
                 outline: 'none',
                 fontFamily: 'inherit',
                 transition: 'border-color 0.2s, background 0.2s',
               }}
-              onFocus={(e) => { e.target.style.borderColor = GOLD; e.target.style.background = 'rgba(255,255,255,0.18)' }}
-              onBlur={(e) => { e.target.style.borderColor = 'rgba(255,255,255,0.25)'; e.target.style.background = 'rgba(255,255,255,0.12)' }}
+              onFocus={(e) => { e.target.style.borderColor = GOLD; e.target.style.background = 'rgba(234, 217, 199, 0.18)' }}
+              onBlur={(e) => { e.target.style.borderColor = 'rgba(234, 217, 199, 0.25)'; e.target.style.background = 'rgba(234, 217, 199, 0.12)' }}
             />
             <button
               type="submit"
@@ -483,7 +483,7 @@ export default function HeroBanner() {
               textTransform: 'uppercase',
               letterSpacing: '0.18em',
               fontWeight: 700,
-              color: 'rgba(255,255,255,0.55)',
+              color: 'rgba(234, 217, 199, 0.55)',
               marginBottom: 12,
             }}>
               {esNegocio ? 'Descubrir' : 'Contactos'}
@@ -505,17 +505,17 @@ export default function HeroBanner() {
                     gap: 8,
                     padding: '9px 18px',
                     borderRadius: 999,
-                    border: '1px solid rgba(255,255,255,0.22)',
-                    background: 'rgba(255,255,255,0.08)',
-                    color: 'rgba(255,255,255,0.9)',
+                    border: '1px solid rgba(234, 217, 199, 0.22)',
+                    background: 'rgba(234, 217, 199, 0.08)',
+                    color: 'rgba(234, 217, 199, 0.9)',
                     fontSize: 13,
                     fontWeight: 600,
                     cursor: 'pointer',
                     fontFamily: 'inherit',
                     transition: 'background 0.2s, border-color 0.2s',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.16)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)' }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.22)' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(234, 217, 199, 0.16)'; e.currentTarget.style.borderColor = 'rgba(234, 217, 199, 0.35)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(234, 217, 199, 0.08)'; e.currentTarget.style.borderColor = 'rgba(234, 217, 199, 0.22)' }}
                 >
                   <Icon name={c.icon} size={15} />
                   {c.label}

@@ -14,7 +14,7 @@ import '../styles/home.css'
 // (Navbar + secciones) no estaban conectados a ninguna ruta.
 export default function Bienvenida() {
   return (
-    <div style={{ background: '#ffffff' }}>
+    <div style={{ background: '#ead9c7' }}>
       <Navbar />
       <HeroSection />
       <BenefitsSection />

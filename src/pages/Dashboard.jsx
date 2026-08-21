@@ -20,7 +20,7 @@ export default function Dashboard() {
         fontFamily: "'Sora', 'Inter', sans-serif",
         fontSize: 22,
         fontWeight: 700,
-        color: '#ffffff',
+        color: '#ead9c7',
         display: 'flex',
         alignItems: 'center',
         gap: 10,
@@ -29,7 +29,7 @@ export default function Dashboard() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '20px' }}>
         {stats.map((s, i) => (
           <div key={i} style={{
-            backgroundColor: '#fff',
+            backgroundColor: '#ead9c7',
             borderRadius: '18px',
             padding: '18px 12px',
             boxShadow: '0 10px 26px rgba(0,24,36,0.22)',
@@ -43,7 +43,7 @@ export default function Dashboard() {
       </div>
 
       <div style={{
-        backgroundColor: '#fff',
+        backgroundColor: '#ead9c7',
         borderRadius: '20px',
         padding: '20px',
         boxShadow: '0 10px 26px rgba(0,24,36,0.22)',

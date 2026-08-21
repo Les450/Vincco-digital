@@ -2,12 +2,15 @@ import { Link } from 'react-router-dom'
 import useStore from '../store/puntos_usestore'
 import Icon from '../components/icons/Icon'
 import {
+  PerfilPagina,
   PerfilHero,
+  CintaProgreso,
   VerificacionBanner,
   Seccion,
-  Metricas,
+  Recibos,
   BloqueDatos,
   Insignias,
+  Pasaporte,
   Actividad,
 } from '../components/perfil/PerfilUI'
 import {
@@ -19,14 +22,17 @@ import {
   niveles,
 } from '../data/data_falso'
 
-// Perfil del cliente. Lo que le importa es su progreso: cuantos
-// puntos lleva, que tan lejos esta del siguiente nivel y donde
-// compra. Por eso el nivel va en el encabezado y no escondido abajo.
-//
-// El nivel (Bronce, Plata, Oro, VIP) es interno de Vincco: sube segun
-// cuanto compra el cliente USANDO la plataforma, no por antiguedad ni
-// por nada externo. Los puntos son la medida de esas compras.
-// Todos los montos van en cordobas nicaraguenses (C$), nunca en dolares.
+/* Perfil del cliente — "Tu libreta Vincco".
+ *
+ * Lo que le importa es su progreso: cuantos puntos lleva, que tan lejos
+ * esta del siguiente nivel y donde compra. Por eso el nivel va en la
+ * portada, en el anillo de la foto y en la cinta, no escondido abajo.
+ *
+ * El nivel (Bronce, Plata, Oro, VIP) es interno de Vincco: sube segun
+ * cuanto compra el cliente USANDO la plataforma, no por antiguedad ni por
+ * nada externo. Los puntos son la medida de esas compras.
+ * Todos los montos van en cordobas nicaraguenses, nunca en dolares.
+ */
 
 function nivelActual(puntos) {
   return [...niveles].reverse().find((n) => puntos >= n.puntosMin) || niveles[0]
@@ -34,6 +40,12 @@ function nivelActual(puntos) {
 
 function nivelSiguiente(puntos) {
   return niveles.find((n) => puntos < n.puntosMin) || null
+}
+
+// Nueva Guinea es el piloto: quien entro en 2026 es de los primeros.
+// Se deduce del dato que ya existe, no hace falta un campo nuevo.
+function esPionero(miembroDesde) {
+  return /202[6]/.test(String(miembroDesde || ''))
 }
 
 export default function PerfilUsuario() {
@@ -58,40 +70,38 @@ export default function PerfilUsuario() {
     ? Math.min(100, ((puntos - nivel.puntosMin) / (siguiente.puntosMin - nivel.puntosMin)) * 100)
     : 100
 
+  // El micro-copy sale de los mismos numeros que muestra el recibo, para
+  // que nunca diga una cosa distinta de la que se ve arriba.
+  const m = {}
+  metricasPerfil.usuario.forEach((x) => { m[x.id] = x })
+
   return (
-    <div className="pf pf--usuario">
+    <PerfilPagina rol="usuario" nivel={nivel.nivel}>
       <PerfilHero
-        kicker="Cuenta de cliente"
+        kicker="Tu libreta Vincco"
         nombre={perfil.nombre}
-        subtitulo={`${perfil.barrio}, ${perfil.municipio} · miembro desde ${perfil.miembroDesde}`}
-        acento="#dd6600"
+        subtitulo={`${perfil.barrio} · ${perfil.municipio}`}
+        nivel={nivel.nivel}
         foto={perfil.foto}
         onFoto={(foto) => guardarFoto('usuario', foto)}
         onQuitarFoto={() => quitarFoto('usuario')}
-        chips={[
-          { label: `Nivel ${nivel.nivel}`, icono: nivel.icono, destacado: true },
-          { label: `${puntos} puntos`, icono: 'star' },
+        sellos={[
           ...(estadoVerificacion === 'aprobada'
-            ? [{ label: 'Cliente verificado', icono: 'check-circle' }]
+            ? [{ label: 'Cliente verificado', icono: 'check-circle', destacado: true }]
             : []),
+          ...(esPionero(perfil.miembroDesde)
+            ? [{ label: `Pionero · ${perfil.miembroDesde}`, icono: 'award', pionero: true }]
+            : [{ label: `Miembro desde ${perfil.miembroDesde}`, icono: 'calendar' }]),
         ]}
         extra={
-          <div className="pf-nivel">
-            <div className="pf-nivel-top">
-              <span className="pf-nivel-label">Nivel Vincco · subís comprando con la app</span>
-              <span className="pf-nivel-valor">{puntos} pts</span>
-            </div>
-
-            <div className="pf-barra" role="presentation">
-              <span className="pf-barra-relleno" style={{ width: `${progreso}%` }} />
-            </div>
-
-            <p className="pf-nivel-pie">
-              {siguiente
-                ? <>Te faltan <strong>{faltan} puntos</strong> para llegar a {siguiente.nivel}</>
-                : <>Alcanzaste el nivel máximo. Seguí sumando para mantenerlo.</>}
-            </p>
-          </div>
+          <CintaProgreso
+            puntos={puntos}
+            progreso={progreso}
+            faltan={faltan}
+            nivel={nivel}
+            siguiente={siguiente}
+            niveles={niveles}
+          />
         }
       />
 
@@ -101,60 +111,69 @@ export default function PerfilUsuario() {
         texto="Para que tu perfil y tus reseñas aparezcan como Cliente verificado, podés solicitar la verificación de tu cuenta."
       />
 
-      <div className="pf-body">
-        <Metricas items={metricasPerfil.usuario} />
+      <div className="vc-perf__cuerpo">
+        {/* Dos recibos, no cuatro cajas. El monto en cordobas queda con el
+            mismo peso visual que las compras: para el usuario, el ahorro
+            real es el valor real. */}
+        <Recibos
+          items={metricasPerfil.usuario}
+          grupos={[
+            {
+              titulo: 'Tu recompensa',
+              ids: ['ahorro', 'canjes'],
+              nota: 'Cada canje es plata que se quedó en Nueva Guinea.',
+              notaIcono: 'gift',
+            },
+            {
+              titulo: 'Tu impacto local',
+              ids: ['compras', 'favoritos'],
+              nota: `Comprás en ${m.favoritos?.valor || 'varios'} negocios distintos del barrio. Así se construye barrio.`,
+              notaIcono: 'flame',
+            },
+          ]}
+        />
 
-        <div className="pf-columnas">
-          <BloqueDatos
-            titulo="Datos personales"
-            descripcion="Se usan para identificarte al canjear tus recompensas"
-            campos={camposPerfil.usuario}
-            valores={perfil}
-            onGuardar={(datos) => guardarPerfil('usuario', datos)}
-            ocultable
-            ocultos={ocultarDatos}
-            onOcultos={(v) => guardarConfig('usuario', 'ocultarDatos', v)}
-          />
-
-          <Seccion
-            titulo="Logros"
-            descripcion="Insignias que ganaste comprando local"
-            className="pf-seccion--lateral"
-          >
-            <Insignias items={insigniasPerfil.usuario} />
-          </Seccion>
-        </div>
+        <BloqueDatos
+          documento="Credencial de comprador local"
+          titulo="Tus datos"
+          descripcion="Se usan para identificarte al canjear tus recompensas"
+          campos={camposPerfil.usuario}
+          valores={perfil}
+          folioCampo="cedula"
+          onGuardar={(datos) => guardarPerfil('usuario', datos)}
+          ocultable
+          ocultos={ocultarDatos}
+          onOcultos={(v) => guardarConfig('usuario', 'ocultarDatos', v)}
+        />
 
         <Seccion
-          titulo="Negocios favoritos"
-          descripcion="Los comercios donde más puntos acumulás"
+          titulo="Mural de reconocimientos"
+          descripcion="Los sellos que fuiste ganando comprando local"
+        >
+          <Insignias items={insigniasPerfil.usuario} />
+        </Seccion>
+
+        <Seccion
+          titulo="Tu pasaporte de negocios"
+          descripcion="De dónde sale cada parte de tus puntos"
           accion={
-            <Link to="/favoritos" className="pf-btn pf-btn--linea">
+            <Link to="/favoritos" className="vc-perf-btn vc-perf-btn--linea">
               Ver favoritos
               <Icon name="chevron-right" size={14} />
             </Link>
           }
         >
-          <ul className="pf-favoritos">
-            {favoritosPerfil.map((f) => (
-              <li key={f.id} className="pf-favorito">
-                <span className="pf-favorito-marca" style={{ background: f.color }}>
-                  <Icon name="store" size={16} />
-                </span>
-                <span className="pf-favorito-info">
-                  <strong>{f.nombre}</strong>
-                  <span>{f.categoria}</span>
-                </span>
-                <span className="pf-favorito-puntos">{f.puntos}</span>
-              </li>
-            ))}
-          </ul>
+          <Pasaporte items={favoritosPerfil} />
         </Seccion>
 
-        <Seccion titulo="Actividad reciente" descripcion="Tus últimos movimientos en Vincco">
-          <Actividad items={actividadPerfil.usuario} />
+        <Seccion titulo="Tu extracto" descripcion="Movimientos de tu cuenta en Vincco">
+          <Actividad
+            items={actividadPerfil.usuario}
+            resumenIcono="wallet"
+            resumen={`${actividadPerfil.usuario.length} movimientos · llevás ${m.ahorro?.valor || 0} ${m.ahorro?.unidad || 'córdobas'} ahorrados`}
+          />
         </Seccion>
       </div>
-    </div>
+    </PerfilPagina>
   )
 }

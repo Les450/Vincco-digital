@@ -7,8 +7,8 @@
    Cualquier cambio hecho acá se pierde en la próxima compilación.
    Para cambiar lo que sabe Kiara, editá src/Chatbot/guiausuario.md.
 
-   Generado: 2026-08-16
-   43 entradas · 10 secciones
+   Generado: 2026-08-21
+   46 entradas · 10 secciones
    ══════════════════════════════════════════════════════════════ */
 
 export const SECCIONES = [
@@ -125,11 +125,11 @@ export const ENTRADAS = [
       "proveedor"
     ],
     "titulo": "¿Cómo creo una cuenta en Vincco?",
-    "resumen": "Entrás a Registrarme, elegís qué tipo de cuenta querés y completás los pasos.",
+    "resumen": "Toda cuenta nueva en Vincco empieza como cliente: no hay que elegir ningún tipo de cuenta al registrarte.",
     "pasos": [
       "Tocá \"Registrarme\" en la pantalla de inicio de sesión",
-      "Elegí tu perfil: Cliente, Negocio o Proveedor",
-      "Completá tu nombre, correo y teléfono",
+      "Completá tu correo y contraseña",
+      "Completá tu nombre, cédula y datos personales",
       "Seguí los pasos que te va pidiendo el formulario"
     ],
     "ruta": "/register",
@@ -142,25 +142,32 @@ export const ENTRADAS = [
       "inscribirme",
       "darme de alta"
     ],
-    "nota": "Cliente lleva menos pasos que Negocio o Proveedor, porque a esos dos se les piden datos del comercio.",
+    "nota": "Si más adelante querés vender en Vincco (como negocio) o abastecer a otros negocios (como proveedor), no te registrás de nuevo: tu cuenta de cliente se convierte en esa cuenta desde \"Socio Vincco\", en el menú.",
     "pendiente": false,
     "tipo": "pregunta",
     "opciones": []
   },
   {
-    "id": "quien-es-el-dueno-de-vincco",
+    "id": "quien-creo-vincco",
     "seccion": "primeros-pasos",
     "roles": [
       "usuario",
       "negocio",
       "proveedor"
     ],
-    "titulo": "¿quien es el dueño de vincco?",
-    "resumen": "Vincco es desarrolada por Impulso Digital.",
+    "titulo": "¿Quién creó Vincco?",
+    "resumen": "Vincco fue creado por el grupo de desarrolladores Impulso Digital.",
     "pasos": [],
     "ruta": null,
     "rutaLabel": null,
-    "claves": [],
+    "claves": [
+      "quien creo vincco",
+      "dueño de vincco",
+      "quien hizo vincco",
+      "desarrolladores de vincco",
+      "de donde es vincco",
+      "impulso digital"
+    ],
     "nota": null,
     "pendiente": false,
     "tipo": "pregunta",
@@ -170,27 +177,33 @@ export const ENTRADAS = [
     "id": "registrar-negocio",
     "seccion": "primeros-pasos",
     "roles": [
-      "negocio"
+      "usuario",
+      "negocio",
+      "proveedor"
     ],
     "titulo": "¿Cómo registro mi negocio?",
-    "resumen": "En el registro elegís el perfil de Negocio y agregás los datos de tu comercio.",
+    "resumen": "Desde tu cuenta de cliente, andá al menú y entrá a \"Socio Vincco\": ahí tocás \"Registrarme\" en la tarjeta de Negocio.",
     "pasos": [
-      "Tocá \"Registrarme\" y elegí el perfil Negocio",
+      "Abrí el menú (las tres rayas) y tocá \"Socio Vincco\"",
+      "Tocá \"Registrarme\" en la tarjeta de Negocio",
       "Completá tus datos personales como propietario",
       "Agregá el nombre del negocio, la categoría y la dirección",
       "Cargá tu RUC o cédula si ya lo tenés",
       "Revisá el resumen y confirmá"
     ],
-    "ruta": "/register",
-    "rutaLabel": "Registro",
+    "ruta": "/socio-vincco",
+    "rutaLabel": "Socio Vincco",
     "claves": [
       "registrar negocio",
       "registrar comercio",
       "dar de alta mi negocio",
       "inscribir negocio",
-      "mi comercio"
+      "mi comercio",
+      "hacerme socio",
+      "socio vincco",
+      "volverme negocio"
     ],
-    "nota": "El RUC no es obligatorio para empezar, pero sin él no se desbloquea la insignia de Formalizado.",
+    "nota": "El RUC no es obligatorio para empezar, pero sin él no se desbloquea la insignia de Formalizado. No hace falta crear una cuenta nueva: tu cuenta de cliente se convierte en tu cuenta de negocio.",
     "pendiente": false,
     "tipo": "pregunta",
     "opciones": []
@@ -199,27 +212,59 @@ export const ENTRADAS = [
     "id": "registrar-proveedor",
     "seccion": "primeros-pasos",
     "roles": [
+      "usuario",
+      "negocio",
       "proveedor"
     ],
     "titulo": "¿Cómo me registro como proveedor?",
-    "resumen": "Elegís el perfil de Proveedor y cargás tu empresa, tu rubro y tu zona de cobertura.",
+    "resumen": "Desde tu cuenta de cliente, andá al menú y entrá a \"Socio Vincco\": ahí tocás \"Registrarme\" en la tarjeta de Proveedor.",
     "pasos": [
-      "Tocá \"Registrarme\" y elegí el perfil Proveedor",
+      "Abrí el menú (las tres rayas) y tocá \"Socio Vincco\"",
+      "Tocá \"Registrarme\" en la tarjeta de Proveedor",
       "Completá los datos de la empresa y la persona de contacto",
       "Indicá qué rubro abastecés",
       "Definí tu zona de cobertura: en qué municipios entregás",
       "Confirmá el registro"
     ],
-    "ruta": "/register",
-    "rutaLabel": "Registro",
+    "ruta": "/socio-vincco",
+    "rutaLabel": "Socio Vincco",
     "claves": [
       "registrar proveedor",
       "ser proveedor",
       "distribuidora",
       "inscribir empresa",
-      "abastecer"
+      "abastecer",
+      "hacerme socio",
+      "socio vincco",
+      "volverme proveedor"
     ],
-    "nota": "La zona de cobertura es lo que permite que un negocio te encuentre cuando filtra por su municipio.",
+    "nota": "La zona de cobertura es lo que permite que un negocio te encuentre cuando filtra por su municipio. No hace falta crear una cuenta nueva: tu cuenta de cliente se convierte en tu cuenta de proveedor.",
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
+  },
+  {
+    "id": "conversion-cuenta",
+    "seccion": "primeros-pasos",
+    "roles": [
+      "usuario",
+      "negocio",
+      "proveedor"
+    ],
+    "titulo": "¿Qué pasa con mi cuenta de cliente cuando me vuelvo negocio o proveedor?",
+    "resumen": "Tu cuenta de cliente no se pierde ni se borra: se convierte en tu cuenta nueva. Dejás de operar como cliente y pasás a operar como negocio o proveedor, con los beneficios de ese rol.",
+    "pasos": [],
+    "ruta": null,
+    "rutaLabel": null,
+    "claves": [
+      "que pasa con mis puntos",
+      "pierdo mis favoritos",
+      "se borran mis puntos",
+      "convertir cuenta",
+      "cambiar de cliente a negocio",
+      "cambiar de cliente a proveedor"
+    ],
+    "nota": "Tu cuenta nueva arranca sin verificar, igual que cualquier registro de negocio o proveedor. Las mismas reglas de verificación aplican: podés ver todo, pero para publicar, recibir cotizaciones o asociarte con otros negocios vas a necesitar verificarte.",
     "pendiente": false,
     "tipo": "pregunta",
     "opciones": []
@@ -417,6 +462,36 @@ export const ENTRADAS = [
     "opciones": []
   },
   {
+    "id": "ver-inventario-negocio",
+    "seccion": "descubrir",
+    "roles": [
+      "usuario"
+    ],
+    "titulo": "¿Cómo veo el catálogo de un negocio?",
+    "resumen": "Desde Favoritos, tocás \"Ver inventario\" en el negocio que te interesa y ves sus productos, precios y promociones.",
+    "pasos": [
+      "Tocá Favoritos en la barra de abajo",
+      "Elegí el negocio que querés revisar",
+      "Tocá \"Ver inventario\" en su tarjeta",
+      "Buscá o filtrá por categoría dentro de su catálogo"
+    ],
+    "ruta": "/favoritos",
+    "rutaLabel": "Favoritos",
+    "claves": [
+      "ver inventario",
+      "catalogo del negocio",
+      "ver productos",
+      "que vende",
+      "precios del negocio",
+      "ver promociones",
+      "inventario del negocio"
+    ],
+    "nota": "Es de solo lectura: mirás lo que el negocio publicó, no podés comprar todavía desde acá.",
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
+  },
+  {
     "id": "negocios-cercanos",
     "seccion": "descubrir",
     "roles": [
@@ -580,6 +655,34 @@ export const ENTRADAS = [
       "recompensar clientes"
     ],
     "nota": "Mientras más puntos das, más le conviene al cliente elegirte a vos.",
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
+  },
+  {
+    "id": "agregar-proveedor-asociado",
+    "seccion": "mi-negocio",
+    "roles": [
+      "negocio"
+    ],
+    "titulo": "¿Cómo agrego un proveedor a mis asociados?",
+    "resumen": "Le mandás una invitación desde Conectar, no lo agregás directo: el proveedor tiene que aceptarla primero.",
+    "pasos": [
+      "Tocá Conectar en la barra de abajo",
+      "Buscá el proveedor que te interesa",
+      "Tocá \"Invitar\" en su tarjeta",
+      "Esperá a que el proveedor la acepte o la rechace"
+    ],
+    "ruta": "/proveedores",
+    "rutaLabel": "Conectar",
+    "claves": [
+      "agregar proveedor",
+      "invitar proveedor",
+      "nuevo proveedor asociado",
+      "pedir asociacion a proveedor",
+      "conseguir proveedor"
+    ],
+    "nota": "Necesitás tu cuenta verificada para enviar invitaciones. Mientras está pendiente, el proveedor todavía no te puede cotizar.",
     "pendiente": false,
     "tipo": "pregunta",
     "opciones": []
@@ -1147,9 +1250,8 @@ export const ENTRADAS = [
     "resumen": "Es el acceso rápido a las cinco pantallas que más usás. Cambia según tu tipo de cuenta.",
     "pasos": [
       "Inicio: el feed principal con promociones y negocios",
-      "Favoritos: los negocios que marcaste",
-      "Premios o Panel: tus puntos si sos cliente, tu panel si sos negocio o proveedor",
-      "Calendario y Avisos: eventos y notificaciones"
+      "Si sos cliente: Favoritos (los negocios que marcaste), Premios, Calendario y Avisos",
+      "Si sos negocio o proveedor: Panel, Conectar (los socios de Vincco), Calendario y Avisos"
     ],
     "ruta": "/home",
     "rutaLabel": "Inicio",
@@ -1162,6 +1264,38 @@ export const ENTRADAS = [
       "tabs"
     ],
     "nota": null,
+    "pendiente": false,
+    "tipo": "pregunta",
+    "opciones": []
+  },
+  {
+    "id": "conectar",
+    "seccion": "la-app",
+    "roles": [
+      "negocio",
+      "proveedor"
+    ],
+    "titulo": "¿Qué es Conectar?",
+    "resumen": "Es el botón de la barra de abajo donde ves a todos los socios de Vincco: si tenés un negocio, ahí aparecen los proveedores; si sos proveedor, aparecen los negocios.",
+    "pasos": [
+      "Tocá Conectar en la barra de abajo",
+      "Buscá por nombre, categoría o ubicación",
+      "Tocá \"Invitar\" en el que te interese para pedirle la asociación",
+      "Esperá a que responda desde sus Avisos"
+    ],
+    "ruta": "/proveedores",
+    "rutaLabel": "Conectar",
+    "claves": [
+      "conectar",
+      "socios de vincco",
+      "buscar proveedores",
+      "buscar negocios",
+      "directorio de proveedores",
+      "directorio de negocios",
+      "invitar proveedor",
+      "invitar negocio"
+    ],
+    "nota": "Necesitás tu cuenta verificada para enviar invitaciones de asociación.",
     "pendiente": false,
     "tipo": "pregunta",
     "opciones": []
@@ -1294,25 +1428,6 @@ export const ENTRADAS = [
       "en que moneda"
     ],
     "nota": "Vincco opera en Nicaragua. Aunque en Configuración podés elegir ver dólares, los montos se siguen mostrando en córdobas hasta que haya un tipo de cambio del día.",
-    "pendiente": false,
-    "tipo": "pregunta",
-    "opciones": []
-  },
-  {
-    "id": "quien-creo-vincco",
-    "seccion": "la-app",
-    "roles": [
-      "usuario",
-      "negocio",
-      "proveedor"
-    ],
-    "titulo": "¿Quien  creo VINCCO?",
-    "resumen": "> VINCCO fue creada por el grupo de desarrolladores Impulso Digital.",
-    "pasos": [],
-    "ruta": null,
-    "rutaLabel": null,
-    "claves": [],
-    "nota": null,
     "pendiente": false,
     "tipo": "pregunta",
     "opciones": []

@@ -35,7 +35,7 @@
   display: flex;
   flex-direction: column;
   width: min(84vw, 292px);
-  background: #f6f8fb;
+  background: #fbf7f0;
   border-right: 1px solid #dbe3ec;
   transform: translateX(-100%);
   transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
@@ -181,7 +181,7 @@
    rol en el icono, no solo con negrita: en pantalla chica la
    diferencia de peso sola casi no se nota. */
 .cfg-nav-item--activa {
-  background: #ffffff;
+  background: #ead9c7;
   box-shadow: 0 1px 3px rgba(0, 20, 32, 0.09), inset 3px 0 0 var(--cfg-acento, #c05900);
 }
 
@@ -206,7 +206,7 @@
   background: var(--cfg-acento, #c05900);
   font-size: 10.5px;
   font-weight: 800;
-  color: #ffffff;
+  color: #ead9c7;
 }
 
 /* ── Pie del panel ───────────────────────────────────────── */
@@ -336,7 +336,7 @@
   padding: 7px 13px;
   border: 1px solid #d3dee7;
   border-radius: 999px;
-  background: #ffffff;
+  background: #ead9c7;
   font-family: inherit;
   font-size: 12.5px;
   font-weight: 600;
@@ -346,7 +346,7 @@
 }
 
 .cfg-topbar-volver:hover {
-  background: #f2f6fa;
+  background: #f1e4d4;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -393,7 +393,7 @@
   padding: 11px 14px;
   border: 1px solid #dbe3ec;
   border-radius: 12px;
-  background: #ffffff;
+  background: #ead9c7;
   color: #8399a8;
 }
 
@@ -439,7 +439,7 @@
   padding: 18px 18px 6px;
   border: 1px solid #dfe6ee;
   border-radius: 14px;
-  background: #ffffff;
+  background: #ead9c7;
   /* Deja aire arriba al saltar desde el panel, para que el título
      no quede tapado por la barra superior pegada */
   scroll-margin-top: 70px;
@@ -494,7 +494,7 @@
   padding: 6px 11px;
   border: 1px solid #dfe6ee;
   border-radius: 999px;
-  background: #ffffff;
+  background: #ead9c7;
   font-family: inherit;
   font-size: 11.5px;
   font-weight: 700;
@@ -504,7 +504,7 @@
 }
 
 .cfg-restablecer:hover {
-  background: #f2f6fa;
+  background: #f1e4d4;
   color: #00374e;
 }
 
@@ -522,7 +522,7 @@
   width: 100%;
   padding: 14px 0;
   border: none;
-  border-bottom: 1px solid #f2f6f9;
+  border-bottom: 1px solid #f1e4d4;
   background: none;
   text-align: left;
   font-family: inherit;
@@ -538,7 +538,7 @@
 }
 
 .cfg-ajuste--clickeable:hover {
-  background: #f7fafc;
+  background: #fbf7f0;
 }
 
 /* Deshabilitado por dependencia: se atenúa pero no desaparece, así
@@ -555,7 +555,7 @@
   width: 34px;
   height: 34px;
   border-radius: 11px;
-  background: #f1f5f9;
+  background: #f7efe3;
   color: #4a6274;
 }
 
@@ -640,7 +640,7 @@
   width: 21px;
   height: 21px;
   border-radius: 50%;
-  background: #ffffff;
+  background: #ead9c7;
   box-shadow: 0 1px 3px rgba(0, 20, 32, 0.3);
 }
 
@@ -651,7 +651,7 @@
   gap: 3px;
   padding: 3px;
   border-radius: 11px;
-  background: #f1f5f9;
+  background: #f7efe3;
 }
 
 .cfg-opcion {
@@ -669,7 +669,7 @@
 }
 
 .cfg-opcion--activa {
-  background: #ffffff;
+  background: #ead9c7;
   color: #0b1b26;
   font-weight: 700;
   box-shadow: 0 1px 3px rgba(0, 20, 32, 0.14);
@@ -694,7 +694,7 @@
   height: 30px;
   border: 1px solid #dfe6ee;
   border-radius: 9px;
-  background: #ffffff;
+  background: #ead9c7;
   font-family: inherit;
   font-size: 17px;
   font-weight: 700;
@@ -705,7 +705,7 @@
 }
 
 .cfg-numero-btn:hover:not(:disabled) {
-  background: #f2f6fa;
+  background: #f1e4d4;
 }
 
 .cfg-numero-btn:disabled {
@@ -718,7 +718,7 @@
   padding: 6px 4px;
   border: 1px solid #dfe6ee;
   border-radius: 9px;
-  background: #ffffff;
+  background: #ead9c7;
   font-family: inherit;
   font-size: 13.5px;
   font-weight: 700;
@@ -795,7 +795,7 @@
   width: 32px;
   height: 32px;
   border-radius: 11px;
-  color: #ffffff;
+  color: #ead9c7;
 }
 
 .cfg-permiso-info {
@@ -861,11 +861,11 @@
 
 .cfg-permiso-btn--si {
   background: #007a7b;
-  color: #ffffff;
+  color: #ead9c7;
 }
 
 .cfg-permiso-btn--no {
-  background: #f1f5f9;
+  background: #f7efe3;
   color: #4a6274;
 }
 
@@ -876,7 +876,7 @@
   margin: 13px 0 0;
   padding: 9px 12px;
   border-radius: 11px;
-  background: #f1f5f9;
+  background: #f7efe3;
   font-size: 11.5px;
   line-height: 1.45;
   color: #4a6274;
@@ -894,7 +894,7 @@
 
 .cfg-vacio--busqueda {
   border: 1px solid #dfe6ee;
-  background: #ffffff;
+  background: #ead9c7;
 }
 
 /* ── Aviso de guardado ───────────────────────────────────── */
@@ -914,7 +914,7 @@
   box-shadow: 0 10px 28px rgba(0, 20, 32, 0.32);
   font-size: 13px;
   font-weight: 600;
-  color: #ffffff;
+  color: #ead9c7;
   white-space: nowrap;
 }
 
@@ -936,7 +936,7 @@
   width: min(400px, calc(100vw - 40px));
   padding: 24px 22px 20px;
   border-radius: 18px;
-  background: #ffffff;
+  background: #ead9c7;
   box-shadow: 0 24px 60px rgba(0, 20, 32, 0.35);
   text-align: center;
 }
@@ -994,18 +994,18 @@
 }
 
 .cfg-btn--fantasma {
-  background: #f1f5f9;
+  background: #f7efe3;
   color: #4a6274;
 }
 
 .cfg-btn--solido {
   background: var(--cfg-acento, #c05900);
-  color: #ffffff;
+  color: #ead9c7;
 }
 
 .cfg-btn--peligro {
   background: #b3261e;
-  color: #ffffff;
+  color: #ead9c7;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -1205,4 +1205,302 @@
   .cfg-nav-fondo {
     transition: none;
   }
+}
+
+/* ── Tema oscuro ─────────────────────────────────────────── */
+/* La clase .dark la controla App.js con el ajuste "Tema" de esta
+   misma pantalla. Mismo criterio que el tema claro: tarjetas más
+   claras que el fondo, chips activos más oscuros que su contenedor
+   y los acentos de rol sin tocar, que sobre oscuro brillan solos. */
+body.dark .cfg {
+  background: #0d1b24;
+  color: #e6eef4;
+}
+
+body.dark .cfg-nav {
+  background: #101f2b;
+  border-right-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark .cfg-nav-marca {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark .cfg-nav-nombre {
+  color: #e6eef4;
+}
+
+body.dark .cfg-nav-cerrar {
+  background: #1a3345;
+  color: #a9bdca;
+}
+
+body.dark .cfg-nav-titulo {
+  color: #7f93a3;
+}
+
+body.dark .cfg-nav-item:hover {
+  background: #1a3345;
+}
+
+body.dark .cfg-nav-icono {
+  color: #7f93a3;
+}
+
+body.dark .cfg-nav-label {
+  color: #c6d5df;
+}
+
+body.dark .cfg-nav-resumen {
+  color: #7f93a3;
+}
+
+body.dark .cfg-nav-item--activa {
+  background: #22384a;
+}
+
+body.dark .cfg-nav-item--activa .cfg-nav-label {
+  color: #ffffff;
+}
+
+body.dark .cfg-nav-pie {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark .cfg-nav-pie-item {
+  color: #a9bdca;
+}
+
+body.dark .cfg-nav-pie-item:hover {
+  background: #1a3345;
+}
+
+body.dark .cfg-topbar {
+  background: rgba(13, 27, 36, 0.92);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark .cfg-topbar-btn {
+  color: #a9bdca;
+}
+
+body.dark .cfg-topbar-btn:hover {
+  background: #1a3345;
+}
+
+body.dark .cfg-topbar-sep {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+body.dark .cfg-ruta {
+  color: #7f93a3;
+}
+
+body.dark .cfg-ruta-inicio {
+  color: #a9bdca;
+}
+
+body.dark .cfg-ruta-actual {
+  color: #e6eef4;
+}
+
+body.dark .cfg-topbar-volver {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: #22384a;
+  color: #a9bdca;
+}
+
+body.dark .cfg-topbar-volver:hover {
+  background: #2c4254;
+}
+
+body.dark .cfg-encabezado h1 {
+  color: #e6eef4;
+}
+
+body.dark .cfg-encabezado p {
+  color: #a9bdca;
+}
+
+body.dark .cfg-buscador {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: #132836;
+  color: #7f93a3;
+}
+
+body.dark .cfg-buscador input {
+  color: #e6eef4;
+}
+
+body.dark .cfg-buscador input::placeholder {
+  color: #7f93a3;
+}
+
+body.dark .cfg-buscador button {
+  background: #22384a;
+  color: #a9bdca;
+}
+
+body.dark .cfg-grupo {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: #132836;
+}
+
+body.dark .cfg-grupo-head {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark .cfg-grupo-icono {
+  background: #22384a;
+}
+
+body.dark .cfg-grupo-texto h2 {
+  color: #e6eef4;
+}
+
+body.dark .cfg-grupo-texto p {
+  color: #a9bdca;
+}
+
+body.dark .cfg-restablecer {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: #22384a;
+  color: #a9bdca;
+}
+
+body.dark .cfg-restablecer:hover {
+  background: #2c4254;
+  color: #e6eef4;
+}
+
+body.dark .cfg-ajuste {
+  border-bottom-color: rgba(255, 255, 255, 0.09);
+}
+
+body.dark .cfg-ajuste--clickeable:hover {
+  background: #1a3345;
+}
+
+body.dark .cfg-ajuste-icono {
+  background: #22384a;
+  color: #a9bdca;
+}
+
+body.dark .cfg-ajuste-label {
+  color: #e6eef4;
+}
+
+body.dark .cfg-ajuste-ayuda {
+  color: #7f93a3;
+}
+
+body.dark .cfg-ajuste-flecha {
+  color: #7f93a3;
+}
+
+body.dark .cfg-info-valor {
+  color: #a9bdca;
+}
+
+body.dark .cfg-switch {
+  background: #2c4254;
+}
+
+body.dark .cfg-opciones {
+  background: #22384a;
+}
+
+body.dark .cfg-opcion {
+  color: #a9bdca;
+}
+
+body.dark .cfg-opcion--activa {
+  background: #0d1b24;
+  color: #ffffff;
+}
+
+body.dark .cfg-numero-btn {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: #22384a;
+  color: #a9bdca;
+}
+
+body.dark .cfg-numero-btn:hover:not(:disabled) {
+  background: #2c4254;
+}
+
+body.dark .cfg-numero-input {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: #132836;
+  color: #e6eef4;
+}
+
+body.dark .cfg-numero-sufijo {
+  color: #7f93a3;
+}
+
+/* Las pastillas de estado usan fondos translúcidos de color: sobre
+   oscuro siguen funcionando, pero el texto hay que aclararlo. */
+body.dark .cfg-pastilla--ok,
+body.dark .cfg-permiso-estado--ok {
+  color: #45c4bf;
+}
+
+body.dark .cfg-pastilla--espera,
+body.dark .cfg-permiso-estado--espera {
+  color: #f0a35c;
+}
+
+body.dark .cfg-permiso {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark .cfg-permiso-info strong {
+  color: #e6eef4;
+}
+
+body.dark .cfg-permiso-info span {
+  color: #7f93a3;
+}
+
+body.dark .cfg-permiso-btn--no {
+  background: #22384a;
+  color: #a9bdca;
+}
+
+body.dark .cfg-nota {
+  background: #22384a;
+  color: #a9bdca;
+}
+
+body.dark .cfg-vacio {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #7f93a3;
+}
+
+body.dark .cfg-vacio--busqueda {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: #132836;
+}
+
+body.dark .cfg-modal {
+  background: #132836;
+}
+
+body.dark .cfg-modal-icono {
+  background: #22384a;
+  color: #8fc1d8;
+}
+
+body.dark .cfg-modal-titulo {
+  color: #e6eef4;
+}
+
+body.dark .cfg-modal-mensaje {
+  color: #a9bdca;
+}
+
+body.dark .cfg-btn--fantasma {
+  background: #22384a;
+  color: #a9bdca;
 }

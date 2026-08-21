@@ -138,10 +138,30 @@ function DotMap() {
 }
 
 // Sin backend no hay credenciales reales que validar: esta es la
-// contraseña de las cuentas de prueba (mismo login para los tres
-// roles). Cuando exista un backend de verdad, esto se reemplaza por
-// la llamada de autenticacion y deja de vivir en el codigo.
+// contraseña de las cuentas de prueba (misma para los tres roles).
+// Cuando exista un backend de verdad, esto se reemplaza por la
+// llamada de autenticacion y deja de vivir en el codigo.
 const PASSWORD_DEMO = 'Vincco2026'
+
+// Los tres perfiles de prueba: un correo por rol. El correo decide
+// con que rol se entra a la app (en minusculas para comparar).
+const CUENTAS_PRUEBA = {
+  'negociovincco@gmail.com': 'negocio',
+  'provedorvincco@gmail.com': 'proveedor',
+  'clientevincco@gmail.com': 'cliente',
+}
+
+// Logo multicolor de Google para el boton "Continuar con Google".
+function GoogleG({ className = '' }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="#4285F4" d="M23.5 12.27c0-.85-.08-1.66-.22-2.45H12v4.64h6.45a5.53 5.53 0 0 1-2.4 3.63v3h3.87c2.27-2.09 3.58-5.17 3.58-8.82z" />
+      <path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.95-2.91l-3.88-3c-1.08.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.12-6.73-4.96H1.28v3.1A12 12 0 0 0 12 24z" />
+      <path fill="#FBBC05" d="M5.27 14.28a7.2 7.2 0 0 1 0-4.56V6.62H1.28a12 12 0 0 0 0 10.76l3.99-3.1z" />
+      <path fill="#EA4335" d="M12 4.76c1.76 0 3.34.6 4.59 1.79l3.43-3.43A12 12 0 0 0 1.28 6.62l3.99 3.1C6.22 6.88 8.87 4.76 12 4.76z" />
+    </svg>
+  )
+}
 
 export default function Landing() {
   const navigate = useNavigate()
@@ -149,7 +169,7 @@ export default function Landing() {
   const setUserType = useStore((s) => s.setUserType)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [userType, setUserTypeLocal] = useState('usuario')
+  const [mantenerSesion, setMantenerSesion] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
 
@@ -160,8 +180,13 @@ export default function Landing() {
       setError('Contraseña incorrecta')
       return
     }
+    const rol = CUENTAS_PRUEBA[email.trim().toLowerCase()]
+    if (!rol) {
+      setError('Ese correo no está registrado. Usá uno de los perfiles de prueba.')
+      return
+    }
     setError('')
-    setUserType(userType)
+    setUserType(rol)
     setLoggedIn(true)
     navigate('/')
   }
@@ -240,6 +265,15 @@ export default function Landing() {
             Inicia sesión
           </motion.h1>
 
+          <motion.p
+            className="m-0 mt-1.5 max-w-[320px] text-sm font-normal text-gray-500 leading-relaxed"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.25 }}
+          >
+            Accede a tu cuenta y continúa tu experiencia con nosotros
+          </motion.p>
+
           <motion.form
             className="w-full mt-7 flex flex-col gap-4"
             onSubmit={handleSubmit}
@@ -254,11 +288,11 @@ export default function Landing() {
               <input
                 id="login-email"
                 type="email"
-                placeholder="tu@correo.com"
+                placeholder="Introduce tu correo electrónico"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
-                className="w-full h-[50px] px-4 border border-gray-200 rounded-xl text-sm text-gray-900 bg-[#f8f9fb] outline-none transition-all duration-200 placeholder:text-[#b0b7c3] focus:border-[#003f5a] focus:shadow-[0_0_0_3px_rgba(0,63,90,0.12)] focus:bg-white"
+                className="w-full h-[50px] px-4 border border-gray-200 rounded-xl text-sm text-gray-900 bg-[#fbf7f0] outline-none transition-all duration-200 placeholder:text-[#b0b7c3] focus:border-[#003f5a] focus:shadow-[0_0_0_3px_rgba(0,63,90,0.12)] focus:bg-white"
               />
             </div>
 
@@ -270,11 +304,11 @@ export default function Landing() {
                 <input
                   id="login-password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
+                  placeholder="Introduce tu contraseña"
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setError('') }}
                   autoComplete="current-password"
-                  className={`w-full h-[50px] px-4 pr-11 border rounded-xl text-sm text-gray-900 bg-[#f8f9fb] outline-none transition-all duration-200 placeholder:text-[#b0b7c3] focus:shadow-[0_0_0_3px_rgba(0,63,90,0.12)] focus:bg-white ${error ? 'border-red-400 focus:border-red-400' : 'border-gray-200 focus:border-[#003f5a]'}`}
+                  className={`w-full h-[50px] px-4 pr-11 border rounded-xl text-sm text-gray-900 bg-[#fbf7f0] outline-none transition-all duration-200 placeholder:text-[#b0b7c3] focus:shadow-[0_0_0_3px_rgba(0,63,90,0.12)] focus:bg-white ${error ? 'border-red-400 focus:border-red-400' : 'border-gray-200 focus:border-[#003f5a]'}`}
                 />
                 <button
                   type="button"
@@ -291,26 +325,23 @@ export default function Landing() {
               )}
             </div>
 
-            <div className="w-full flex flex-col gap-2">
-              <span className="text-xs font-medium text-gray-600 text-left pl-0.5">
-                Tipo de usuario
-              </span>
-              <div className="flex gap-2">
-                {['cliente', 'negocio', 'proveedor'].map((tipo) => (
-                  <button
-                    key={tipo}
-                    type="button"
-                    onClick={() => setUserTypeLocal(tipo)}
-                    className={`flex-1 h-[42px] rounded-xl text-xs font-medium font-inherit cursor-pointer transition-all duration-250 px-2 ${
-                      userType === tipo
-                        ? 'border-[#003f5a] bg-[#003f5a] text-white shadow-[0_2px_8px_rgba(0,63,90,0.2)]'
-                        : 'border border-gray-200 bg-white text-gray-400 hover:border-[#003f5a] hover:text-[#003f5a] hover:bg-[#f4f8fb]'
-                    }`}
-                  >
-                    {tipo === 'cliente' ? 'Cliente' : tipo === 'negocio' ? 'Negocio' : 'Proveedor'}
-                  </button>
-                ))}
-              </div>
+            <div className="w-full flex items-center justify-between gap-2">
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={mantenerSesion}
+                  onChange={(e) => setMantenerSesion(e.target.checked)}
+                  className="h-4 w-4 rounded accent-[#003f5a] cursor-pointer"
+                />
+                <span className="text-xs text-gray-600">Mantener la sesión iniciada</span>
+              </label>
+              <button
+                type="button"
+                onClick={(e) => e.preventDefault()}
+                className="bg-none border-none p-0 text-xs font-medium text-[#007a7b] cursor-pointer font-inherit transition-colors duration-200 hover:text-[#005c5e]"
+              >
+                Restablecer contraseña
+              </button>
             </div>
 
             <motion.button
@@ -324,26 +355,35 @@ export default function Landing() {
             </motion.button>
           </motion.form>
 
-          <motion.button
-            className="mt-5 bg-none border-none text-sm font-medium text-[#007a7b] cursor-pointer font-inherit p-0 transition-colors duration-200 hover:text-[#005c5e]"
-            onClick={() => navigate('/')}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.4 }}
-          >
-            Continuar como Invitado
-          </motion.button>
+          <div className="w-full flex items-center gap-3 mt-5">
+            <span className="h-px flex-1 bg-gray-200" />
+            <span className="text-xs text-gray-400 whitespace-nowrap">O continuar con</span>
+            <span className="h-px flex-1 bg-gray-200" />
+          </div>
 
-          <motion.a
-            href="#"
-            onClick={(e) => e.preventDefault()}
-            className="mt-3.5 text-xs text-[#005c5e] no-underline font-normal transition-colors duration-200 hover:text-[#003f5a]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.45 }}
-          >
-            ¿Olvidaste tu contraseña?
-          </motion.a>
+          <div className="w-full flex gap-3 mt-4">
+            <motion.button
+              type="button"
+              className="flex-1 h-[50px] border border-gray-200 rounded-xl bg-[#fbf7f0] text-gray-700 text-sm font-medium font-inherit cursor-pointer transition-all duration-200 hover:border-gray-300 hover:shadow-[0_2px_10px_rgba(0,0,0,0.06)] flex items-center justify-center gap-2.5"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.4 }}
+            >
+              <GoogleG className="h-5 w-5" />
+              Google
+            </motion.button>
+            <motion.button
+              type="button"
+              onClick={() => navigate('/')}
+              className="flex-1 h-[50px] border border-gray-200 rounded-xl bg-[#fbf7f0] text-gray-700 text-sm font-medium font-inherit cursor-pointer transition-all duration-200 hover:border-gray-300 hover:shadow-[0_2px_10px_rgba(0,0,0,0.06)] flex items-center justify-center gap-2.5"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.45 }}
+            >
+              <Icon name="user" size={18} className="text-gray-500" />
+              Invitado
+            </motion.button>
+          </div>
 
           <motion.p
             className="mt-4.5 text-sm text-gray-400"
@@ -351,24 +391,14 @@ export default function Landing() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.5 }}
           >
-            ¿No tienes una cuenta?{' '}
+            ¿Eres nuevo en nuestra plataforma?{' '}
             <button
               className="text-[#007a7b] underline font-medium bg-none border-none p-0 text-inherit font-inherit cursor-pointer transition-colors duration-200 hover:text-[#003f5a]"
               onClick={() => navigate('/register')}
             >
-              Regístrate
+              Crear cuenta
             </button>
           </motion.p>
-
-          <motion.button
-            className="mt-4 bg-none border-none text-xs text-gray-300 cursor-pointer font-inherit p-0 transition-colors duration-200 hover:text-gray-400"
-            onClick={() => navigate('/bienvenida')}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.55 }}
-          >
-            Ir a la página de inicio
-          </motion.button>
         </div>
       </motion.div>
     </div>

@@ -1,0 +1,2012 @@
+/* Base app styles */
+:root {
+  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Sora', var(--font-family);
+
+  /* Tipografia oficial (diseño-guia/colores y botones.md): Old Standard TT
+     es solo para titulares y el numero de puntos, nada mas. Plus Jakarta
+     Sans es la sans de UI. Por ahora conviven con Sora/Inter, que siguen
+     siendo la tipografia del resto de la app. */
+  --font-serif: 'Old Standard TT', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --font-jakarta: 'Plus Jakarta Sans', var(--font-family);
+
+  /* ── Vincco brand — manual de identidad v2.1 ─────────────── */
+  --navy-950: #001d2a;
+  --navy-900: #002e43;
+  --navy-800: #003f5a;
+  --navy-700: #00374e;
+  --navy-600: #3f6f84;
+  --navy-500: #7a9caa;
+
+  --orange-500: #dd6600;
+  --orange-600: #c05900;
+  --orange-700: #a34b00;
+
+  --gold-400: #feb862;
+  --gold-500: #fea02f;
+  --gold-600: #de8b27;
+
+  /* Azul claro del panel de chips del carrusel de negocios */
+  --brand-sky: #62b2fe;
+  --brand-sky-dark: #3f97ea;
+
+  --teal-500: #3f9c9c;
+  --teal-600: #007a7b;
+  --teal-700: #005c5e;
+
+  --ok: #17693f;
+  --err: #b3261e;
+  --warn: #8f5a00;
+
+  --ink-900: #0b1b26;
+  --slate-600: #4d6273;
+  --slate-400: #7f93a3;
+  --slate-200: #e3eaef;
+
+  --surface: #ead9c7;
+  --surface-alt: #f7efe3;
+  --bone: #ead9c7;
+  --line: rgba(0, 63, 90, 0.12);
+  --line-strong: rgba(0, 63, 90, 0.22);
+
+  --shadow-navy: 0 24px 60px rgba(0, 32, 46, 0.22);
+  --shadow-card: 0 2px 14px rgba(0, 42, 61, 0.07);
+  --shadow-card-lg: 0 10px 34px rgba(0, 42, 61, 0.10);
+
+  /* ── Layout responsive ───────────────────────────────────
+     Breakpoints del proyecto (usar siempre estos):
+       movil   -> hasta 480px
+       tablet  -> 481px a 1024px
+       laptop  -> 1025px en adelante
+     Como CSS no permite variables dentro de @media, los valores
+     estan documentados aqui pero se escriben literales abajo.   */
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --nav-height: 62px;
+  --nav-space: calc(var(--nav-height) + var(--safe-bottom) + 12px);
+
+  color-scheme: light;
+  font-family: var(--font-family);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink-900);
+  background-color: var(--navy-800);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--navy-800);
+  color: var(--ink-900);
+  text-rendering: optimizeLegibility;
+  /* Evita el scroll horizontal por elementos decorativos que se salen */
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Espacio reservado para la barra inferior fija.
+   Reemplaza el paddingBottom: 70px que estaba repetido en el router. */
+/* Pantalla de espera mientras se descarga el codigo de una ruta.
+   Usa el mismo navy de las paginas para que no haya flash blanco. */
+.route-fallback {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #002e43 0%, #003f5a 30%, #3f6f84 100%);
+}
+
+.page-shell {
+  padding-bottom: var(--nav-space);
+}
+
+/* Las paginas de adentro usan min-height: 100vh. Sumado al padding
+   del shell daba 100vh + 74px, o sea scroll de mas en pantallas
+   con poco contenido. Se les descuenta el alto del nav.
+   El !important es porque varias lo declaran con style inline. */
+.page-shell > * {
+  min-height: calc(100vh - var(--nav-space)) !important;
+}
+
+/* En tablet/laptop la barra flota separada del borde, hace falta mas aire */
+@media (min-width: 768px) {
+  .page-shell {
+    padding-bottom: calc(var(--nav-height) + 32px);
+  }
+
+  .page-shell > * {
+    min-height: calc(100vh - var(--nav-height) - 32px) !important;
+  }
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+section {
+  padding: 4rem 0;
+}
+
+/* Tablet: menos aire vertical para no desperdiciar pantalla */
+@media (max-width: 1024px) {
+  section {
+    padding: 3rem 0;
+  }
+}
+
+/* Movil */
+@media (max-width: 480px) {
+  section {
+    padding: 2.25rem 0;
+  }
+}
+
+/* ── Bottom Navigation ─────────────────────────────── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  background: hsl(222 47% 11%); /* slate-900 */
+  border-top: 1px solid hsl(217 33% 17%); /* slate-800 */
+  border-radius: 20px 20px 0 0;
+  /* La safe-area evita que la barra de gestos del iPhone tape los botones */
+  padding: 8px 4px calc(12px + var(--safe-bottom));
+  box-shadow: 0 -12px 30px rgba(0, 24, 36, 0.28);
+  z-index: 1000;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.bottom-nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  /* min-width: 0 permite que el boton se encoja sin desbordar el flex */
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 96px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: hsl(214 27% 65%); /* #94A3B8 — slate-400 inactivo */
+  padding: 4px 2px;
+  transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bottom-nav-btn--active {
+  color: hsl(var(--accent-primary, 25 95% 53%));
+}
+
+.bottom-nav-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.bottom-nav-btn--active .bottom-nav-icon {
+  transform: scale(1.05);
+}
+
+/* El mismo punto naranja que marca la ruta activa en el Sidebar:
+   ambas barras de navegacion hablan el mismo idioma visual. */
+.bottom-nav-dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: hsl(var(--accent-primary, 25 95% 53%));
+  box-shadow: 0 0 0 3px hsl(222 47% 11%);
+  transform: scale(0);
+  transition: transform 0.2s ease;
+}
+
+.bottom-nav-btn--active .bottom-nav-dot {
+  transform: scale(1);
+}
+
+/* Publicar es la unica accion de escritura de la barra (el resto son
+   destinos): se eleva como boton relleno para que se note la diferencia. */
+.bottom-nav-btn--fab .bottom-nav-icon {
+  width: 44px;
+  height: 44px;
+  margin-top: -22px;
+  border-radius: 50%;
+  background: linear-gradient(155deg, var(--gold-400), var(--orange-500));
+  color: var(--surface);
+  box-shadow: 0 8px 20px rgba(221, 102, 0, 0.45),
+    0 0 0 4px hsl(222 47% 11%);
+}
+
+.bottom-nav-btn--fab.bottom-nav-btn--active .bottom-nav-icon {
+  background: linear-gradient(155deg, var(--gold-500), var(--orange-600));
+}
+
+.bottom-nav-btn--fab {
+  color: rgba(234, 217, 199, 0.85);
+}
+
+.bottom-nav-btn--fab .bottom-nav-dot {
+  display: none;
+}
+
+.bottom-nav-label {
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: hsl(214 27% 65%); /* #94A3B8 — slate-400 inactivo */
+  /* Si aun asi no entra, se corta con puntos suspensivos en vez de desbordar */
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bottom-nav-btn--active .bottom-nav-label {
+  color: hsl(var(--accent-primary, 25 95% 53%));
+  font-weight: 600;
+}
+
+/* Movil chico: los labels ya vienen cortos desde BottomNav.jsx,
+   solo bajamos un punto el tamano */
+@media (max-width: 380px) {
+  .bottom-nav-label {
+    font-size: 9px;
+  }
+
+  .bottom-nav {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+}
+
+/* Tablet y laptop: la barra flota centrada en vez de estirarse
+   de borde a borde, que dejaba los iconos demasiado separados */
+@media (min-width: 768px) {
+  .bottom-nav {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: min(600px, calc(100% - 2rem));
+    bottom: 16px;
+    border-radius: 22px;
+    padding: 10px 8px calc(10px + var(--safe-bottom));
+    justify-content: space-between;
+    box-shadow: 0 18px 40px rgba(0, 24, 36, 0.32);
+  }
+
+  .bottom-nav-label {
+    font-size: 11px;
+  }
+}
+
+/* Variante clara de la barra: fondo blanco, borde superior claro y
+   sombra superior sutil. Solo activa cuando el toggle del calendario
+   quita .dark del <body>. */
+body:not(.dark) .bottom-nav {
+  background: #ead9c7;
+  border-top-color: hsl(214 32% 91%);
+  box-shadow: 0 -8px 24px rgba(2, 6, 23, 0.08);
+}
+
+/* ── Menu lateral (Sidebar.jsx) ────────────────────────────
+   Comparte panel con la barra inferior: es la otra mitad de la
+   navegacion global de la app. Fondo navy oscuro para que ambas
+   se sientan parte del mismo sistema, no dos widgets distintos. */
+.side-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 10, 16, 0.55);
+  z-index: 1100;
+}
+
+.side-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(300px, 84vw);
+  background: linear-gradient(180deg, var(--navy-900) 0%, var(--navy-950) 100%);
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 40px rgba(0, 10, 16, 0.45);
+}
+
+.side-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid rgba(234, 217, 199, 0.08);
+}
+
+/* Mismo logo del home: la moneda con la V, adaptada al fondo navy
+   del panel. "Vincco" queda a la derecha, como en el navbar. */
+.side-logo-img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+}
+
+.side-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.side-logo-text {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 19px;
+  color: var(--surface);
+  line-height: 1;
+}
+
+.side-role-chip {
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold-400);
+  background: rgba(254, 184, 98, 0.12);
+  border: 1px solid rgba(254, 184, 98, 0.28);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.side-nav {
+  flex: 1;
+  padding: 10px 12px;
+  overflow-y: auto;
+}
+
+.side-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 2px;
+  border: none;
+  border-radius: 12px;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: rgba(234, 217, 199, 0.68);
+  text-align: left;
+  transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.side-nav-item:hover {
+  background: rgba(234, 217, 199, 0.06);
+  color: var(--surface);
+}
+
+.side-nav-item--active {
+  background: rgba(221, 102, 0, 0.16);
+  color: var(--surface);
+}
+
+.side-nav-icon {
+  color: rgba(234, 217, 199, 0.55);
+  transition: color 0.15s;
+}
+
+.side-nav-item:hover .side-nav-icon {
+  color: rgba(234, 217, 199, 0.85);
+}
+
+.side-nav-item--active .side-nav-icon {
+  color: var(--gold-400);
+}
+
+.side-nav-label {
+  flex: 1;
+}
+
+.side-nav-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--orange-500);
+  box-shadow: 0 0 0 4px rgba(221, 102, 0, 0.18);
+  flex-shrink: 0;
+}
+
+.side-footer {
+  border-top: 1px solid rgba(234, 217, 199, 0.08);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.side-btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 14.5px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.side-btn--primary {
+  border: none;
+  background: var(--orange-500);
+  color: var(--surface);
+}
+
+.side-btn--primary:hover {
+  background: var(--orange-600);
+}
+
+.side-btn--outline {
+  border: 1.5px solid var(--teal-500);
+  background: transparent;
+  color: var(--teal-500);
+}
+
+.side-btn--outline:hover {
+  background: rgba(63, 156, 156, 0.12);
+}
+
+.side-btn--danger {
+  border: none;
+  background: rgba(179, 38, 30, 0.18);
+  color: #ff8a80;
+}
+
+.side-btn--danger:hover {
+  background: rgba(179, 38, 30, 0.28);
+}
+
+/* ── Carrusel de negocios asociados ────────────────────────
+   Usado por NegociosCarousel.jsx.
+   Movil: chips arriba, tarjeta abajo (columna).
+   Tablet/laptop: chips a la izquierda, tarjeta a la derecha. */
+
+/* Ocupa todo el ancho y todo el alto libre de la pagina.
+   .na es flex column, asi que flex:1 estira el carrusel. */
+.ncar {
+  width: 100%;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Fondo claro propio: despega el carrusel del degradado navy
+   de la pagina para que resalte como bloque independiente */
+.ncar-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid rgba(234, 217, 199, 0.5);
+  background: #fbf7f0;
+  box-shadow: 0 30px 70px rgba(0, 20, 32, 0.32);
+}
+
+/* ── Columna de chips ── */
+.ncar-chips-col {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 20px;
+  background: var(--brand-sky);
+}
+
+/* ── Buscador ── */
+.ncar-search {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  padding: 0 16px;
+  margin-bottom: 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(234, 217, 199, 0.18);
+  background: rgba(234, 217, 199, 0.08);
+}
+
+.ncar-search-icono {
+  flex-shrink: 0;
+  color: rgba(234, 217, 199, 0.55);
+}
+
+.ncar-search input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 0;
+  border: none;
+  background: none;
+  outline: none;
+  color: #ead9c7;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.ncar-search input::placeholder {
+  color: rgba(234, 217, 199, 0.45);
+}
+
+.ncar-chips-zona {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-height: 280px;
+}
+
+.ncar-sin-resultados {
+  margin: 0;
+  padding: 0 12px;
+  text-align: center;
+  font-size: 14px;
+  color: rgba(234, 217, 199, 0.6);
+}
+
+/* Degradados que difuminan los chips al entrar y salir */
+.ncar-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 56px;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.ncar-fade--top {
+  top: 0;
+  background: linear-gradient(to bottom, var(--brand-sky), rgba(98, 178, 254, 0.7), transparent);
+}
+
+.ncar-fade--bottom {
+  bottom: 0;
+  background: linear-gradient(to top, var(--brand-sky), rgba(98, 178, 254, 0.7), transparent);
+}
+
+.ncar-chips-pista {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.ncar-chip-wrap {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.ncar-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 100%;
+  padding: 13px 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(234, 217, 199, 0.2);
+  background: transparent;
+  color: rgba(234, 217, 199, 0.6);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.4s, color 0.4s, border-color 0.4s;
+}
+
+.ncar-chip:hover {
+  border-color: rgba(234, 217, 199, 0.4);
+  color: #ead9c7;
+}
+
+.ncar-chip--activo {
+  background: #ead9c7;
+  border-color: #ead9c7;
+  color: var(--brand-sky-dark);
+  box-shadow: 0 6px 18px rgba(0, 40, 70, 0.14);
+}
+
+.ncar-chip-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: currentColor;
+}
+
+.ncar-chip-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+/* ── Columna de tarjetas ── */
+.ncar-cards-col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  padding: 28px 20px;
+  background: #fbf7f0;
+}
+
+.ncar-cards-pista {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 4 / 5;
+}
+
+.ncar-card {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 26px;
+  border: 5px solid var(--surface);
+  background: var(--surface);
+  transform-origin: center;
+}
+
+.ncar-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter 0.6s;
+}
+
+.ncar-card-img--placeholder {
+  display: grid;
+  place-items: center;
+  color: rgba(234, 217, 199, 0.9);
+}
+
+.ncar-card-img--inactiva {
+  filter: grayscale(1) brightness(0.75) blur(2px);
+}
+
+.ncar-card-estado {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(234, 217, 199, 0.85);
+  transition: opacity 0.3s;
+}
+
+.ncar-card-estado--oculto {
+  opacity: 0;
+}
+
+.ncar-card-punto {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ead9c7;
+  box-shadow: 0 0 10px #ead9c7;
+}
+
+/* El estado del negocio viene del store: Activo o Pendiente */
+.ncar-card-punto--activo {
+  background: #4ade80;
+  box-shadow: 0 0 10px #4ade80;
+}
+
+.ncar-card-punto--pendiente {
+  background: var(--gold-500);
+  box-shadow: 0 0 10px var(--gold-500);
+}
+
+.ncar-card-info {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 28px 24px 24px;
+  padding-top: 90px;
+  background: linear-gradient(to top, rgba(0, 20, 30, 0.92), rgba(0, 20, 30, 0.4) 55%, transparent);
+  pointer-events: none;
+}
+
+.ncar-card-badge {
+  width: fit-content;
+  max-width: 100%;
+  margin-bottom: 10px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-900);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-shadow: var(--shadow-card);
+}
+
+.ncar-card-nombre {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #ead9c7;
+  /* Corta a 3 lineas para que descripciones largas no tapen la imagen */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Panel de datos y acciones del negocio activo ── */
+.ncar-panel {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Encabezado del panel: nombre del negocio + boton de editar */
+.ncar-panel-encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.ncar-panel-titulo {
+  min-width: 0;
+}
+
+.ncar-panel-categoria {
+  margin: 0 0 3px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-sky-dark);
+}
+
+.ncar-panel-titulo h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--ink-900);
+  word-break: break-word;
+}
+
+.ncar-btn-editar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  padding: 9px 15px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--navy-800);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.ncar-btn-editar:hover {
+  background: var(--brand-sky);
+  border-color: var(--brand-sky);
+  color: #ead9c7;
+}
+
+.ncar-panel-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.ncar-panel-meta-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--slate-600);
+}
+
+.ncar-panel-meta-item svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--brand-sky-dark);
+}
+
+.ncar-panel-meta-item span {
+  min-width: 0;
+  word-break: break-word;
+}
+
+.ncar-panel-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ncar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  padding: 13px 18px;
+  border: none;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.ncar-btn-contenido {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+}
+
+.ncar-btn--whatsapp {
+  background: #25d366;
+  color: #05341a;
+}
+
+.ncar-btn--whatsapp:hover {
+  background: #1fbb59;
+}
+
+.ncar-btn--whatsapp[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ncar-btn--pendiente {
+  background: #f1e4d4;
+  color: #7a8a99;
+  cursor: default;
+}
+
+.ncar-btn--notificar {
+  background: var(--orange-500);
+  color: #ead9c7;
+}
+
+.ncar-btn--notificar:hover {
+  background: var(--orange-600);
+}
+
+/* Tablet: las dos columnas se ponen lado a lado */
+@media (min-width: 768px) {
+  .ncar-shell {
+    flex-direction: row;
+    border-radius: 36px;
+    /* Piso, por si la ventana es muy baja. El alto real
+       lo da flex:1 estirandose en la pagina. */
+    min-height: 480px;
+  }
+
+  .ncar-chips-col {
+    width: 38%;
+    flex-shrink: 0;
+    justify-content: center;
+    padding: 28px;
+  }
+
+  .ncar-chips-zona {
+    justify-content: flex-start;
+  }
+
+  .ncar-chips-pista {
+    justify-content: flex-start;
+  }
+
+  .ncar-chip-wrap {
+    justify-content: flex-start;
+  }
+
+  .ncar-chip {
+    font-size: 15px;
+    padding: 14px 26px;
+  }
+
+  .ncar-cards-col {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    gap: 26px;
+    padding: 36px 32px;
+  }
+
+  /* Se dimensiona por altura de viewport para que crezca con la
+     pantalla, con un tope para que no se desborde */
+  .ncar-cards-pista {
+    max-width: min(360px, calc((100vh - 340px) * 0.8));
+  }
+
+  .ncar-panel-titulo h2 {
+    font-size: 22px;
+  }
+}
+
+/* Laptop: bloque bastante mas grande. La tarjeta va al lado de los
+   datos en vez de encima, y todo sube de tamano. */
+@media (min-width: 1025px) {
+  .ncar-shell {
+    min-height: 560px;
+    border-radius: 44px;
+  }
+
+  .ncar-chips-col {
+    width: 36%;
+    padding: 40px;
+  }
+
+  .ncar-chip {
+    font-size: 16px;
+    padding: 16px 30px;
+    gap: 14px;
+  }
+
+  .ncar-cards-col {
+    flex-direction: row;
+    align-items: center;
+    gap: 40px;
+    padding: 48px 44px;
+  }
+
+  .ncar-cards-pista {
+    max-width: min(420px, calc((100vh - 300px) * 0.8));
+  }
+
+  .ncar-panel {
+    max-width: 520px;
+    flex: 1;
+    min-width: 0;
+    gap: 20px;
+  }
+
+  .ncar-panel-titulo h2 {
+    font-size: 27px;
+  }
+
+  .ncar-panel-meta-item {
+    font-size: 14.5px;
+    gap: 12px;
+  }
+
+  .ncar-panel-acciones {
+    flex-direction: row;
+  }
+
+  .ncar-btn {
+    padding: 15px 20px;
+    font-size: 14.5px;
+  }
+
+  .ncar-card-nombre {
+    font-size: 21px;
+  }
+}
+
+/* Pantallas grandes: se aprovecha todavia mas el ancho */
+@media (min-width: 1440px) {
+  .ncar-cards-pista {
+    max-width: min(470px, calc((100vh - 300px) * 0.8));
+  }
+
+  .ncar-chip {
+    font-size: 17px;
+  }
+
+  .ncar-cards-col {
+    gap: 56px;
+    padding: 56px;
+  }
+}
+
+/* Movil chico: chips mas compactos para que entren los nombres largos */
+@media (max-width: 400px) {
+  .ncar-chip {
+    padding: 11px 18px;
+    font-size: 13px;
+    gap: 9px;
+  }
+
+  .ncar-cards-col {
+    padding: 24px 16px;
+  }
+
+  .ncar-cards-pista {
+    max-width: 250px;
+  }
+
+  .ncar-panel-titulo h2 {
+    font-size: 18px;
+  }
+
+  .ncar-btn-editar span {
+    display: none;
+  }
+
+  .ncar-btn-editar {
+    padding: 9px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   Preferencias de accesibilidad y ahorro de datos.
+
+   App.js pone estas clases en el <body> según lo que el usuario
+   eligió en Configuraciones (/config). Van acá, en App.css,
+   porque son globales: afectan a todas las pantallas por igual.
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Texto más grande ────────────────────────────────────── */
+/* Sube el tamaño base y todo lo que use rem crece con él. Los
+   tamaños en px no se tocan, para que no se rompa ningún layout. */
+body.vincco--texto-grande {
+  font-size: 112.5%;
+}
+
+body.vincco--texto-grande p,
+body.vincco--texto-grande span,
+body.vincco--texto-grande li,
+body.vincco--texto-grande label,
+body.vincco--texto-grande button,
+body.vincco--texto-grande input,
+body.vincco--texto-grande textarea {
+  font-size: 1.06em;
+  line-height: 1.55;
+}
+
+/* ── Alto contraste ──────────────────────────────────────── */
+/* Para leer bajo el sol: bordes marcados y texto secundario más
+   oscuro. No cambia la identidad de color de Vincco, solo la
+   separación entre elementos. */
+body.vincco--alto-contraste .pf-seccion,
+body.vincco--alto-contraste .cfg-grupo,
+body.vincco--alto-contraste .pf-metrica {
+  border: 1.5px solid #0b1b26;
+  box-shadow: none;
+}
+
+body.vincco--alto-contraste .pf-campo-valor,
+body.vincco--alto-contraste .cfg-ajuste-ayuda,
+body.vincco--alto-contraste .cfg-grupo-texto p,
+body.vincco--alto-contraste .pf-metrica-detalle,
+body.vincco--alto-contraste .pf-metrica-label {
+  color: #24404f;
+}
+
+body.vincco--alto-contraste .cfg-ajuste,
+body.vincco--alto-contraste .pf-favorito {
+  border-color: #b4c6d1;
+}
+
+body.vincco--alto-contraste a,
+body.vincco--alto-contraste .pf-metrica-enlace {
+  text-decoration: underline;
+}
+
+/* Respeta a quien pidió menos movimiento en su sistema operativo.
+   No es un ajuste de Vincco: es una preferencia del dispositivo. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* =====================================================================
+   HEADER DEL HERO — logo + menú hamburguesa   (V2.2)
+   El logo usa vincco-logo-nav.png: el mismo logo original, recortado
+   del aire transparente que traía el archivo (48% del alto era vacío,
+   por eso se veía diminuto). Proporción del logo: 1.598 (ancho/alto).
+   ===================================================================== */
+
+.hero-banner-header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+}
+
+/* ---------- Logo ---------- */
+.hero-banner-logo {
+  display: block;
+  height: 36px;                /* móvil: 36px alto = 58px ancho */
+  width: auto;
+  flex: 0 0 auto;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.hero-banner-logo:hover {
+  transform: translateY(-1px) scale(1.03);
+}
+
+/* ---------- Menú hamburguesa ---------- */
+.hb-burger {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0;
+  border: 1px solid rgba(234, 217, 199, 0.2);
+  border-radius: 13px;
+  background: rgba(234, 217, 199, 0.12);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.22s ease, border-color 0.22s ease,
+              transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.hb-burger span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  border-radius: 2px;
+  background: #ead9c7;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.2s ease, width 0.3s ease, background 0.22s ease;
+}
+
+.hb-burger span:nth-child(2) { width: 13px; }
+
+.hb-burger:hover {
+  background: rgba(234, 217, 199, 0.18);
+  border-color: rgba(255, 194, 107, 0.55);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+}
+
+.hb-burger:hover span { background: #ffc26b; }
+.hb-burger:hover span:nth-child(2) { width: 20px; }
+.hb-burger:active { transform: translateY(0) scale(0.95); }
+
+.hb-burger:focus-visible {
+  outline: 2px solid #ffc26b;
+  outline-offset: 3px;
+}
+
+/* Animación a "X" mientras el menú está abierto */
+.hb-burger.is-open { background: #ffc26b; border-color: transparent; }
+.hb-burger.is-open span { width: 20px; background: #012d40; }
+.hb-burger.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hb-burger.is-open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hb-burger.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ---------- Responsive: tamaño del logo por dispositivo ---------- */
+
+/* Celular chico */
+@media (max-width: 380px) {
+  .hero-banner-header { padding: 16px 18px; }
+  .hero-banner-logo { height: 32px; }   /* 32 x 51 px */
+}
+
+/* Celular grande */
+@media (min-width: 481px) {
+  .hero-banner-header { padding: 22px 26px; }
+  .hero-banner-logo { height: 40px; }   /* 40 x 64 px */
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .hero-banner-header { padding: 24px 34px; }
+  .hero-banner-logo { height: 46px; }   /* 46 x 74 px */
+  .hb-burger { width: 46px; height: 46px; border-radius: 14px; }
+}
+
+/* Laptop */
+@media (min-width: 1025px) {
+  .hero-banner-header { padding: 26px 44px; }
+  .hero-banner-logo { height: 52px; }   /* 52 x 83 px */
+  .hb-burger { width: 48px; height: 48px; border-radius: 15px; }
+}
+
+/* Monitor grande */
+@media (min-width: 1440px) {
+  .hero-banner-header { padding: 28px 56px; }
+  .hero-banner-logo { height: 58px; }   /* 58 x 93 px */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-banner-logo, .hb-burger, .hb-burger span { transition: none; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FLUJO DE COMPRA · Hoja y detalle de una promoción
+   ──────────────────────────────────────────────────────────
+   Lo que ve el cliente cuando toca "Ver" en una promoción del
+   Home: la hoja que sube desde abajo, el detalle de adentro
+   (foto → descripción → negocio → acciones) y la pantalla
+   completa en /promocion/:id, que reusa el mismo detalle.
+
+   Movil primero. Cortes en 481px y 768px, area tactil de
+   44px minimo y contraste medido contra el manual v2.1:
+   naranja-600 sobre blanco 4.50:1, turquesa-700 7.25:1.
+   ══════════════════════════════════════════════════════════ */
+
+/* ── La hoja ───────────────────────────────────────────── */
+
+.vc-hoja__fondo {
+  position: fixed;
+  inset: 0;
+  /* Por encima del sidebar (1200), que es lo mas alto de la app */
+  z-index: 1400;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 29, 42, 0.55);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+.vc-hoja {
+  position: relative;
+  width: 100%;
+  /* dvh y no vh: en celular la barra del navegador aparece y
+     desaparece, y con vh la hoja quedaba cortada por abajo */
+  max-height: 92dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-radius: 24px 24px 0 0;
+  box-shadow: var(--shadow-navy);
+  padding-bottom: var(--safe-bottom);
+  overflow: hidden;
+}
+
+.vc-hoja__agarre {
+  flex-shrink: 0;
+  width: 44px;
+  height: 4px;
+  margin: 10px auto 2px;
+  border-radius: 999px;
+  background: var(--slate-200);
+}
+
+.vc-hoja__cerrar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(234, 217, 199, 0.94);
+  color: var(--navy-800);
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 32, 46, 0.18);
+}
+
+.vc-hoja__contenido {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Detalle de la promoción ───────────────────────────── */
+
+.vc-promo__media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 210px;
+  overflow: hidden;
+}
+
+.vc-promo__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vc-promo__media-icono {
+  color: #ead9c7;
+  opacity: 0.92;
+}
+
+.vc-promo__badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  background: rgba(234, 217, 199, 0.94);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+}
+
+/* Abajo a la izquierda para no chocar con el boton de cerrar */
+.vc-promo__badge--limitada {
+  top: auto;
+  bottom: 14px;
+  background: var(--navy-800);
+  color: #ead9c7;
+}
+
+.vc-promo__cuerpo {
+  padding: 20px 20px 24px;
+}
+
+.vc-promo__categoria {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--slate-400);
+}
+
+.vc-promo__titulo {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: clamp(20px, 5vw, 25px);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--ink-900);
+}
+
+.vc-promo__descripcion {
+  margin: 0 0 16px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--slate-600);
+}
+
+/* El precio de un producto: es lo primero que la persona busca,
+   así que va grande y antes que los chips. Turquesa-700 sobre
+   blanco da 7.25:1; el naranja se reserva para el botón. */
+.vc-promo__precio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 14px;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 6vw, 30px);
+  font-weight: 800;
+  color: var(--teal-700);
+  font-variant-numeric: tabular-nums;
+}
+
+.vc-promo__precio-stock {
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--slate-400);
+}
+
+.vc-promo__chip--likes {
+  background: #ffe4e9;
+  border-color: rgba(225, 29, 72, 0.22);
+  color: #b3123f;
+}
+
+.vc-promo__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.vc-promo__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface-alt);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--slate-600);
+  font-variant-numeric: tabular-nums;
+}
+
+.vc-promo__chip--puntos {
+  background: #ecfdf5;
+  border-color: rgba(23, 105, 63, 0.2);
+  color: var(--ok);
+}
+
+.vc-promo__chip--descuento {
+  background: rgba(192, 89, 0, 0.1);
+  border-color: rgba(192, 89, 0, 0.24);
+  color: var(--orange-700);
+}
+
+.vc-promo__chip--vigencia {
+  background: rgba(143, 90, 0, 0.1);
+  border-color: rgba(143, 90, 0, 0.24);
+  color: var(--warn);
+}
+
+.vc-promo__terminos {
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-alt);
+}
+
+.vc-promo__terminos-titulo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 5px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--slate-400);
+}
+
+.vc-promo__terminos-texto {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--slate-600);
+}
+
+/* ── Tarjeta del negocio que publicó ───────────────────── */
+
+.vc-promo__negocio {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fbf7f0 0%, #ead9c7 100%);
+}
+
+.vc-promo__negocio-avatar {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--navy-800);
+  color: #ead9c7;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.vc-promo__negocio-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vc-promo__negocio-datos {
+  min-width: 0;
+}
+
+.vc-promo__negocio-etiqueta {
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate-400);
+}
+
+.vc-promo__negocio-nombre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0 3px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink-900);
+}
+
+.vc-promo__verificado {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(0, 122, 123, 0.1);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--teal-700);
+}
+
+.vc-promo__negocio-sub {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--slate-600);
+}
+
+.vc-promo__negocio-tel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 5px 0 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--slate-400);
+}
+
+/* ── Acciones ──────────────────────────────────────────── */
+
+.vc-promo__acciones {
+  display: grid;
+  gap: 10px;
+}
+
+.vc-promo__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 18px;
+  border: 1.5px solid transparent;
+  border-radius: 14px;
+  font-family: var(--font-family);
+  font-size: 14.5px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: filter 0.18s, background-color 0.18s, transform 0.18s;
+}
+
+/* Naranja-600 y no naranja-500: sobre blanco el 500 se queda en
+   3.51:1 y el texto no pasa. El 600 da 4.50:1 justo. */
+.vc-promo__btn--primario {
+  background: var(--orange-600);
+  color: #ead9c7;
+}
+
+.vc-promo__btn--primario:hover {
+  filter: brightness(1.08);
+}
+
+.vc-promo__btn--secundario {
+  background: var(--surface);
+  border-color: var(--teal-600);
+  color: var(--teal-700);
+}
+
+.vc-promo__btn--secundario:hover {
+  background: rgba(0, 122, 123, 0.08);
+}
+
+.vc-promo__btn--fantasma {
+  background: transparent;
+  border-color: var(--line-strong);
+  color: var(--slate-600);
+}
+
+.vc-promo__btn--inactivo {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.vc-promo__btn:active {
+  transform: scale(0.985);
+}
+
+.vc-promo__btn:focus-visible {
+  outline: 3px solid var(--gold-500);
+  outline-offset: 2px;
+}
+
+.vc-promo__vertodo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 14px auto 0;
+  padding: 10px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--teal-700);
+  cursor: pointer;
+}
+
+.vc-promo__aviso-rol {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface-alt);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--slate-600);
+}
+
+/* ── Formulario de consulta ────────────────────────────── */
+
+.vc-promo__form {
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.vc-promo__form-titulo {
+  margin: 0 0 14px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink-900);
+}
+
+.vc-promo__campo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.vc-promo__campo--bloque {
+  display: block;
+}
+
+.vc-promo__campo-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--slate-600);
+}
+
+.vc-promo__campo--bloque .vc-promo__campo-label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.vc-promo__campo-label em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--slate-400);
+}
+
+.vc-promo__contador {
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 12px;
+}
+
+.vc-promo__contador-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: var(--surface-alt);
+  color: var(--navy-800);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.vc-promo__contador-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.vc-promo__contador-valor {
+  min-width: 52px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-900);
+}
+
+.vc-promo__form-nota {
+  margin: -4px 0 12px;
+  font-size: 12px;
+  color: var(--slate-400);
+}
+
+.vc-promo__textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-900);
+  resize: vertical;
+}
+
+.vc-promo__textarea:focus {
+  outline: none;
+  border-color: var(--teal-600);
+  box-shadow: 0 0 0 3px rgba(0, 122, 123, 0.16);
+}
+
+.vc-promo__form-acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* "Enviar al negocio" es la accion; "Cancelar" ocupa solo lo
+   suyo. Repartidos mitad y mitad, en un celular de 390px el
+   boton de enviar partia el texto en dos lineas. */
+.vc-promo__form-acciones .vc-promo__btn--primario {
+  flex: 1;
+}
+
+.vc-promo__form-acciones .vc-promo__btn--fantasma {
+  flex: 0 0 auto;
+  padding: 0 16px;
+}
+
+/* ── Confirmación de enviado ───────────────────────────── */
+
+.vc-promo__enviado {
+  padding: 6px 0 2px;
+  text-align: center;
+}
+
+.vc-promo__enviado-icono {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: rgba(23, 105, 63, 0.12);
+  color: var(--ok);
+}
+
+.vc-promo__enviado-titulo {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink-900);
+}
+
+.vc-promo__enviado-texto {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--slate-600);
+}
+
+/* ── Pantalla completa /promocion/:id ──────────────────── */
+
+.vc-promo-pagina {
+  min-height: 100vh;
+  padding: 18px 16px 40px;
+  background: linear-gradient(180deg, #002e43 0%, #003f5a 38%, #3f6f84 100%);
+}
+
+.vc-promo-pagina__barra {
+  max-width: 720px;
+  margin: 0 auto 14px;
+}
+
+.vc-promo-pagina__volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 9px 18px;
+  border: 1.5px solid rgba(234, 217, 199, 0.22);
+  border-radius: 999px;
+  background: rgba(234, 217, 199, 0.08);
+  color: #ead9c7;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.vc-promo-pagina__volver:hover {
+  background: rgba(234, 217, 199, 0.15);
+}
+
+.vc-promo-pagina__caja {
+  max-width: 720px;
+  margin: 0 auto;
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow-navy);
+}
+
+.vc-promo-pagina__vacio {
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.vc-promo-pagina__vacio-icono {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: rgba(192, 89, 0, 0.12);
+  color: var(--orange-700);
+}
+
+.vc-promo-pagina__vacio h3 {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink-900);
+}
+
+.vc-promo-pagina__vacio p {
+  margin: 0 0 18px;
+  font-size: 14px;
+  color: var(--slate-600);
+}
+
+/* ── Responsive ────────────────────────────────────────── */
+
+/* Celular grande: los dos botones de accion entran lado a lado */
+@media (min-width: 481px) {
+  .vc-promo__acciones {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Tablet y laptop: la hoja deja de estar pegada abajo y se centra.
+   En una pantalla ancha una hoja de 1200px de ancho se lee mal, y
+   el gesto de arrastrar hacia abajo ahi no existe. */
+@media (min-width: 768px) {
+  .vc-hoja__fondo {
+    align-items: center;
+    padding: 24px;
+  }
+
+  .vc-hoja {
+    max-width: 560px;
+    max-height: 88vh;
+    border-radius: 24px;
+  }
+
+  .vc-hoja__agarre {
+    display: none;
+  }
+
+  .vc-promo__media {
+    height: 240px;
+  }
+
+  .vc-promo__cuerpo {
+    padding: 24px 26px 28px;
+  }
+
+  .vc-promo--pantalla .vc-promo__media {
+    height: 300px;
+  }
+
+  .vc-promo--pantalla .vc-promo__cuerpo {
+    padding: 28px 30px 32px;
+  }
+}

@@ -54,7 +54,7 @@
   margin-top: 10px !important;
   padding: 9px 12px;
   border-radius: 10px;
-  background: #f2f5f8;
+  background: #f1e4d4;
   font-size: 12px !important;
   text-align: left;
   color: #5a7080 !important;
@@ -140,7 +140,7 @@
 .vf-btn--primaria {
   border: none;
   background: linear-gradient(135deg, #dd6600, #c05900);
-  color: #ffffff;
+  color: #ead9c7;
 }
 
 .vf-btn--primaria:hover {
@@ -177,7 +177,7 @@
   max-width: 440px;
   max-height: 88vh;
   overflow-y: auto;
-  background: #ffffff;
+  background: #ead9c7;
   border-radius: 20px 20px 0 0;
   box-shadow: 0 -12px 40px rgba(0, 20, 32, 0.28);
 }
@@ -192,7 +192,7 @@
   height: 30px;
   border: none;
   border-radius: 50%;
-  background: #f2f5f8;
+  background: #f1e4d4;
   color: #4a6274;
   cursor: pointer;
 }

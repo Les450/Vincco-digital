@@ -2,7 +2,7 @@ import { negocios, proveedores } from '../data/data_falso'
 import Icon from '../components/icons/Icon'
 
 const cardStyle = {
-  background: '#ffffff',
+  background: '#ead9c7',
   borderRadius: 16,
   padding: '14px 16px',
   marginBottom: 10,
@@ -19,7 +19,7 @@ const sectionTitleStyle = {
   fontFamily: "'Sora', 'Inter', sans-serif",
   fontSize: 15,
   fontWeight: 700,
-  color: 'rgba(255,255,255,0.7)',
+  color: 'rgba(234, 217, 199, 0.7)',
   textTransform: 'uppercase',
   letterSpacing: '0.06em',
 }
@@ -46,7 +46,7 @@ export default function Directorio() {
         fontFamily: "'Sora', 'Inter', sans-serif",
         fontSize: 22,
         fontWeight: 700,
-        color: '#ffffff',
+        color: '#ead9c7',
       }}>Directorio</h2>
 
       <h3 style={sectionTitleStyle}>Comercios</h3>

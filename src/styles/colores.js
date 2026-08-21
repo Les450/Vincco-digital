@@ -42,16 +42,16 @@ export const TOKENS = {
   textMuted: '#64798a',
   border: '#e4eaef',
 
-  surface: '#ffffff',
-  surfaceAlt: '#f4f8fb',
+  surface: '#ead9c7',
+  surfaceAlt: '#f7efe3',
   navySoft: '#e6eff4',
 
   successBg: '#ecfdf5',
   successText: '#166534',
 
-  onDark: '#ffffff',
-  onDarkMuted: 'rgba(255,255,255,0.72)',
-  onDarkFaint: 'rgba(255,255,255,0.5)',
+  onDark: '#ead9c7',
+  onDarkMuted: 'rgba(234, 217, 199, 0.72)',
+  onDarkFaint: 'rgba(234, 217, 199, 0.5)',
 }
 
 /* Mapa que usa Home.jsx. Mismas claves y valores que antes. */

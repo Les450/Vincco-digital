@@ -41,7 +41,7 @@ export default function DashboardPreview() {
       >
         <div className="vc-preview-wrapper">
           <div className="vc-preview-header">
-            <Icon name="bar-chart-2" size={15} style={{ color: 'rgba(255,255,255,0.7)' }} />
+            <Icon name="bar-chart-2" size={15} style={{ color: 'rgba(234, 217, 199, 0.7)' }} />
             <span className="vc-preview-header-word">Panel de negocio — Ferretería Sánchez</span>
           </div>
           <div className="vc-preview-body">

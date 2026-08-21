@@ -17,7 +17,15 @@
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@500;600;700;800&family=Old+Standard+TT:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Solo las familias que usa la app en general:
+         · Inter y Sora    → interfaz y títulos, en todas las pantallas
+         · Fraunces        → títulos del catálogo del negocio
+         · Old Standard TT → cifras y titulos del perfil (App.css, seccion 20)
+         Plus Jakarta Sans sigue siendo exclusiva de la landing
+         (/bienvenida) y se piden desde su propia hoja, src/styles/home.css,
+         así no las descarga quien nunca entra ahí.
+         Manrope se sacó: no la usa ninguna pantalla. -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Old+Standard+TT:wght@400;700&family=Sora:wght@500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&display=swap" rel="stylesheet">
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.

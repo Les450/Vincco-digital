@@ -73,6 +73,8 @@ export default function NegociosCarousel({
   verificado = true,
   onBloqueado,
   pausado,
+  ocultarCotizacion = false,
+  textoPendiente = 'Esperando que acepte tu solicitud',
 }) {
   const total = negocios.length
   const idxActual = Math.max(0, negocios.findIndex((n) => n.id === seleccionadoId))
@@ -284,10 +286,10 @@ export default function NegociosCarousel({
                   </a>
 
                   {seleccionado.estado === 'pendiente' ? (
-                    <span className="ncar-btn ncar-btn--pendiente" title="Este negocio todavía no aceptó tu solicitud de asociación">
-                      <Icon name="clock" size={17} /> Esperando que acepte tu solicitud
+                    <span className="ncar-btn ncar-btn--pendiente" title={textoPendiente}>
+                      <Icon name="clock" size={17} /> {textoPendiente}
                     </span>
-                  ) : (
+                  ) : !ocultarCotizacion && (
                     <motion.button
                       className="ncar-btn ncar-btn--notificar"
                       onClick={() => {

@@ -69,15 +69,15 @@ export default function HeroBannerRedes({ esNegocio }) {
           display: grid;
           place-items: center;
           border-radius: 50%;
-          border: 1.5px solid rgba(255, 255, 255, 0.22);
-          background: rgba(255, 255, 255, 0.08);
-          color: #ffffff;
+          border: 1.5px solid rgba(234, 217, 199, 0.22);
+          background: rgba(234, 217, 199, 0.08);
+          color: #ead9c7;
           cursor: pointer;
           transition: background 0.15s;
         }
 
         .rdshero-volver:hover {
-          background: rgba(255, 255, 255, 0.18);
+          background: rgba(234, 217, 199, 0.18);
         }
 
         .rdshero-logo {
@@ -103,8 +103,8 @@ export default function HeroBannerRedes({ esNegocio }) {
           margin-bottom: 18px;
           padding: 7px 16px;
           border-radius: 999px;
-          border: 1px solid rgba(255, 255, 255, 0.22);
-          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(234, 217, 199, 0.22);
+          background: rgba(234, 217, 199, 0.08);
           color: #feb862;
           font-size: 11px;
           font-weight: 800;
@@ -118,7 +118,7 @@ export default function HeroBannerRedes({ esNegocio }) {
           font-size: 26px;
           font-weight: 800;
           line-height: 1.18;
-          color: #ffffff;
+          color: #ead9c7;
         }
 
         .rdshero-subtitulo {
@@ -126,7 +126,7 @@ export default function HeroBannerRedes({ esNegocio }) {
           max-width: 480px;
           font-size: 14px;
           line-height: 1.6;
-          color: rgba(255, 255, 255, 0.72);
+          color: rgba(234, 217, 199, 0.72);
         }
 
         .rdshero-cta {
@@ -138,7 +138,7 @@ export default function HeroBannerRedes({ esNegocio }) {
           border: none;
           border-radius: 999px;
           background: linear-gradient(135deg, #dd6600, #c05900);
-          color: #ffffff;
+          color: #ead9c7;
           font-family: inherit;
           font-size: 13.5px;
           font-weight: 700;

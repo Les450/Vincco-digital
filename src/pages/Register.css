@@ -51,13 +51,13 @@
 
 .rk-card {
   position: relative;
-  background: #ffffff;
+  background: #ead9c7;
   border-radius: 28px;
   padding: 36px 28px 30px;
   width: 100%;
   max-width: 420px;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 0 0 1px rgba(234, 217, 199, 0.06),
     0 30px 80px rgba(0, 18, 28, 0.45),
     0 4px 16px rgba(0, 0, 0, 0.08);
   display: flex;
@@ -76,14 +76,14 @@
   place-items: center;
   border-radius: 50%;
   border: 1.5px solid #dfe8ee;
-  background: #ffffff;
+  background: #ead9c7;
   color: #003f5a;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, transform 0.15s;
 }
 
 .rk-close:hover {
-  background: #f2f7fa;
+  background: #f1e4d4;
   border-color: #b9cdda;
   transform: scale(1.05);
 }
@@ -113,81 +113,6 @@
   font-weight: 400;
 }
 
-.rk-step0-label {
-  text-align: center;
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-  margin: 0 0 18px;
-}
-
-.rk-account-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 100%;
-}
-
-.rk-account-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 18px 16px;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 14px;
-  background: #ffffff;
-  cursor: pointer;
-  transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
-  font-family: inherit;
-  width: 100%;
-}
-
-.rk-account-card:hover {
-  border-color: #003f5a;
-  background: #f4f8fb;
-}
-
-.rk-account-card--on {
-  border-color: #003f5a;
-  background: #003f5a;
-  box-shadow: 0 2px 8px rgba(0, 63, 90, 0.2);
-}
-
-.rk-account-card--on .rk-account-label,
-.rk-account-card--on .rk-account-desc,
-.rk-account-card--on .rk-account-icon {
-  color: #ffffff;
-}
-
-.rk-account-icon {
-  font-size: 28px;
-  line-height: 1;
-  color: #6b7280;
-  transition: color 0.25s;
-}
-
-.rk-account-label {
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
-  transition: color 0.25s;
-}
-
-.rk-account-desc {
-  font-size: 12px;
-  color: #9ca3af;
-  transition: color 0.25s;
-}
-
-.rk-account-info {
-  margin-top: 16px;
-  font-size: 12px;
-  color: #9ca3af;
-  text-align: center;
-  line-height: 1.5;
-}
-
 .rk-cat-label {
   font-size: 14px;
   font-weight: 500;
@@ -207,7 +132,7 @@
   padding: 10px 18px;
   border: 1.5px solid #e5e7eb;
   border-radius: 999px;
-  background: #ffffff;
+  background: #ead9c7;
   font-size: 14px;
   font-weight: 500;
   font-family: inherit;
@@ -224,7 +149,7 @@
 .rk-cat-chip--on {
   border-color: #003f5a;
   background: #003f5a;
-  color: #ffffff;
+  color: #ead9c7;
   font-weight: 500;
 }
 
@@ -245,7 +170,7 @@
   transition: background 0.25s, transform 0.2s;
   border: none;
   background: #003f5a;
-  color: #ffffff;
+  color: #ead9c7;
 }
 
 .rk-btn--verify:hover {
@@ -321,11 +246,6 @@
   cursor: not-allowed;
 }
 
-.rk-err--center {
-  text-align: center;
-  margin-top: 12px;
-}
-
 .rk-fields {
   display: flex;
   flex-direction: column;
@@ -347,7 +267,7 @@
   font-size: 15px;
   font-family: inherit;
   color: #111827;
-  background: #f8f9fb;
+  background: #fbf7f0;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
   box-sizing: border-box;
@@ -360,7 +280,7 @@
 .rk-input:focus {
   border-color: #003f5a;
   box-shadow: 0 0 0 3px rgba(0, 63, 90, 0.12);
-  background: #ffffff;
+  background: #ead9c7;
 }
 
 .rk-input--err {
@@ -370,7 +290,37 @@
 .rk-input--err:focus {
   border-color: #b3261e;
   box-shadow: 0 0 0 3px rgba(179, 38, 30, 0.12);
-  background: #ffffff;
+  background: #ead9c7;
+}
+
+/* Contenedor para meter un indicador (spinner de verificacion) a la
+   derecha del input */
+.rk-field-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.rk-input--with-icon {
+  padding-right: 44px;
+}
+
+.rk-field-spinner {
+  position: absolute;
+  right: 14px;
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid rgba(0, 122, 123, 0.2);
+  border-top-color: #007a7b;
+  border-radius: 50%;
+  animation: rk-spin 0.7s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes rk-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .rk-select {
@@ -449,7 +399,7 @@
 }
 
 .rk-dot--on {
-  background: #003f5a;
+  background: #dd6600;
 }
 
 .rk-nav {
@@ -461,12 +411,22 @@
 .rk-btn {
   flex: 1;
   height: 48px;
+  /* En celular .rk-nav pasa a flex-direction:column (ver media
+     query más abajo), y ahí flex:1 usa flex-basis:0% en el eje
+     vertical — el height:48px de arriba deja de pesar y el botón
+     se comprime a lo que el contenedor tenga libre (~26px en la
+     práctica, muy por debajo del mínimo de 44px de área de toque).
+     min-height no cede ante flex-basis: pone un piso real. */
+  min-height: 48px;
   border-radius: 12px;
   font-size: 15px;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.25s, transform 0.2s, opacity 0.2s;
+  /* border-color/color sumados a la lista: antes solo el fondo
+     transicionaba suave y el color del borde/texto del outline
+     saltaba de golpe en hover. */
+  transition: background 0.25s, border-color 0.25s, color 0.25s, transform 0.2s, opacity 0.2s;
   border: none;
 }
 
@@ -476,23 +436,39 @@
 
 .rk-btn--primary {
   background: #003f5a;
-  color: #ffffff;
+  color: #ead9c7;
 }
 
 .rk-btn--primary:hover {
   background: #00344c;
 }
 
+/* Botón secundario (outline): nunca compite con el CTA principal
+   — fondo transparente, turquesa (el color "secundario" de la
+   paleta oficial), nunca relleno sólido. Esta es la variante
+   CLARA, para pantallas de fondo cremita (.rk-card). La variante
+   OSCURA es .rk-btn--ghost más abajo, para las pantallas de foto
+   con overlay oscuro (.rk-step3) — mismo botón "Anterior" usa una
+   u otra según el fondo real que tiene debajo, nunca el mismo
+   color de texto en las dos.
+
+   El turquesa "normal" (#007a7b) mide 3.75:1 sobre el crema de
+   .rk-card (#ead9c7) — no llega al mínimo de 4.5:1. Por eso el
+   reposo usa directo el turquesa oscuro (#005c5e, que ya existía
+   en el sistema como color de hover): mide 5.66:1, pasa cómodo. */
 .rk-btn--outline {
   background: transparent;
-  color: #007a7b;
-  border: 1.5px solid #007a7b;
+  color: #005c5e;
+  border: 1.5px solid #005c5e;
 }
 
 .rk-btn--outline:hover {
-  background: rgba(0, 122, 123, 0.06);
-  border-color: #005c5e;
-  color: #005c5e;
+  background: rgba(0, 92, 94, 0.08);
+}
+
+.rk-btn--outline:focus-visible {
+  outline: 2px solid #003f5a;
+  outline-offset: 2px;
 }
 
 .rk-btn--wide {
@@ -586,7 +562,7 @@
   cursor: pointer;
   transition: border-color 0.25s, background 0.25s, color 0.25s;
   border: 1.5px solid #e5e7eb;
-  background: #ffffff;
+  background: #ead9c7;
   color: #374151;
   padding: 0 16px;
 }
@@ -599,7 +575,7 @@
 .rk-option-btn--on {
   border-color: #003f5a;
   background: #003f5a;
-  color: #ffffff;
+  color: #ead9c7;
   font-weight: 500;
 }
 
@@ -661,20 +637,32 @@
   color: #003f5a;
 }
 
+/* Variante OSCURA del botón secundario (fondo de foto + overlay
+   oscuro de .rk-step3): mismo tratamiento outline, pero el
+   turquesa se cambia por el crema claro que ya usan el título y el
+   mensaje de esas pantallas — un outline turquesa sobre fondo
+   oscuro perdería contraste, y esto además hace que "Anterior"
+   quede igual de legible que sus botones vecinos ahí (que ya usan
+   este mismo crema). */
 .rk-btn--ghost {
-  border-color: rgba(255, 255, 255, 0.5);
-  color: #ffffff;
+  border-color: rgba(234, 217, 199, 0.5);
+  color: #ead9c7;
 }
 
 .rk-btn--ghost:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: #ffffff;
+  background: rgba(234, 217, 199, 0.08);
+  border-color: #ead9c7;
+}
+
+.rk-btn--ghost:focus-visible {
+  outline: 2px solid #ead9c7;
+  outline-offset: 2px;
 }
 
 .rk-welcome-note {
   margin: 12px 0 0;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(234, 217, 199, 0.7);
   line-height: 1.6;
   max-width: 340px;
 }
@@ -730,15 +718,15 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.14);
-  color: #ffffff;
+  border: 1.5px solid rgba(234, 217, 199, 0.35);
+  background: rgba(234, 217, 199, 0.14);
+  color: #ead9c7;
   cursor: pointer;
   transition: background 0.15s, transform 0.15s;
 }
 
 .rk-step3-close:hover {
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(234, 217, 199, 0.28);
   transform: scale(1.05);
 }
 
@@ -752,7 +740,7 @@
   margin: 0;
   font-size: 28px;
   font-weight: 700;
-  color: #ffffff;
+  color: #ead9c7;
   letter-spacing: -0.02em;
   line-height: 1.2;
 }
@@ -760,7 +748,7 @@
 .rk-step3-msg {
   margin: 12px 0 0;
   font-size: 15px;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(234, 217, 199, 0.85);
   line-height: 1.6;
   max-width: 340px;
 }
@@ -791,15 +779,15 @@
 }
 
 .rk-step3 .rk-footer {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(234, 217, 199, 0.7);
 }
 
 .rk-step3 .rk-link {
-  color: #ffffff;
+  color: #ead9c7;
 }
 
 .rk-step3 .rk-link:hover {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(234, 217, 199, 0.8);
 }
 
 @keyframes rk-slide-fwd {
@@ -836,7 +824,7 @@
   .rk {
     padding: 0;
     align-items: stretch;
-    background: #ffffff;
+    background: #ead9c7;
   }
 
   .rk-card {

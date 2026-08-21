@@ -28,15 +28,15 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.22);
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  border: 1.5px solid rgba(234, 217, 199, 0.22);
+  background: rgba(234, 217, 199, 0.08);
+  color: #ead9c7;
   cursor: pointer;
   transition: background 0.15s;
 }
 
 .ayu-hero-volver:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(234, 217, 199, 0.18);
 }
 
 .ayu-hero-contenido {
@@ -51,9 +51,9 @@
   margin-bottom: 22px;
   padding: 8px 18px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+  border: 1px solid rgba(234, 217, 199, 0.24);
+  background: rgba(234, 217, 199, 0.1);
+  color: #ead9c7;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -66,7 +66,7 @@
   font-size: 30px;
   font-weight: 800;
   line-height: 1.15;
-  color: #ffffff;
+  color: #ead9c7;
 }
 
 .ayu-hero-sub {
@@ -74,7 +74,7 @@
   max-width: 520px;
   font-size: 15px;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(234, 217, 199, 0.78);
 }
 
 .ayu-hero-buscador {
@@ -248,7 +248,7 @@
   padding: 11px 18px;
   border: none;
   border-radius: 12px;
-  color: #ffffff;
+  color: #ead9c7;
   font-family: inherit;
   font-size: 13.5px;
   font-weight: 700;
@@ -296,7 +296,7 @@
 .ayu-tab--activo {
   background: var(--navy-800);
   border-color: var(--navy-800);
-  color: #ffffff;
+  color: #ead9c7;
 }
 
 .ayu-faq-titulo {
@@ -584,7 +584,7 @@
   border: none;
   border-radius: 14px;
   background: linear-gradient(135deg, var(--navy-800), var(--navy-900));
-  color: #ffffff;
+  color: #ead9c7;
   font-family: inherit;
   font-size: 15px;
   font-weight: 700;

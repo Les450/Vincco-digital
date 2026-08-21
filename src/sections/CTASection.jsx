@@ -38,7 +38,7 @@ export default function CTASection() {
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </button>
-          <button className="vc-btn vc-btn-secondary" onClick={() => navigate('/login')} style={{ borderColor: 'rgba(255,255,255,0.22)', color: 'rgba(255,255,255,0.85)' }}>
+          <button className="vc-btn vc-btn-secondary" onClick={() => navigate('/login')} style={{ borderColor: 'rgba(234, 217, 199, 0.22)', color: 'rgba(234, 217, 199, 0.85)' }}>
             Creá tu cuenta
           </button>
         </motion.div>

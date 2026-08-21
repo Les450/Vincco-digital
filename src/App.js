@@ -13,12 +13,32 @@ import './App.css'
 // en qué idioma está la página.
 function App() {
   const config = useStore((s) => s.configuraciones[s.userType])
+  const tema = config?.tema || 'claro'
 
   useEffect(() => {
     const clases = document.body.classList
-    clases.toggle('vincco--texto-grande', Boolean(config?.textoGrande))
     clases.toggle('vincco--alto-contraste', Boolean(config?.altoContraste))
-  }, [config?.textoGrande, config?.altoContraste])
+    clases.toggle('vincco--texto-grande', config?.tamanoTexto === 'grande')
+    clases.toggle('vincco--texto-muy-grande', config?.tamanoTexto === 'muyGrande')
+    clases.toggle('vincco--sin-animaciones', Boolean(config?.reducirAnimaciones))
+  }, [config?.altoContraste, config?.tamanoTexto, config?.reducirAnimaciones])
+
+  // El tema oscuro usa la clase .dark que el proyecto ya maneja
+  // (tailwind darkMode:class, las variables de index.css y el tema
+  // del calendario). En automático sigue al dispositivo y reacciona
+  // solo si el usuario cambia el modo del teléfono sin recargar.
+  useEffect(() => {
+    const medio = window.matchMedia('(prefers-color-scheme: dark)')
+    const aplicar = () => {
+      document.body.classList.toggle(
+        'dark',
+        tema === 'oscuro' || (tema === 'auto' && medio.matches)
+      )
+    }
+    aplicar()
+    medio.addEventListener('change', aplicar)
+    return () => medio.removeEventListener('change', aplicar)
+  }, [tema])
 
   useEffect(() => {
     document.documentElement.lang = config?.idioma === 'en' ? 'en' : 'es-NI'

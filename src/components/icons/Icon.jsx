@@ -502,7 +502,7 @@ const PATHS = {
   ),
 }
 
-export default function Icon({ name, size = 18, filled = false, className, style, ...rest }) {
+export default function Icon({ name, size = 18, filled = false, className = '', style = {}, ...rest }) {
   const path = PATHS[name]
   if (!path) {
     if (process.env.NODE_ENV !== 'production') {
@@ -512,13 +512,15 @@ export default function Icon({ name, size = 18, filled = false, className, style
   }
 
   const isStar = name === 'star'
+  const isHeart = name === 'heart'
+  const rellenable = filled && (isStar || isHeart)
 
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 24 24"
-      fill={isStar && filled ? 'currentColor' : 'none'}
+      fill={rellenable ? 'currentColor' : 'none'}
       stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"

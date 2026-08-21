@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import Icon from '../icons/Icon'
-import useStore from '../../store/puntos_usestore'
+import useStore, { perfilDeSucursal } from '../../store/puntos_usestore'
 import { TIPOS_PUBLICACION } from '../../data/publicationTypes'
 import { useCategoriasInventario } from '../../data/categoriasInventario'
 import { agregarInventarioDesdePublicacion, eliminarInventarioDePublicacion, claveInventario } from '../../data/inventario'
+import { comprimirImagen } from '../../utils/imagenes'
 import ModalAccionBloqueada from '../verificacion/ModalAccionBloqueada'
 
 const STORAGE_KEYS = Object.fromEntries(TIPOS_PUBLICACION.map((t) => [t.id, t.storageKey]))
@@ -14,7 +15,17 @@ function useStorage(key, defaults) {
     if (saved) { try { return JSON.parse(saved) } catch {} }
     return defaults
   })
-  useEffect(() => { localStorage.setItem(key, JSON.stringify(data)) }, [data, key])
+  useEffect(() => {
+    // Sin try/catch un QuotaExceededError revienta la app entera
+    // (overlay de error de CRA). Si no entra, se avisa por consola:
+    // con las imagenes comprimidas no deberia pasar, pero si pasa
+    // es mejor perder el ultimo cambio que tirar la pantalla.
+    try {
+      localStorage.setItem(key, JSON.stringify(data))
+    } catch (e) {
+      console.warn('localStorage lleno: no se pudo guardar', key, e)
+    }
+  }, [data, key])
   return [data, setData]
 }
 
@@ -77,6 +88,10 @@ function FormularioPromocion({ form, setForm, fileInputRef, handleImage, categor
         </div>
       </div>
       <div className="panel-form-grupo">
+        <label className="panel-form-label">Alerta de stock</label>
+        <input className="panel-form-input" type="number" min="0" placeholder="Ej: 5 (avisa cuando queden esas unidades o menos)" value={form.alertaStock} onChange={(e) => setForm({ ...form, alertaStock: e.target.value })} />
+      </div>
+      <div className="panel-form-grupo">
         <label className="panel-form-label">Descripción</label>
         <textarea className="panel-form-textarea" rows={2} placeholder="Describí tu promoción..." value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} />
       </div>
@@ -89,10 +104,6 @@ function FormularioPromocion({ form, setForm, fileInputRef, handleImage, categor
           <label className="panel-form-label">Puntos por compra</label>
           <input className="panel-form-input" type="number" min="0" placeholder="Ej: 50" value={form.puntos} onChange={(e) => setForm({ ...form, puntos: e.target.value })} />
         </div>
-      </div>
-      <div className="panel-form-grupo">
-        <label className="panel-form-label">Términos y condiciones</label>
-        <textarea className="panel-form-textarea" rows={2} placeholder="Ej: Válido hasta agotar existencias..." value={form.terminos} onChange={(e) => setForm({ ...form, terminos: e.target.value })} />
       </div>
     </>
   )
@@ -138,7 +149,7 @@ const FORMULARIOS = {
 }
 
 const EMPTY_FORM = {
-  promocion: { tipo: 'normal', titulo: '', descripcion: '', imagen: null, descuento: '', validoHasta: '', terminos: '', puntos: '', unidades: '', categoriaPromocion: 'Otros' },
+  promocion: { tipo: 'normal', titulo: '', descripcion: '', imagen: null, descuento: '', validoHasta: '', puntos: '', unidades: '', alertaStock: '', categoriaPromocion: 'Otros' },
   producto: { titulo: '', descripcion: '', imagen: null, precio: '', categoriaProducto: 'Herramientas', stock: '' },
 }
 
@@ -152,6 +163,17 @@ export default function PublicacionesPanel() {
   // administrar lo que ya es público.
   const verificado = useStore((s) => s.estadosVerificacion[userType]) === 'aprobada'
   const [bloqueoAbierto, setBloqueoAbierto] = useState(false)
+
+  /* Quién publica. El cliente que ve la promoción en su Home
+     necesita saber de qué negocio es para poder escribirle o
+     mandarle una consulta; hasta ahora la publicación no guardaba
+     ni el nombre. Se toma el perfil de la sucursal activa, que es
+     el mismo que el negocio muestra en su perfil público. */
+  const perfil = useStore((s) => s.perfiles[s.userType])
+  const sucursal = useStore((s) =>
+    s.sucursales[s.userType]?.find((x) => x.id === s.sucursalActiva[s.userType])
+  )
+  const whatsappRed = useStore((s) => s.redesNegocio?.whatsapp)
 
   const [tipoActivo, setTipoActivo] = useState(TIPOS_PUBLICACION[0].id)
   // Cada sucursal guarda sus publicaciones aparte ("pn_promociones:n1"),
@@ -186,16 +208,44 @@ export default function PublicacionesPanel() {
   const handleImage = (e) => {
     const file = e.target.files[0]
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = (ev) => setForm({ ...form, imagen: ev.target.result })
-    reader.readAsDataURL(file)
+    // Se comprime antes de guardarla: la foto original en base64
+    // llenaba el localStorage con una o dos publicaciones.
+    comprimirImagen(file, 900, 0.72)
+      .then((dataUrl) => setForm((prev) => ({ ...prev, imagen: dataUrl })))
+      .catch(() => {})
+  }
+
+  /* Tarjeta del negocio que viaja pegada a cada publicación.
+     Se arma al guardar y no al leer, porque el día que dos personas
+     usen la app desde teléfonos distintos el cliente no va a tener
+     el perfil del negocio a mano: tiene que venir con la promoción. */
+  const datosDelNegocio = () => {
+    const p = perfilDeSucursal(perfil, sucursal) || {}
+    return {
+      id: sucursalId || null,
+      rol: userType,
+      nombre: p.nombre || '',
+      categoria: p.categoria || '',
+      telefono: p.telefono || '',
+      whatsapp: p.whatsapp || whatsappRed || p.telefono || '',
+      direccion: p.direccion || '',
+      descripcion: p.descripcion || '',
+      foto: p.foto || null,
+      verificado,
+    }
   }
 
   const guardar = (e) => {
     e.preventDefault()
     if (!form.titulo) return
 
-    const item = { id: editando || Date.now(), tipo: tipoActivo, fecha: new Date().toISOString().slice(0, 10), ...form }
+    const item = {
+      id: editando || Date.now(),
+      tipo: tipoActivo,
+      fecha: new Date().toISOString().slice(0, 10),
+      ...form,
+      negocio: datosDelNegocio(),
+    }
 
     if (editando) {
       setLista((prev) => prev.map((p) => p.id === editando ? { ...p, ...item } : p))
@@ -222,7 +272,15 @@ export default function PublicacionesPanel() {
 
   const abrirEditar = (item) => {
     setEditando(item.id)
-    const { id, fecha, tipo, ...rest } = item
+    /* "negocio" sale del form: no es un campo que se escriba, y al
+       guardar se vuelve a armar con el perfil del momento.
+
+       "tipo" en cambio ahora SÍ se conserva. Antes se descartaba
+       junto con el id, y como en las promociones ese campo es el
+       que dice si es normal o limitada, editar una promoción
+       limitada la convertía en normal sin avisar: el select salía
+       vacío y al guardar quedaba sin tipo. */
+    const { id, fecha, negocio, ...rest } = item
     setForm(rest)
     setMostrarForm(true)
   }
@@ -349,6 +407,9 @@ export default function PublicacionesPanel() {
                       : item.puntos && <span className="panel-pub-card-pts"><Icon name="star" filled size={11} /> {item.puntos} pts</span>}
                   </div>
                 )}
+                {tipoActivo === 'promocion' && item.alertaStock > 0 && Number(item.unidades) > 0 && Number(item.unidades) <= Number(item.alertaStock) && (
+                  <span className="panel-inv-stock-badge panel-inv-stock-badge--bajo">Stock bajo</span>
+                )}
                 {tipoActivo === 'producto' && item.precio && (
                   <div className="panel-pub-card-promo">
                     <span className="panel-pub-card-precio">C${item.precio}</span>
@@ -397,6 +458,12 @@ export default function PublicacionesPanel() {
                     ? detallePub.unidades && <span className="panel-pub-detail-stock">Solo {detallePub.unidades} unidades</span>
                     : detallePub.puntos && <span className="panel-pub-detail-pts">{detallePub.puntos} pts por compra</span>}
                   {detallePub.validoHasta && <span className="panel-pub-detail-fecha">Válido hasta {detallePub.validoHasta}</span>}
+                </div>
+              )}
+              {tipoActivo === 'promocion' && detallePub.alertaStock > 0 && Number(detallePub.unidades) > 0 && Number(detallePub.unidades) <= Number(detallePub.alertaStock) && (
+                <div className="panel-alerta panel-alerta--warning" style={{ marginTop: 12 }}>
+                  <span className="panel-alerta-icono"><Icon name="alert-triangle" size={18} /></span>
+                  <span>Stock bajo: quedan {detallePub.unidades} unidades (alerta configurada en {detallePub.alertaStock}).</span>
                 </div>
               )}
               {tipoActivo === 'producto' && (

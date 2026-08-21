@@ -7,6 +7,7 @@ import NegociosCarousel from '../components/NegociosCarousel'
 import CotizacionesEnviadas from '../components/panel/CotizacionesEnviadas'
 import ModalAccionBloqueada from '../components/verificacion/ModalAccionBloqueada'
 import { categoriasNegocioAsociado } from '../data/data_falso'
+import { comprimirImagen } from '../utils/imagenes'
 import './NegociosAsociados.css'
 
 const COLORES_NUEVO = ['#007a7b', '#c05900', '#005c5e', '#a34b00', '#dd6600', '#003f5a']
@@ -40,8 +41,8 @@ export default function NegociosAsociados() {
     () => todosLosNegocios.filter((n) => n.estado !== 'rechazada'),
     [todosLosNegocios]
   )
-  // Agregar un negocio asociado (y cotizarle) requiere cuenta
-  // verificada. Ver y editar los que ya tenés no se toca.
+  // Cotizarle a un negocio asociado requiere cuenta verificada.
+  // Ver y editar los que ya tenés no se toca.
   const verificado = useStore((s) => s.estadosVerificacion.proveedor) === 'aprobada'
   const [bloqueoAbierto, setBloqueoAbierto] = useState(false)
   const [cotizacionesAbiertas, setCotizacionesAbiertas] = useState(false)
@@ -82,17 +83,18 @@ export default function NegociosAsociados() {
   const handleImagen = (e) => {
     const file = e.target.files[0]
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = (ev) => setForm((f) => ({ ...f, imagen: ev.target.result }))
-    reader.readAsDataURL(file)
+    // Comprimida antes de guardarla: el original en base64 llenaba
+    // el localStorage del navegador en un par de negocios.
+    comprimirImagen(file, 600, 0.75)
+      .then((dataUrl) => setForm((f) => ({ ...f, imagen: dataUrl })))
+      .catch(() => {})
   }
 
-  const abrirAgregar = () => {
-    if (!verificado) { setBloqueoAbierto(true); return }
-    setEditandoId(null)
-    setForm(FORM_VACIO)
-    setErrorDuplicado('')
-    setMostrarFormulario(true)
+  // Buscar negocios nuevos pasa por el directorio de negocios del
+  // módulo de asociados (/proveedores): la misma interfaz que el
+  // negocio usa para buscar proveedores, pero independiente.
+  const abrirBuscar = () => {
+    navigate('/proveedores')
   }
 
   // Precarga el formulario con los datos del negocio para editarlos
@@ -188,8 +190,8 @@ export default function NegociosAsociados() {
           <p>Administra los negocios con los que trabajas</p>
         </div>
         <div className="na-header-acciones">
-          <button className="na-btn-agregar" onClick={abrirAgregar} type="button">
-            + Solicitar asociación
+          <button className="na-btn-agregar" onClick={abrirBuscar} type="button">
+            <Icon name="search" size={14} /> Buscar negocio
           </button>
           <button className="na-btn-cotizaciones" onClick={() => setCotizacionesAbiertas(true)} type="button">
             <Icon name="file-text" size={14} /> Cotizaciones enviadas
@@ -206,9 +208,9 @@ export default function NegociosAsociados() {
         <div className="na-vacio">
           <div className="na-vacio-icono"><Icon name="store" size={30} /></div>
           <h3>Todavía no tenés negocios asociados.</h3>
-          <p>Solicitá la asociación con tus primeros negocios. Quedan asociados recién cuando la aceptan.</p>
-          <button className="na-vacio-btn" onClick={abrirAgregar} type="button">
-            + Solicitar asociación
+          <p>Buscá en el directorio de negocios y pedí la asociación con tus primeros clientes.</p>
+          <button className="na-vacio-btn" onClick={abrirBuscar} type="button">
+            <Icon name="search" size={16} /> Buscar negocio
           </button>
         </div>
       ) : (
@@ -225,7 +227,7 @@ export default function NegociosAsociados() {
           onBloqueado={() => setBloqueoAbierto(true)}
           onCotizar={handleCotizacionEnviada}
           // Se frena la rotacion automatica mientras el usuario busca
-          // o tiene algún formulario/modal abierto
+          // o tiene algún formulario abierto
           pausado={mostrarFormulario || busqueda.trim().length > 0}
         />
       )}

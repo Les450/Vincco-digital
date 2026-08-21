@@ -196,9 +196,9 @@ export default function Redes() {
               >
                 <span className="rds-oficial-icono" style={{ background: info.color }}>
                   {esCorreo ? (
-                    <Icon name="mail" size={20} style={{ color: '#ffffff' }} />
+                    <Icon name="mail" size={20} style={{ color: '#ead9c7' }} />
                   ) : (
-                    <IconRed nombre={red.id} size={20} style={{ color: '#ffffff' }} />
+                    <IconRed nombre={red.id} size={20} style={{ color: '#ead9c7' }} />
                   )}
                 </span>
                 <span className="rds-oficial-info">
@@ -304,7 +304,7 @@ export default function Redes() {
             >
               <div className="rds-modal-header">
                 <span className="rds-modal-icono" style={{ background: redEditando.color }}>
-                  <IconRed nombre={editandoId} size={20} style={{ color: '#ffffff' }} />
+                  <IconRed nombre={editandoId} size={20} style={{ color: '#ead9c7' }} />
                 </span>
                 <h3>{redesNegocio[editandoId] ? 'Editar' : 'Conectar'} <span translate="no">{redEditando.nombre}</span></h3>
                 <button

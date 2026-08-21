@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react'
 import { EventManager } from '../components/ui/event-manager'
 import { Button } from '../components/ui/button'
 import Icon from '../components/icons/Icon'
+import BotonVolver from '../components/BotonVolver'
+import useStore from '../store/puntos_usestore'
 import './Calendario.css'
 import './Calendario-tema.css'
 
 const CATEGORIAS_CALENDARIO = ['Cita', 'Entrega', 'Promoción', 'Pago', 'Recordatorio']
 const TAGS_CALENDARIO = ['Urgente', 'Cliente', 'Proveedor', 'Equipo', 'Importante']
 const CLAVE_STORAGE = 'vincco_calendario'
-const CLAVE_TEMA = 'vincco_tema_calendario'
 
 function crearEventosEjemplo() {
   const enHoras = (dias, hora) => {
@@ -70,17 +71,25 @@ export default function Calendario() {
     localStorage.setItem(CLAVE_STORAGE, JSON.stringify(eventos))
   }, [eventos])
 
-  const [modoOscuro, setModoOscuro] = useState(() => localStorage.getItem(CLAVE_TEMA) !== 'claro')
-
-  useEffect(() => {
-    document.body.classList.toggle('dark', modoOscuro)
-    localStorage.setItem(CLAVE_TEMA, modoOscuro ? 'oscuro' : 'claro')
-  }, [modoOscuro])
+  // El botón de tema del calendario ahora mueve el ajuste global de
+  // /config: antes tenía su propio estado y le peleaba la clase
+  // .dark del <body> a la configuración general.
+  const userType = useStore((s) => s.userType)
+  const tema = useStore((s) => s.configuraciones[s.userType]?.tema || 'claro')
+  const guardarConfig = useStore((s) => s.guardarConfig)
+  const oscuro = tema === 'oscuro'
+  const alternarTema = () => guardarConfig(userType, 'tema', oscuro ? 'claro' : 'oscuro')
 
   return (
     <div className="cal">
       <div className="cal-header">
-        <h2>Calendario</h2>
+        {/* El calendario se abre desde la barra inferior, asi que muchas
+            veces es la primera pantalla del historial. BotonVolver se
+            encarga: si no hay a donde volver, lleva al inicio. */}
+        <div className="cal-header__titulo">
+          <BotonVolver tono="tinta" />
+          <h2>Calendario</h2>
+        </div>
       </div>
       <EventManager
         events={eventos}
@@ -97,13 +106,13 @@ export default function Calendario() {
             variant="outline"
             size="sm"
             className="cal-filter-btn gap-2 bg-transparent"
-            onClick={() => setModoOscuro((prev) => !prev)}
-            title={modoOscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-            aria-label={modoOscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-            aria-pressed={!modoOscuro}
+            onClick={alternarTema}
+            title={oscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+            aria-label={oscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+            aria-pressed={!oscuro}
           >
-            <Icon name={modoOscuro ? 'sun' : 'moon'} size={16} />
-            {modoOscuro ? 'Claro' : 'Oscuro'}
+            <Icon name={oscuro ? 'sun' : 'moon'} size={16} />
+            {oscuro ? 'Claro' : 'Oscuro'}
           </Button>
         }
       />

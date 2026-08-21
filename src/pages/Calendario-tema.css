@@ -39,7 +39,7 @@ body.dark {
   --surface-elevated: 218 58% 16%;  /* #112240 — superficie eleva */
   --surface-inset: 220 60% 5%;      /* #050A14 — input búsqueda   */
 
-  --text-primary: 210 40% 97%;      /* #F1F5F9                    */
+  --text-primary: 210 40% 97%;      /* #f7efe3                    */
   --text-secondary: 214 26% 65%;    /* #94A3B8 — números de día   */
   --text-muted: 215 16% 47%;        /* #64748B — labels navbar    */
 
@@ -164,7 +164,7 @@ body:not(.dark) .cal {
    Oscuro: fondo #0F172A (slate-900), borde slate-700 visible,
    placeholder slate-500.
    Búsqueda (cal-buscar): misma base + focus con borde azul.
-   Claro: fondo #F8FAFC, placeholder gris claro.                  */
+   Claro: fondo #fbf7f0, placeholder gris claro.                  */
 body.dark .cal :is(input, textarea) {
   background-color: hsl(222 47% 11%);
   color: hsl(210 40% 96%);
@@ -264,7 +264,7 @@ body.dark .cal .cal-view-btn:hover {
 
 body.dark .cal .cal-view-btn[class*="bg-secondary"] {
   background-color: hsl(221 83% 53%);           /* blue-600        */
-  color: #ffffff;
+  color: #ead9c7;
   border-color: hsl(217 91% 60%);               /* blue-500        */
   font-weight: 500;
 }

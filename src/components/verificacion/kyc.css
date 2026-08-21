@@ -67,7 +67,7 @@
   border-radius: 22px;
   box-shadow:
     0 30px 70px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    inset 0 1px 0 rgba(234, 217, 199, 0.04);
   animation: kyc-entrar 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
 }
 
@@ -122,7 +122,7 @@
 .kyc-marca strong {
   font-size: 14px;
   letter-spacing: 0.12em;
-  color: #f8fafc;
+  color: #fbf7f0;
 }
 
 .kyc-marca span {
@@ -169,7 +169,7 @@
 }
 
 .kyc-cerrar:hover {
-  color: #f8fafc;
+  color: #fbf7f0;
   border-color: var(--acento);
 }
 
@@ -203,7 +203,7 @@
 .kyc-selector-cabecera h2 {
   margin: 12px 0 4px;
   font-size: 22px;
-  color: #f8fafc;
+  color: #fbf7f0;
 }
 
 .kyc-selector-cabecera p {
@@ -265,7 +265,7 @@
 
 .kyc-rol strong {
   font-size: 14.5px;
-  color: #f8fafc;
+  color: #fbf7f0;
 }
 
 .kyc-rol-desc {
@@ -407,7 +407,7 @@
   align-items: center;
   gap: 7px;
   font-size: 16.5px;
-  color: #f8fafc;
+  color: #fbf7f0;
 }
 
 .kyc-paso-titulo h2 svg {
@@ -461,7 +461,7 @@
   min-height: 42px;
   padding: 9px 12px;
   font-size: 13.5px;
-  color: #f1f5f9;
+  color: #f7efe3;
   background: rgba(2, 6, 23, 0.6);
   border: 1px solid #374151;
   border-radius: 11px;
@@ -822,7 +822,7 @@ select.kyc-input {
 .kyc-contenido--exito h2 {
   margin: 16px 0 8px;
   font-size: 21px;
-  color: #f8fafc;
+  color: #fbf7f0;
 }
 
 .kyc-contenido--exito p {
@@ -850,8 +850,8 @@ select.kyc-input {
 }
 
 .kyc-spinner--claro {
-  border-color: rgba(255, 255, 255, 0.3);
-  border-top-color: #fff;
+  border-color: rgba(234, 217, 199, 0.3);
+  border-top-color: #ead9c7;
 }
 
 @keyframes kyc-girar {

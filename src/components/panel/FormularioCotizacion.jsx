@@ -2,20 +2,26 @@ import { useState, useMemo } from 'react'
 import Icon from '../icons/Icon'
 import useStore from '../../store/puntos_usestore'
 import { MontoTexto } from '../Monto'
+import { UNIDADES } from '../../data/inventario'
 
 const STORAGE_KEY = 'vn_cotizaciones_recibidas'
 
-const UNIDADES = ['unidad', 'kg', 'lb', 'litro', 'caja', 'paquete', 'metros']
-
 const PRODUCTO_VACIO = { nombre: '', cantidad: '', precio: '', unidad: 'unidad' }
 
-function FormularioCotizacion({ negocio, proveedor, onClose, onEnviada }) {
+/* `productosIniciales` y `solicitudInicial` llegan cuando el
+   formulario se abre para responder un pedido concreto del negocio:
+   el producto y la cantidad que pidió ya vienen cargados y al
+   proveedor solo le queda poner el precio. Abierto a mano, como
+   siempre, llegan vacíos y no cambia nada. */
+function FormularioCotizacion({ negocio, proveedor, onClose, onEnviada, productosIniciales, solicitudInicial }) {
   // Los montos se guardan siempre en cordobas; esto solo cambia como
   // se MUESTRAN el subtotal y el total, segun lo que el proveedor
   // eligio en Configuraciones > Idioma y moneda.
   const moneda = useStore((s) => s.configuraciones.proveedor?.moneda) || 'NIO'
-  const [productos, setProductos] = useState([PRODUCTO_VACIO])
-  const [solicitud, setSolicitud] = useState('')
+  const [productos, setProductos] = useState(
+    productosIniciales?.length ? productosIniciales.map((p) => ({ ...PRODUCTO_VACIO, ...p })) : [PRODUCTO_VACIO]
+  )
+  const [solicitud, setSolicitud] = useState(solicitudInicial || '')
   const [descuento, setDescuento] = useState('')
   const [envio, setEnvio] = useState('')
   const [entrega, setEntrega] = useState('')

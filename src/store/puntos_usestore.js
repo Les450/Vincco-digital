@@ -20,20 +20,49 @@ const CLAVE_CONFIG = 'vincco:configuraciones'
 const CLAVE_NOTIFICACIONES = 'vincco:notificaciones'
 const CLAVE_SUCURSALES = 'vincco:sucursales'
 const CLAVE_SUCURSAL_ACTIVA = 'vincco:sucursal-activa'
+const CLAVE_SUCURSALES_ELIMINADAS = 'vincco:sucursales-eliminadas'
 const CLAVE_VERIFICACION = 'vincco:verificacion'
 const CLAVE_KYC = 'vincco:kyc'
+const CLAVE_CONSULTAS_PROMO = 'vincco:consultas-promocion'
+const CLAVE_SOLICITUDES_COT = 'vincco:solicitudes-cotizacion'
+const CLAVE_PERFILES = 'vincco:perfiles'
+
+// Campos del perfil que no son de la cuenta sino de la sucursal
+// activa: cada sucursal tiene su propio nombre, dirección, teléfono,
+// horario y WhatsApp. Al cambiar de sucursal, el perfil que se ve
+// es el de la sucursal elegida; lo demás (RUC, correo, propietario)
+// es de la cuenta y no cambia.
+const CAMPOS_SUCURSAL_PERFIL = ['nombre', 'direccion', 'telefono', 'horario', 'whatsapp']
+
+// Fusiona el perfil base de la cuenta con los datos de una sucursal.
+// Si la sucursal no tiene el campo (por ejemplo "nombre" en una
+// llevada mal), se cae al valor del perfil base.
+export function perfilDeSucursal(perfil, sucursal) {
+  if (!sucursal) return perfil
+  const fusionado = { ...perfil }
+  CAMPOS_SUCURSAL_PERFIL.forEach((campo) => {
+    if (sucursal[campo]) fusionado[campo] = sucursal[campo]
+  })
+  return fusionado
+}
 
 // Sucursales de ejemplo por rol. Cada sucursal administra su propio
 // panel (inventario y publicaciones aparte). El dia que haya backend,
 // esto sale de un GET /sucursales y se olvida de aqui.
+// La primera de cada rol es la principal: coincide con el perfil del
+// socio (Vincco Negocio / Vincco Proveedor), que es la que se ve
+// activa por defecto en el selector al entrar.
+// "contrasena" la define el propietario al registrar la sucursal; al
+// cambiar de sucursal se pide. Las de ejemplo usan "1234" para poder
+// probar el cambio sin un registro real.
 const SUCURSALES_INICIALES = {
   negocio: [
-    { id: 'n1', nombre: 'Sucursal Central', direccion: 'Frente al parque central, Nueva Guinea' },
-    { id: 'n2', nombre: 'Sucursal El Rama', direccion: 'Calle principal, El Rama' },
+    { id: 'n1', nombre: 'Vincco Negocio', direccion: 'Nueva Guinea, RACCS', principal: true, contrasena: '1234' },
+    { id: 'n2', nombre: 'Sucursal El Rama', direccion: 'Calle principal, El Rama', contrasena: '1234' },
   ],
   proveedor: [
-    { id: 'p1', nombre: 'Bodega Central', direccion: 'Nueva Guinea, RACCS' },
-    { id: 'p2', nombre: 'Bodega El Rama', direccion: 'El Rama, RACCS' },
+    { id: 'p1', nombre: 'Vincco Proveedor', direccion: 'Nueva Guinea, RACCS', principal: true, contrasena: '1234' },
+    { id: 'p2', nombre: 'Bodega El Rama', direccion: 'El Rama, RACCS', contrasena: '1234' },
   ],
 }
 
@@ -58,12 +87,99 @@ function escribirNotificaciones(notificaciones) {
   }
 }
 
+/* ── Consultas del cliente sobre una promoción ────────────────
+   Lo que el cliente manda desde el Home cuando toca "Ver" en una
+   promoción y decide preguntar por dentro de Vincco en vez de irse
+   a WhatsApp. Se guarda igual que los avisos: mientras no hay
+   backend, localStorage es el piso de datos.                    */
+function leerConsultasPromocion() {
+  try {
+    const guardado = JSON.parse(window.localStorage.getItem(CLAVE_CONSULTAS_PROMO))
+    if (Array.isArray(guardado)) return guardado
+  } catch {
+    // Modo privado o JSON corrupto: se arranca sin consultas
+  }
+  return []
+}
+
+function escribirConsultasPromocion(consultas) {
+  try {
+    window.localStorage.setItem(CLAVE_CONSULTAS_PROMO, JSON.stringify(consultas))
+  } catch {
+    // Si no se puede guardar, la consulta dura solo esta sesión
+  }
+}
+
+/* ── Solicitudes de cotización del negocio al proveedor ───────
+   El mismo gesto que la consulta del cliente, un escalón más
+   arriba de la cadena: el negocio ve algo en el Home de sus
+   proveedores y pide precio. La diferencia es cómo se contesta —
+   el proveedor no responde "sí o no", responde con una cotización
+   formal, que es la que ya existe en vn_cotizaciones_recibidas. */
+function leerSolicitudesCotizacion() {
+  try {
+    const guardado = JSON.parse(window.localStorage.getItem(CLAVE_SOLICITUDES_COT))
+    if (Array.isArray(guardado)) return guardado
+  } catch {
+    // Modo privado o JSON corrupto: se arranca sin solicitudes
+  }
+  return []
+}
+
+function escribirSolicitudesCotizacion(solicitudes) {
+  try {
+    window.localStorage.setItem(CLAVE_SOLICITUDES_COT, JSON.stringify(solicitudes))
+  } catch {
+    // Si no se puede guardar, la solicitud dura solo esta sesión
+  }
+}
+
 function leerSucursales() {
+  const eliminadas = leerSucursalesEliminadas()
+  const vivas = (lista, rol) => lista.filter((s) => !eliminadas[rol].includes(s.id))
   try {
     const guardado = JSON.parse(window.localStorage.getItem(CLAVE_SUCURSALES) || '{}')
-    if (guardado && Array.isArray(guardado.negocio)) return guardado
+    if (guardado && Array.isArray(guardado.negocio)) {
+      return {
+        negocio: fusionarSucursales(vivas(SUCURSALES_INICIALES.negocio, 'negocio'), vivas(guardado.negocio, 'negocio')),
+        proveedor: fusionarSucursales(vivas(SUCURSALES_INICIALES.proveedor, 'proveedor'), vivas(guardado.proveedor || [], 'proveedor')),
+      }
+    }
   } catch {}
-  return SUCURSALES_INICIALES
+  return {
+    negocio: vivas(SUCURSALES_INICIALES.negocio, 'negocio'),
+    proveedor: vivas(SUCURSALES_INICIALES.proveedor, 'proveedor'),
+  }
+}
+
+// Sucursales que el dueño eliminó. Se recuerdan aparte para que las
+// de ejemplo (n2, p2...) no resuciten al recargar: leerSucursales
+// rearma las iniciales desde el código en cada arranque.
+function leerSucursalesEliminadas() {
+  try {
+    const guardado = JSON.parse(window.localStorage.getItem(CLAVE_SUCURSALES_ELIMINADAS) || '{}')
+    return {
+      negocio: Array.isArray(guardado.negocio) ? guardado.negocio : [],
+      proveedor: Array.isArray(guardado.proveedor) ? guardado.proveedor : [],
+    }
+  } catch {}
+  return { negocio: [], proveedor: [] }
+}
+
+function escribirSucursalesEliminadas(eliminadas) {
+  try {
+    window.localStorage.setItem(CLAVE_SUCURSALES_ELIMINADAS, JSON.stringify(eliminadas))
+  } catch {}
+}
+
+// Las sucursales iniciales (n1/p1, n2/p2) siempre usan el nombre y la
+// dirección que define el código: el día que el demo cambie nombres,
+// los guardados viejos se migran solos. Las que el dueño agregó con
+// "+ Agregar sucursal" (id `s<timestamp>`) se conservan tal cual.
+function fusionarSucursales(iniciales, guardadas) {
+  const idsIniciales = new Set(iniciales.map((s) => s.id))
+  const extra = guardadas.filter((s) => !idsIniciales.has(s.id))
+  return [...iniciales, ...extra]
 }
 
 function escribirSucursales(sucursales) {
@@ -75,16 +191,19 @@ function escribirSucursales(sucursales) {
 function leerSucursalActiva() {
   try {
     const guardado = JSON.parse(window.localStorage.getItem(CLAVE_SUCURSAL_ACTIVA) || '{}')
-    const validoNegocio = guardado?.negocio && SUCURSALES_INICIALES.negocio.some((s) => s.id === guardado.negocio)
-    const validoProveedor = guardado?.proveedor && SUCURSALES_INICIALES.proveedor.some((s) => s.id === guardado.proveedor)
+    // Se valida contra las sucursales reales (iniciales + las agregadas
+    // por el dueño), para que una sucursal propia siga activa al recargar.
+    const sucursales = leerSucursales()
+    const validoNegocio = guardado?.negocio && sucursales.negocio.some((s) => s.id === guardado.negocio)
+    const validoProveedor = guardado?.proveedor && sucursales.proveedor.some((s) => s.id === guardado.proveedor)
     return {
-      negocio: validoNegocio ? guardado.negocio : SUCURSALES_INICIALES.negocio[0].id,
-      proveedor: validoProveedor ? guardado.proveedor : SUCURSALES_INICIALES.proveedor[0].id,
+      negocio: validoNegocio ? guardado.negocio : sucursales.negocio[0]?.id || null,
+      proveedor: validoProveedor ? guardado.proveedor : sucursales.proveedor[0]?.id || null,
     }
   } catch {}
   return {
-    negocio: SUCURSALES_INICIALES.negocio[0].id,
-    proveedor: SUCURSALES_INICIALES.proveedor[0].id,
+    negocio: SUCURSALES_INICIALES.negocio[0]?.id || null,
+    proveedor: SUCURSALES_INICIALES.proveedor[0]?.id || null,
   }
 }
 
@@ -164,6 +283,7 @@ const CONFIG_INICIAL = {
     resenasAnonimas: false,
     aparecerRanking: true,
     pinCanje: true,
+    ocultarSaldo: false,
     confirmarCanje: true,
     avisoVencimiento: true,
     diasVencimiento: 7,
@@ -178,13 +298,16 @@ const CONFIG_INICIAL = {
     silencioDesde: '21:00',
     silencioHasta: '06:00',
     mostrarAsistente: true,
-    textoGrande: false,
+    tema: 'claro',
+    tamanoTexto: 'normal',
+    reducirAnimaciones: false,
     altoContraste: false,
     idioma: 'es',
     moneda: 'NIO',
   },
   negocio: {
     mostrarPrecios: 'publicos',
+    cerradoTemporal: false,
     puntosPorCompra: 10,
     puntosDobles: false,
     diaPuntosDobles: 'viernes',
@@ -201,7 +324,9 @@ const CONFIG_INICIAL = {
     silencioDesde: '21:00',
     silencioHasta: '06:00',
     mostrarAsistente: true,
-    textoGrande: false,
+    tema: 'claro',
+    tamanoTexto: 'normal',
+    reducirAnimaciones: false,
     altoContraste: false,
     idioma: 'es',
     moneda: 'NIO',
@@ -214,6 +339,7 @@ const CONFIG_INICIAL = {
     pedidoMinimoProv: 5000,
     plantillaCotizacion: true,
     frecuenciaEntrega: 'semanal',
+    capacidadDespacho: 0,
     recordatorioCatalogo: 15,
     canalPush: true,
     canalCorreo: true,
@@ -222,7 +348,9 @@ const CONFIG_INICIAL = {
     silencioDesde: '21:00',
     silencioHasta: '06:00',
     mostrarAsistente: true,
-    textoGrande: false,
+    tema: 'claro',
+    tamanoTexto: 'normal',
+    reducirAnimaciones: false,
     altoContraste: false,
     idioma: 'es',
     moneda: 'NIO',
@@ -235,10 +363,20 @@ function leerConfig() {
     // Se mezcla con los valores iniciales para que, si mañana agregás
     // un ajuste nuevo, quien ya tenía config guardada igual lo reciba
     // con su valor por defecto en vez de undefined.
+    const mezclar = (rol) => {
+      const guardadoRol = guardado[rol] || {}
+      const base = { ...CONFIG_INICIAL[rol], ...guardadoRol }
+      // Migración: "textoGrande" era un switch y ahora es un selector
+      // de tres niveles. Quien lo tenía activado no pierde su preferencia.
+      if (guardadoRol.textoGrande === true && guardadoRol.tamanoTexto === undefined) {
+        base.tamanoTexto = 'grande'
+      }
+      return base
+    }
     return {
-      usuario: { ...CONFIG_INICIAL.usuario, ...(guardado.usuario || {}) },
-      negocio: { ...CONFIG_INICIAL.negocio, ...(guardado.negocio || {}) },
-      proveedor: { ...CONFIG_INICIAL.proveedor, ...(guardado.proveedor || {}) },
+      usuario: mezclar('usuario'),
+      negocio: mezclar('negocio'),
+      proveedor: mezclar('proveedor'),
     }
   } catch {
     // Modo privado del navegador o JSON corrupto: se arranca de cero
@@ -368,6 +506,124 @@ function generarEventosCalendario() {
   return { eventosCalendario: todos }
 }
 
+// Ficha editable del perfil. Se guarda una por rol porque los
+// campos no son los mismos: el cliente no tiene RUC ni cobertura,
+// y el proveedor no tiene "propietario" sino persona de contacto.
+// La foto se guarda como dataURL (base64) porque no hay backend
+// todavía: así sobrevive a la recarga mientras se prueba en local.
+const PERFILES_INICIALES = {
+  usuario: {
+    nombre: 'Lesbin Leonardo Díaz Medina',
+    cedula: '616-151206-1006K',
+    edad: 19,
+    telefono: '+505 5717 8100',
+    correo: 'lesbinleonardo@gmail.com',
+    municipio: 'Nueva Guinea',
+    barrio: 'Barrio Rigoberto López',
+    miembroDesde: 'agosto 2026',
+    foto: null,
+  },
+  negocio: {
+    nombre: 'Vincco Negocio',
+    categoria: 'Ferretería',
+    propietario: 'Lesbin Leonardo Díaz Medina',
+    cedula: '616-151206-1006K',
+    edad: 19,
+    telefono: '+505 5717 8100',
+    correo: 'lesbinleonardo@gmail.com',
+    ruc: 'J0310000456789',
+    direccion: 'Nueva Guinea, RACCS',
+    descripcion: 'Negocio de prueba en Nueva Guinea, parte de la red de comercios asociados a Vincco.',
+    miembroDesde: 'agosto 2026',
+    foto: null,
+  },
+  proveedor: {
+    nombre: 'Vincco Proveedor',
+    categoria: 'Construcción',
+    contacto: 'Lesbin Leonardo Díaz Medina',
+    cedula: '616-151206-1006K',
+    edad: 19,
+    telefono: '+505 5717 8100',
+    correo: 'lesbinleonardo@gmail.com',
+    ruc: 'J0310000456790',
+    cobertura: 'Nueva Guinea y alrededores, RACCS',
+    descripcion: 'Proveedor de prueba en Nueva Guinea, RACCS, parte de la red de proveedores asociados a Vincco.',
+    miembroDesde: 'agosto 2026',
+    foto: null,
+  },
+}
+
+function leerPerfiles() {
+  try {
+    const guardado = JSON.parse(window.localStorage.getItem(CLAVE_PERFILES) || '{}')
+    if (guardado && typeof guardado === 'object') {
+      return {
+        usuario: { ...PERFILES_INICIALES.usuario, ...(guardado.usuario || {}) },
+        negocio: { ...PERFILES_INICIALES.negocio, ...(guardado.negocio || {}) },
+        proveedor: { ...PERFILES_INICIALES.proveedor, ...(guardado.proveedor || {}) },
+      }
+    }
+  } catch {
+    // Modo privado o JSON corrupto: se arranca con los de ejemplo
+  }
+  return PERFILES_INICIALES
+}
+
+function escribirPerfiles(perfiles) {
+  try {
+    window.localStorage.setItem(CLAVE_PERFILES, JSON.stringify(perfiles))
+  } catch {
+    // Si no se puede guardar, el cambio dura solo esta sesión
+  }
+}
+
+/* ── Datos por sucursal ──────────────────────────────────────
+   Cada sucursal guarda su inventario y sus publicaciones en claves
+   propias ("pn_inventario:s123", "pn_promociones:n1", ...). Al
+   eliminar una sucursal hay que borrar también esas claves, o quedan
+   huérfanas ocupando espacio del localStorage para siempre — y la
+   cuota es de ~5 MB por sitio: justo lo que revienta al guardar una
+   promoción con foto. */
+const PREFIJOS_DATOS_SUCURSAL = [
+  'pn_inventario',
+  'pn_promociones',
+  'pn_productos',
+  'pn_destacadas',
+  'pn_papelera',
+]
+
+function borrarDatosDeSucursal(id) {
+  try {
+    PREFIJOS_DATOS_SUCURSAL.forEach((prefijo) => {
+      window.localStorage.removeItem(`${prefijo}:${id}`)
+    })
+  } catch {}
+}
+
+// Barre claves de datos de sucursales que ya no existen (por ejemplo,
+// sucursales de prueba eliminadas antes de que existiera esta
+// limpieza). Solo toca los prefijos de datos por sucursal y solo si
+// el id no está en la lista viva, así que es seguro correrlo en cada
+// arranque.
+function limpiarDatosDeSucursalesEliminadas() {
+  try {
+    const sucursales = leerSucursales()
+    const vivas = new Set(
+      [...sucursales.negocio, ...sucursales.proveedor].map((s) => s.id)
+    )
+    const aBorrar = []
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const clave = window.localStorage.key(i)
+      if (!clave || !PREFIJOS_DATOS_SUCURSAL.some((p) => clave.startsWith(`${p}:`))) continue
+      const id = clave.slice(clave.lastIndexOf(':') + 1)
+      if (!vivas.has(id)) aBorrar.push(clave)
+    }
+    aBorrar.forEach((clave) => window.localStorage.removeItem(clave))
+  } catch {}
+}
+
+limpiarDatosDeSucursalesEliminadas()
+
 const useStore = create((set) => ({
   usuario: {
     nombre: 'Lesbin',
@@ -403,53 +659,14 @@ const useStore = create((set) => ({
   // Codigo con el que el usuario invita a otros. En produccion
   // deberia venir del backend al crear la cuenta.
   codigoInvitacion: 'VINCCO-A4K9',
-  // Ficha editable del perfil. Se guarda una por rol porque los
-  // campos no son los mismos: el cliente no tiene RUC ni cobertura,
-  // y el proveedor no tiene "propietario" sino persona de contacto.
-  perfiles: {
-    usuario: {
-      nombre: 'Lesbin Leonardo Díaz Medina',
-      cedula: '616-151206-1006K',
-      edad: 19,
-      telefono: '+505 5717 8100',
-      correo: 'lesbinleonardo@gmail.com',
-      municipio: 'Nueva Guinea',
-      barrio: 'Barrio Rigoberto López',
-      miembroDesde: 'agosto 2026',
-      foto: null,
-    },
-    negocio: {
-      nombre: 'Vincco Negocio',
-      categoria: 'Ferretería',
-      propietario: 'Lesbin Leonardo Díaz Medina',
-      cedula: '616-151206-1006K',
-      edad: 19,
-      telefono: '+505 5717 8100',
-      correo: 'lesbinleonardo@gmail.com',
-      ruc: 'J0310000456789',
-      direccion: 'Nueva Guinea, RACCS',
-      descripcion: 'Negocio de prueba en Nueva Guinea, parte de la red de comercios asociados a Vincco.',
-      miembroDesde: 'agosto 2026',
-      foto: null,
-    },
-    proveedor: {
-      nombre: 'Vincco Proveedor',
-      categoria: 'Construcción',
-      contacto: 'Lesbin Leonardo Díaz Medina',
-      cedula: '616-151206-1006K',
-      edad: 19,
-      telefono: '+505 5717 8100',
-      correo: 'lesbinleonardo@gmail.com',
-      ruc: 'J0310000456790',
-      cobertura: 'Nueva Guinea y alrededores, RACCS',
-      descripcion: 'Proveedor de prueba en Nueva Guinea, RACCS, parte de la red de proveedores asociados a Vincco.',
-      miembroDesde: 'agosto 2026',
-      foto: null,
-    },
-  },
+  perfiles: leerPerfiles(),
   estadosVerificacion: leerVerificacion(),
   kyc: leerKYC(),
   notificaciones: leerNotificaciones(),
+  // Consultas que los clientes mandaron sobre una promoción del Home
+  consultasPromocion: leerConsultasPromocion(),
+  // Pedidos de precio que los negocios mandaron a sus proveedores
+  solicitudesCotizacion: leerSolicitudesCotizacion(),
   sucursales: leerSucursales(),
   sucursalActiva: leerSucursalActiva(),
   ...generarEventosCalendario(),
@@ -494,6 +711,43 @@ const useStore = create((set) => ({
     })
     return id
   },
+  // Actualiza los datos de una sucursal existente sin tocar cuál
+  // está activa. Lo usa el registro cuando el dueño volvió atrás a
+  // corregir algo después de que la sucursal ya se había creado.
+  editarSucursal: (rol, id, datos) => set((state) => {
+    if (!state.sucursales[rol]?.some((s) => s.id === id)) return {}
+    const sucursales = {
+      ...state.sucursales,
+      [rol]: (state.sucursales[rol] || []).map((s) =>
+        s.id === id ? { ...s, ...datos } : s
+      ),
+    }
+    escribirSucursales(sucursales)
+    return { sucursales }
+  }),
+  // Elimina una sucursal del dueño y recuerda la baja aparte, para
+  // que las de ejemplo no vuelvan a aparecer al recargar. Si era la
+  // activa, pasa a la primera que quede viva (o a ninguna). También
+  // borra los datos de esa sucursal (inventario, publicaciones),
+  // que si no quedan huérfanos ocupando espacio.
+  eliminarSucursal: (rol, id) => set((state) => {
+    const actuales = state.sucursales[rol] || []
+    if (!actuales.some((s) => s.id === id)) return {}
+    const sucursales = { ...state.sucursales, [rol]: actuales.filter((s) => s.id !== id) }
+    escribirSucursales(sucursales)
+    borrarDatosDeSucursal(id)
+    const eliminadasPrevias = leerSucursalesEliminadas()
+    escribirSucursalesEliminadas({
+      ...eliminadasPrevias,
+      [rol]: [...eliminadasPrevias[rol], id],
+    })
+    let sucursalActiva = state.sucursalActiva
+    if (state.sucursalActiva[rol] === id) {
+      sucursalActiva = { ...sucursalActiva, [rol]: sucursales[rol][0]?.id || null }
+      escribirSucursalActiva(sucursalActiva)
+    }
+    return { sucursales, sucursalActiva }
+  }),
   marcarNotificacionLeida: (id) => set((state) => {
     const notificaciones = state.notificaciones.map((n) =>
       n.id === id ? { ...n, leida: true } : n
@@ -578,6 +832,281 @@ const useStore = create((set) => ({
     escribirNotificaciones(notificaciones)
     return { negociosAsociados, notificaciones }
   }),
+  /* ── Consulta de un cliente sobre una promoción ──────────────
+     El cliente ve una promoción en su Home, toca "Ver" y desde el
+     detalle decide preguntar por dentro de Vincco. Eso no es un
+     mensaje suelto: queda como un registro con estado, igual que
+     una solicitud de asociación, y le llega al negocio a Avisos,
+     que es donde el negocio ya está acostumbrado a responder.
+
+     Es a propósito la misma forma que solicitarAsociacionNegocio:
+     un registro en 'pendiente' + un aviso al otro rol. Cuando esto
+     pase a backend, las dos van a ser el mismo endpoint con distinto
+     cuerpo.                                                       */
+  enviarConsultaPromocion: ({ promocion, cantidad, mensaje }) => {
+    const id = `cons-${Date.now()}`
+
+    set((state) => {
+      const cliente = state.perfiles.usuario || {}
+      const negocio = promocion.negocio || {}
+      const unidades = Number(cantidad) > 0 ? Number(cantidad) : null
+
+      const consulta = {
+        id,
+        estado: 'pendiente',
+        promocionId: promocion.id,
+        promocionTitulo: promocion.titulo,
+        promocionPuntos: promocion.puntos || null,
+        promocionDescuento: promocion.descuento ?? null,
+        negocio: {
+          id: negocio.id || null,
+          rol: negocio.rol || 'negocio',
+          nombre: negocio.nombre || '',
+          telefono: negocio.telefono || '',
+        },
+        cliente: {
+          nombre: cliente.nombre || state.usuario.nombre || 'Un cliente',
+          telefono: cliente.telefono || '',
+        },
+        cantidad: unidades,
+        mensaje: (mensaje || '').trim(),
+        creadaEn: new Date().toISOString(),
+        respondidaEn: null,
+        respuesta: '',
+      }
+
+      const nombreCliente = consulta.cliente.nombre
+      const detalleCantidad = unidades ? ` · ${unidades} ${unidades === 1 ? 'unidad' : 'unidades'}` : ''
+
+      const notificaciones = [
+        {
+          id: `consulta-promo-${id}`,
+          tipo: 'consulta_promocion',
+          icono: 'message-circle',
+          titulo: 'Consulta sobre una promoción',
+          descripcion: `${nombreCliente} pregunta por "${promocion.titulo}"${detalleCantidad}.`,
+          fecha: consulta.creadaEn,
+          leida: false,
+          ruta: '/notificaciones',
+          // Casi siempre es un negocio, pero un proveedor también
+          // puede publicar promociones: el aviso tiene que llegarle
+          // a quien la publicó, no al rol que supongamos nosotros.
+          userType: negocio.rol || 'negocio',
+          consultaId: id,
+        },
+        ...state.notificaciones,
+      ]
+
+      escribirNotificaciones(notificaciones)
+      const consultasPromocion = [consulta, ...state.consultasPromocion]
+      escribirConsultasPromocion(consultasPromocion)
+
+      return { consultasPromocion, notificaciones }
+    })
+
+    return id
+  },
+
+  /* El negocio contesta desde Avisos. Al cliente le vuelve el
+     resultado por la misma vía, así no tiene que quedarse
+     revisando la pantalla para enterarse.
+
+     Los puntos NO se acreditan acá a propósito. Confirmar una
+     consulta significa "sí, te lo tengo" — la compra todavía no
+     ocurrió. La acreditación va cuando esté definido cómo se
+     cierra la compra; el enganche es agregarPuntos(), que ya
+     existe y ya trae el freno de cuenta verificada.              */
+  responderConsultaPromocion: (id, aceptar, respuesta = '') => set((state) => {
+    const consulta = state.consultasPromocion.find((c) => c.id === id)
+    if (!consulta || consulta.estado !== 'pendiente') return {}
+
+    const consultasPromocion = state.consultasPromocion.map((c) =>
+      c.id === id
+        ? {
+            ...c,
+            estado: aceptar ? 'confirmada' : 'rechazada',
+            respondidaEn: new Date().toISOString(),
+            respuesta: (respuesta || '').trim(),
+          }
+        : c
+    )
+
+    const nombreNegocio = consulta.negocio.nombre || 'El negocio'
+
+    const notificaciones = [
+      {
+        id: `resp-consulta-${id}`,
+        tipo: 'respuesta_consulta_promocion',
+        icono: aceptar ? 'check-circle' : 'x',
+        titulo: aceptar ? 'Tu consulta fue confirmada' : 'Tu consulta no pudo atenderse',
+        descripcion: aceptar
+          ? `${nombreNegocio} te confirmó "${consulta.promocionTitulo}". Pasá al local para retirarla.`
+          : `${nombreNegocio} no puede atender tu consulta sobre "${consulta.promocionTitulo}" por ahora.`,
+        fecha: new Date().toISOString(),
+        leida: false,
+        ruta: '/notificaciones',
+        userType: 'usuario',
+        consultaId: id,
+      },
+      ...state.notificaciones,
+    ]
+
+    escribirNotificaciones(notificaciones)
+    escribirConsultasPromocion(consultasPromocion)
+
+    return { consultasPromocion, notificaciones }
+  }),
+
+  /* ── El negocio le pide precio a un proveedor ────────────────
+     Sube un escalón en la cadena: es el mismo gesto que la consulta
+     del cliente, pero entre negocio y proveedor, y termina en el
+     sistema de cotizaciones que ya existe.
+
+     Acá NO se crea la cotización: se crea el pedido. La cotización
+     con precios la arma el proveedor cuando responde, con el
+     formulario de siempre, y cae en vn_cotizaciones_recibidas —
+     que es de donde el negocio ya la lee en "Mis Cotizaciones". */
+  enviarSolicitudCotizacion: ({ publicacion, cantidad, unidad, mensaje }) => {
+    const id = `solcot-${Date.now()}`
+
+    set((state) => {
+      const sucursal = state.sucursales.negocio?.find(
+        (x) => x.id === state.sucursalActiva.negocio
+      )
+      const perfil = perfilDeSucursal(state.perfiles.negocio, sucursal) || {}
+      const proveedor = publicacion.negocio || {}
+      const unidades = Number(cantidad) > 0 ? Number(cantidad) : 1
+
+      const solicitud = {
+        id,
+        estado: 'pendiente',
+        publicacionId: publicacion.id,
+        publicacionTitulo: publicacion.titulo,
+        publicacionPrecio: publicacion.precio ?? null,
+        proveedor: {
+          id: proveedor.id || null,
+          nombre: proveedor.nombre || '',
+          telefono: proveedor.telefono || '',
+        },
+        negocio: {
+          id: state.sucursalActiva.negocio || null,
+          nombre: perfil.nombre || 'Un negocio',
+          telefono: perfil.telefono || '',
+        },
+        cantidad: unidades,
+        unidad: unidad || 'unidad',
+        mensaje: (mensaje || '').trim(),
+        creadaEn: new Date().toISOString(),
+        respondidaEn: null,
+        cotizacionId: null,
+      }
+
+      const notificaciones = [
+        {
+          id: `aviso-${id}`,
+          // Tipo que el filtro de configuración ya conoce: si el
+          // proveedor apagó "recibir solicitudes", no le llega.
+          tipo: 'negocio_solicito_cotizacion_prov',
+          icono: 'mail',
+          titulo: 'Solicitud de cotización',
+          descripcion: `${solicitud.negocio.nombre} te pide precio de "${publicacion.titulo}" · ${unidades} ${solicitud.unidad}.`,
+          fecha: solicitud.creadaEn,
+          leida: false,
+          ruta: '/notificaciones',
+          userType: 'proveedor',
+          solicitudId: id,
+        },
+        ...state.notificaciones,
+      ]
+
+      escribirNotificaciones(notificaciones)
+      const solicitudesCotizacion = [solicitud, ...state.solicitudesCotizacion]
+      escribirSolicitudesCotizacion(solicitudesCotizacion)
+
+      return { solicitudesCotizacion, notificaciones }
+    })
+
+    return id
+  },
+
+  /* El proveedor ya mandó la cotización (el formulario la guardó en
+     vn_cotizaciones_recibidas). Acá solo se cierra el pedido y se le
+     avisa al negocio para que la vaya a ver. */
+  marcarSolicitudCotizada: (id, cotizacion) => set((state) => {
+    const solicitud = state.solicitudesCotizacion.find((c) => c.id === id)
+    if (!solicitud || solicitud.estado !== 'pendiente') return {}
+
+    const solicitudesCotizacion = state.solicitudesCotizacion.map((c) =>
+      c.id === id
+        ? {
+            ...c,
+            estado: 'cotizada',
+            respondidaEn: new Date().toISOString(),
+            cotizacionId: cotizacion?.id ?? null,
+          }
+        : c
+    )
+
+    const nombreProveedor = state.perfiles.proveedor?.nombre || 'Tu proveedor'
+
+    const notificaciones = [
+      {
+        id: `resp-${id}`,
+        tipo: 'respuesta_proveedor',
+        icono: 'file-text',
+        titulo: 'Respuesta de proveedor',
+        descripcion: `${nombreProveedor} te cotizó "${solicitud.publicacionTitulo}"${
+          cotizacion?.numero ? ` (${cotizacion.numero})` : ''
+        }. Miralo en Mis Cotizaciones.`,
+        fecha: new Date().toISOString(),
+        leida: false,
+        ruta: '/panel-negocio',
+        userType: 'negocio',
+        solicitudId: id,
+      },
+      ...state.notificaciones,
+    ]
+
+    escribirNotificaciones(notificaciones)
+    escribirSolicitudesCotizacion(solicitudesCotizacion)
+
+    return { solicitudesCotizacion, notificaciones }
+  }),
+
+  // Si el proveedor no puede atender el pedido, se cierra sin
+  // cotización y el negocio se entera igual.
+  rechazarSolicitudCotizacion: (id) => set((state) => {
+    const solicitud = state.solicitudesCotizacion.find((c) => c.id === id)
+    if (!solicitud || solicitud.estado !== 'pendiente') return {}
+
+    const solicitudesCotizacion = state.solicitudesCotizacion.map((c) =>
+      c.id === id ? { ...c, estado: 'rechazada', respondidaEn: new Date().toISOString() } : c
+    )
+
+    const nombreProveedor = state.perfiles.proveedor?.nombre || 'Tu proveedor'
+
+    const notificaciones = [
+      {
+        id: `resp-${id}`,
+        tipo: 'respuesta_proveedor',
+        icono: 'x',
+        titulo: 'Sin cotización por ahora',
+        descripcion: `${nombreProveedor} no puede cotizarte "${solicitud.publicacionTitulo}" en este momento.`,
+        fecha: new Date().toISOString(),
+        leida: false,
+        ruta: '/panel-negocio',
+        userType: 'negocio',
+        solicitudId: id,
+      },
+      ...state.notificaciones,
+    ]
+
+    escribirNotificaciones(notificaciones)
+    escribirSolicitudesCotizacion(solicitudesCotizacion)
+
+    return { solicitudesCotizacion, notificaciones }
+  }),
+
   // Termina una asociación ya aceptada. No hace falta la ceremonia
   // de aviso y respuesta: es reversible con solo volver a pedirla.
   quitarAsociacionNegocio: (id) => set((state) => ({
@@ -592,27 +1121,67 @@ const useStore = create((set) => ({
   })),
   // Guarda los cambios del formulario de perfil sin pisar los
   // campos que no vienen en "datos" (por ejemplo miembroDesde).
-  guardarPerfil: (rol, datos) => set((state) => ({
-    perfiles: {
+  guardarPerfil: (rol, datos) => set((state) => {
+    const perfiles = {
       ...state.perfiles,
       [rol]: { ...state.perfiles[rol], ...datos },
-    },
-  })),
+    }
+    escribirPerfiles(perfiles)
+    return { perfiles }
+  }),
+  // Guarda los datos editados de la ficha del socio repartiéndolos:
+  // los campos de la sucursal activa (nombre, dirección, teléfono,
+  // horario, WhatsApp) van a la sucursal; el resto (RUC, correo,
+  // propietario, descripción...) queda en el perfil de la cuenta.
+  // Así, al cambiar de sucursal, cada una muestra su propia ficha.
+  guardarPerfilConSucursal: (rol, datos) => set((state) => {
+    const cambios = {}
+    const datosSucursal = {}
+    const datosPerfil = {}
+    Object.entries(datos || {}).forEach(([campo, valor]) => {
+      if (CAMPOS_SUCURSAL_PERFIL.includes(campo)) datosSucursal[campo] = valor
+      else datosPerfil[campo] = valor
+    })
+    if (Object.keys(datosSucursal).length) {
+      const sucursalId = state.sucursalActiva[rol]
+      const sucursales = {
+        ...state.sucursales,
+        [rol]: (state.sucursales[rol] || []).map((s) =>
+          s.id === sucursalId ? { ...s, ...datosSucursal } : s
+        ),
+      }
+      escribirSucursales(sucursales)
+      cambios.sucursales = sucursales
+    }
+    if (Object.keys(datosPerfil).length) {
+      const perfiles = {
+        ...state.perfiles,
+        [rol]: { ...state.perfiles[rol], ...datosPerfil },
+      }
+      escribirPerfiles(perfiles)
+      cambios.perfiles = perfiles
+    }
+    return cambios
+  }),
   // La foto se guarda como dataURL (base64) porque no hay backend
   // todavia. Al conectar la API esto pasaria a ser la URL del archivo
   // subido; el resto de la pantalla no cambia.
-  guardarFoto: (rol, foto) => set((state) => ({
-    perfiles: {
+  guardarFoto: (rol, foto) => set((state) => {
+    const perfiles = {
       ...state.perfiles,
       [rol]: { ...state.perfiles[rol], foto },
-    },
-  })),
-  quitarFoto: (rol) => set((state) => ({
-    perfiles: {
+    }
+    escribirPerfiles(perfiles)
+    return { perfiles }
+  }),
+  quitarFoto: (rol) => set((state) => {
+    const perfiles = {
       ...state.perfiles,
       [rol]: { ...state.perfiles[rol], foto: null },
-    },
-  })),
+    }
+    escribirPerfiles(perfiles)
+    return { perfiles }
+  }),
   // Pide la verificación de la cuenta: se usa al terminar el
   // registro, desde el perfil para quien la pospuso, y desde
   // cualquier acción bloqueada (publicar, cotizar, etc). Sin backend
@@ -631,6 +1200,7 @@ const useStore = create((set) => ({
         ...state.perfiles,
         [rol]: { ...state.perfiles[rol], ruc: datos.ruc },
       }
+      escribirPerfiles(cambios.perfiles)
     }
     return cambios
   }),
@@ -709,6 +1279,7 @@ const useStore = create((set) => ({
         ...state.perfiles,
         [rol]: { ...state.perfiles[rol], ruc },
       }
+      escribirPerfiles(cambios.perfiles)
     }
     return cambios
   }),

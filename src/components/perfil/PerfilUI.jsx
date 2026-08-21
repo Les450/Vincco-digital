@@ -1,18 +1,27 @@
 import { useState, useRef, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Icon from '../icons/Icon'
+import BotonVolver from '../BotonVolver'
 import useStore from '../../store/puntos_usestore'
 
-// Piezas compartidas por los tres perfiles (cliente, negocio y
-// proveedor). Cada perfil arma su propia pantalla combinandolas,
-// asi el estilo es consistente pero el contenido y el orden de las
-// secciones son distintos segun el rol.
+/* ══════════════════════════════════════════════════════════════════════
+   Piezas compartidas por los tres perfiles (cliente, negocio, proveedor).
 
-/* ── Encabezado ──────────────────────────────────────────── */
+   La idea: el perfil es una LIBRETA, no un muro social. Portada de tinta,
+   hojas de papel hueso y sellos de caucho. Todo lo que la persona
+   acumulo se muestra como recibo, no como caja con numero.
 
-// Iniciales para el avatar cuando no hay foto: "Ferreteria Don Chico"
-// queda como "FD", "Leslie" como "LE".
+   Nada de esto toca los datos: se leen los mismos objetos de
+   data_falso.js y del store, y lo que falta se DEDUCE de ellos
+   (el porcentaje del pasaporte, el tipo de movimiento, la fecha del
+   sello). Si algun dia esos campos vienen del backend, no hay que
+   cambiar una sola linea de aca.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Utilidades ──────────────────────────────────────────────────────── */
+
+// "Ferreteria Don Chico" -> "FD" · "Leslie" -> "LE"
 function iniciales(nombre) {
   const partes = (nombre || '').trim().split(/\s+/).filter(Boolean)
   if (!partes.length) return '?'
@@ -20,12 +29,19 @@ function iniciales(nombre) {
   return (partes[0][0] + partes[1][0]).toUpperCase()
 }
 
+// Solo los digitos de "50 pts" -> 50. Sirve para repartir el pasaporte
+// sin tener que cambiar el formato de los datos.
+function soloNumero(valor) {
+  const n = parseInt(String(valor ?? '').replace(/[^\d]/g, ''), 10)
+  return Number.isFinite(n) ? n : 0
+}
+
 const PESO_MAXIMO_MB = 5
 const LADO_MAXIMO = 512
 
-// Reduce la imagen antes de guardarla. Una foto de celular pesa
-// varios MB y en base64 crece un tercio mas; recortada a 512px
-// cuadrados el avatar se ve igual de nitido y ocupa poquisimo.
+// Reduce la imagen antes de guardarla. Una foto de celular pesa varios MB
+// y en base64 crece un tercio mas; recortada a 512px el avatar se ve
+// igual de nitido y ocupa poquisimo.
 function comprimirImagen(archivo) {
   return new Promise((resolve, reject) => {
     const lector = new FileReader()
@@ -34,7 +50,6 @@ function comprimirImagen(archivo) {
       const img = new Image()
       img.onerror = () => reject(new Error('El archivo no es una imagen válida'))
       img.onload = () => {
-        // Recorte centrado al cuadrado mas grande que entre en la foto
         const lado = Math.min(img.width, img.height)
         const origenX = (img.width - lado) / 2
         const origenY = (img.height - lado) / 2
@@ -54,7 +69,31 @@ function comprimirImagen(archivo) {
   })
 }
 
-function AvatarPerfil({ nombre, foto, onFoto, onQuitarFoto }) {
+/* ══════════════════════════════════════════════════════════════════════
+   1 · LA PÁGINA
+   Envuelve todo y define el color del rol y el del nivel. Los componentes
+   de adentro nunca escriben un color: leen --pf-rol y --pf-nivel.
+   ══════════════════════════════════════════════════════════════════════ */
+
+export function PerfilPagina({ rol = 'usuario', nivel, children }) {
+  const claseNivel = nivel
+    ? ` vc-perf--nivel-${String(nivel).toLowerCase()}`
+    : ''
+  return (
+    <div className={`vc-perf vc-perf--${rol}${claseNivel}`}>
+      {children}
+    </div>
+  )
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   2 · EL ANILLO DE NIVEL
+   El aro alrededor de la foto no es adorno: dice en que nivel esta la
+   persona. Por eso ademas lleva el nombre del nivel escrito abajo — si
+   fuera solo color, quien no distingue tonos no se enteraria.
+   ══════════════════════════════════════════════════════════════════════ */
+
+function AnilloPerfil({ nombre, foto, onFoto, onQuitarFoto, nivel }) {
   const inputRef = useRef(null)
   const [error, setError] = useState('')
   const [cargando, setCargando] = useState(false)
@@ -82,51 +121,51 @@ function AvatarPerfil({ nombre, foto, onFoto, onQuitarFoto }) {
     try {
       const dataUrl = await comprimirImagen(archivo)
       onFoto(dataUrl)
-    } catch (err) {
+    } catch {
       setError('No se pudo procesar la imagen. Probá con otra.')
     } finally {
       setCargando(false)
     }
   }
 
-  if (!editable) {
-    return (
-      <div className="pf-avatar" aria-hidden="true">
-        {foto ? <img src={foto} alt="" className="pf-avatar-img" /> : <span>{iniciales(nombre)}</span>}
-      </div>
-    )
-  }
+  const interior = foto
+    ? <img src={foto} alt="" className="vc-perf-anillo__img" />
+    : <span aria-hidden="true">{iniciales(nombre)}</span>
 
   return (
-    <div className="pf-avatar-zona">
-      <button
-        type="button"
-        className={`pf-avatar pf-avatar--editable ${cargando ? 'pf-avatar--cargando' : ''}`}
-        onClick={() => inputRef.current?.click()}
-        aria-label={foto ? 'Cambiar foto de perfil' : 'Subir foto de perfil'}
-      >
-        {foto
-          ? <img src={foto} alt="" className="pf-avatar-img" />
-          : <span aria-hidden="true">{iniciales(nombre)}</span>}
-
-        <span className="pf-avatar-capa" aria-hidden="true">
-          <Icon name="camera" size={18} />
-        </span>
-      </button>
-
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/png, image/jpeg, image/webp"
-        onChange={elegir}
-        className="pf-avatar-input"
-        tabIndex={-1}
-      />
-
-      {foto && (
+    <div className="vc-perf-anillo">
+      {editable ? (
         <button
           type="button"
-          className="pf-avatar-quitar"
+          className="vc-perf-anillo__disco"
+          onClick={() => inputRef.current?.click()}
+          aria-label={foto ? 'Cambiar foto de perfil' : 'Subir foto de perfil'}
+          data-cargando={cargando ? 'true' : undefined}
+        >
+          {interior}
+          <span className="vc-perf-anillo__capa" aria-hidden="true">
+            <Icon name="camera" size={20} />
+          </span>
+        </button>
+      ) : (
+        <div className="vc-perf-anillo__disco">{interior}</div>
+      )}
+
+      {editable && (
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/png, image/jpeg, image/webp"
+          onChange={elegir}
+          className="vc-perf-input-oculto"
+          tabIndex={-1}
+        />
+      )}
+
+      {editable && foto && (
+        <button
+          type="button"
+          className="vc-perf-anillo__quitar"
           onClick={onQuitarFoto}
           aria-label="Quitar foto de perfil"
         >
@@ -134,10 +173,12 @@ function AvatarPerfil({ nombre, foto, onFoto, onQuitarFoto }) {
         </button>
       )}
 
+      {nivel && <span className="vc-perf-anillo__nivel">{nivel}</span>}
+
       <AnimatePresence>
         {error && (
           <motion.p
-            className="pf-avatar-error"
+            className="vc-perf-error-foto"
             role="alert"
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
@@ -151,79 +192,201 @@ function AvatarPerfil({ nombre, foto, onFoto, onQuitarFoto }) {
   )
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   3 · LA PORTADA
+   Nada de "foto redonda gigante centrada + nombre + tres iconos". La
+   identidad va a la izquierda, en linea, como el encabezado de un
+   documento: primero que documento es, despues de quien.
+   ══════════════════════════════════════════════════════════════════════ */
+
 export function PerfilHero({
   kicker,
   nombre,
   subtitulo,
-  chips = [],
-  acento,
+  sellos = [],
+  chips = [],            // alias viejo: se sigue aceptando
   extra,
   acciones,
+  esquina,
   foto,
   onFoto,
   onQuitarFoto,
+  nivel,
 }) {
-  const navigate = useNavigate()
+  const marcas = sellos.length ? sellos : chips
 
   return (
-    <header className="pf-hero" style={{ '--pf-acento': acento }}>
-      <div className="pf-hero-trama" aria-hidden="true" />
+    <header className="vc-perf-portada">
+      <div className="vc-perf-portada__trama" aria-hidden="true" />
 
-      <button
-        type="button"
-        className="pf-hero-volver"
-        onClick={() => navigate(-1)}
-        aria-label="Volver"
-      >
-        <Icon name="arrow-left" size={18} />
-      </button>
-
-      <div className="pf-hero-cuerpo">
-        <div className="pf-hero-identidad">
-          <AvatarPerfil
-            nombre={nombre}
-            foto={foto}
-            onFoto={onFoto}
-            onQuitarFoto={onQuitarFoto}
-          />
-
-          <div className="pf-hero-texto">
-            <span className="pf-hero-kicker">{kicker}</span>
-            <h1 className="pf-hero-nombre">{nombre}</h1>
-            {subtitulo && <p className="pf-hero-sub">{subtitulo}</p>}
-
-            {chips.length > 0 && (
-              <ul className="pf-chips">
-                {chips.map((chip) => (
-                  <li key={chip.label} className={`pf-chip ${chip.destacado ? 'pf-chip--destacado' : ''}`}>
-                    {chip.icono && <Icon name={chip.icono} size={13} />}
-                    {chip.label}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
-
-        {extra && <div className="pf-hero-extra">{extra}</div>}
+      {/* El boton es el mismo de Calendario y Avisos; la clase de la
+          portada solo lo posiciona. */}
+      <div className="vc-perf-portada__volver">
+        <BotonVolver tono="tinta" />
       </div>
 
-      {acciones && <div className="pf-hero-acciones">{acciones}</div>}
+      {esquina && <div className="vc-perf-portada__esquina">{esquina}</div>}
+
+      <div className="vc-perf-portada__interior">
+        <div>
+          <p className="vc-perf-etiqueta vc-perf-portada__kicker">{kicker}</p>
+
+          <div className="vc-perf-identidad">
+            <AnilloPerfil
+              nombre={nombre}
+              foto={foto}
+              onFoto={onFoto}
+              onQuitarFoto={onQuitarFoto}
+              nivel={nivel}
+            />
+
+            <div className="vc-perf-identidad__texto">
+              <h1 className="vc-perf-nombre">{nombre}</h1>
+              {subtitulo && <p className="vc-perf-sub">{subtitulo}</p>}
+            </div>
+          </div>
+
+          {marcas.length > 0 && (
+            <ul className="vc-perf-sellos">
+              {marcas.map((s) => (
+                <li
+                  key={s.label}
+                  className={
+                    'vc-perf-sello' +
+                    (s.destacado ? ' vc-perf-sello--tinta' : '') +
+                    (s.pionero ? ' vc-perf-sello--pionero' : '')
+                  }
+                >
+                  {s.icono && <Icon name={s.icono} size={13} />}
+                  {s.label}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        {extra}
+      </div>
+
+      {acciones && <div className="vc-perf-portada__acciones">{acciones}</div>}
     </header>
   )
 }
 
-/* ── Verificación ────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   4 · LA CINTA DE PROGRESO
+   La barra plana no decia nada: "68%" no es una meta. La cinta muestra
+   las cuatro paradas del recorrido y donde estas parado. Los puntos y
+   los que faltan van arriba, en cifra tabular, para que se lean como un
+   monto real y no como un marcador de videojuego.
 
-// Aviso del estado de verificación. No se dibuja si ya está
-// aprobada: en ese caso alcanza con el chip "Verificado" del
-// encabezado. Es la misma oferta que la pantalla de "Felicidades,
-// ya eres parte de VINCCO" del registro, para quien la pospuso.
-//
-// El banner ofrece completar el expediente KYC (Ley 977) en el
-// wizard de 4 pasos de VerificacionKYC: a diferencia del RUC solo,
-// ese expediente aplica a los tres roles. Quien ya lo envió ve el
-// estado "en revisión" acá mismo.
+   El arco dorado solo funciona sobre fondo oscuro: sobre pista clara da
+   1.60:1. Por eso la cinta vive en la portada y en ningun otro lado.
+   ══════════════════════════════════════════════════════════════════════ */
+
+export function CintaProgreso({
+  puntos = 0,
+  progreso = 0,
+  faltan = 0,
+  nivel,
+  siguiente,
+  niveles = [],
+}) {
+  const [ancho, setAncho] = useState(0)
+  const [subio, setSubio] = useState(false)
+  const nivelPrevio = useRef(nivel?.nivel)
+
+  // Al entrar, la cinta se llena desde cero: el gesto cuenta la historia
+  // ("llegaste hasta acá"), no solo el estado final.
+  useEffect(() => {
+    const t = requestAnimationFrame(() => setAncho(progreso))
+    return () => cancelAnimationFrame(t)
+  }, [progreso])
+
+  // Subida de nivel: confeti ambar, corto y una sola vez.
+  useEffect(() => {
+    if (nivelPrevio.current && nivel?.nivel && nivelPrevio.current !== nivel.nivel) {
+      setSubio(true)
+      const t = setTimeout(() => setSubio(false), 1100)
+      return () => clearTimeout(t)
+    }
+    nivelPrevio.current = nivel?.nivel
+  }, [nivel])
+
+  const indiceActual = niveles.findIndex((n) => n.nivel === nivel?.nivel)
+
+  return (
+    <div className="vc-perf-cinta" data-subio={subio ? 'true' : undefined}>
+      {subio && (
+        <span className="vc-perf-cinta__confeti" aria-hidden="true">
+          {Array.from({ length: 14 }).map((_, i) => (
+            <i
+              key={i}
+              style={{
+                left: `${6 + i * 6.6}%`,
+                '--d': `${i * 45}ms`,
+                '--c': i % 3 === 0 ? '#fece90' : i % 3 === 1 ? '#fea02f' : '#de8b27',
+              }}
+            />
+          ))}
+        </span>
+      )}
+
+      <div className="vc-perf-cinta__top">
+        <span className="vc-perf-cinta__puntos">
+          <span className="vc-perf-cifra">{puntos}</span>
+          <span className="vc-perf-cinta__unidad">puntos</span>
+        </span>
+
+        <span className="vc-perf-cinta__falta">
+          {siguiente ? (
+            <>Te faltan <strong>{faltan}</strong> para {siguiente.nivel}</>
+          ) : (
+            <>Llegaste al nivel máximo. Seguí sumando para mantenerlo.</>
+          )}
+        </span>
+      </div>
+
+      <div
+        className="vc-perf-cinta__pista"
+        role="progressbar"
+        aria-valuenow={Math.round(progreso)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={
+          siguiente
+            ? `${Math.round(progreso)} por ciento del camino a nivel ${siguiente.nivel}`
+            : 'Nivel máximo alcanzado'
+        }
+      >
+        <span className="vc-perf-cinta__relleno" style={{ width: `${ancho}%` }} />
+      </div>
+
+      {niveles.length > 0 && (
+        <ul className="vc-perf-cinta__hitos">
+          {niveles.map((n, i) => (
+            <li
+              key={n.nivel}
+              className={
+                'vc-perf-cinta__hito' +
+                (i < indiceActual ? ' vc-perf-cinta__hito--hecho' : '') +
+                (i === indiceActual ? ' vc-perf-cinta__hito--actual' : '')
+              }
+            >
+              {n.nivel}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   5 · VERIFICACIÓN
+   Igual que antes en comportamiento: no se dibuja si ya esta aprobada.
+   ══════════════════════════════════════════════════════════════════════ */
+
 export function VerificacionBanner({ rol, estado, texto }) {
   const abrirKYC = useStore((s) => s.abrirKYC)
   const marcarVerificadoDemo = useStore((s) => s.marcarVerificadoDemo)
@@ -233,104 +396,180 @@ export function VerificacionBanner({ rol, estado, texto }) {
   const pendiente = estado === 'pendiente'
 
   return (
-    <div className={`pf-verif ${pendiente ? 'pf-verif--pendiente' : ''}`}>
-      <span className="pf-verif-icono" aria-hidden="true">
+    <div className={`vc-perf-verif ${pendiente ? 'vc-perf-verif--pendiente' : ''}`}>
+      <span className="vc-perf-verif__icono" aria-hidden="true">
         <Icon name={pendiente ? 'help-circle' : 'insignia-verificado'} size={18} />
       </span>
-      <div className="pf-verif-texto">
-        <strong>{pendiente ? 'Tu verificación está en revisión' : 'Todavía no solicitaste la verificación'}</strong>
+
+      <div className="vc-perf-verif__texto">
+        <strong>
+          {pendiente ? 'Tu verificación está en revisión' : 'Todavía no solicitaste la verificación'}
+        </strong>
         <p>
           {pendiente
             ? 'El equipo de Vincco la está revisando. Te llega la confirmación a tu correo electrónico apenas quede aprobada.'
             : texto}
         </p>
       </div>
-      {!pendiente && (
+
+      <div className="vc-perf-verif__acciones">
+        {!pendiente && (
+          <button
+            type="button"
+            className="vc-perf-btn vc-perf-btn--solido"
+            onClick={() => abrirKYC(rol)}
+          >
+            Solicitar verificación
+          </button>
+        )}
+        {/* Sin backend no hay equipo real que apruebe la solicitud: este
+            boton simula esa aprobacion para seguir probando la cuenta ya
+            verificada, sin tocar localStorage a mano. */}
         <button
           type="button"
-          className="pf-btn pf-btn--linea pf-verif-btn"
-          onClick={() => abrirKYC(rol)}
+          className="vc-perf-btn vc-perf-btn--linea"
+          onClick={() => marcarVerificadoDemo(rol)}
+          title="Solo para pruebas: aprueba la verificación sin revisión real"
         >
-          Solicitar verificación
+          Marcar verificado (demo)
         </button>
-      )}
-      {/* Sin backend no hay equipo real que apruebe la solicitud: este
-          botón simula esa aprobación para seguir probando la cuenta
-          ya verificada, sin tocar localStorage a mano. */}
-      <button
-        type="button"
-        className="pf-btn pf-btn--linea pf-verif-btn"
-        onClick={() => marcarVerificadoDemo(rol)}
-        title="Solo para pruebas: aprueba la verificación sin revisión real"
-      >
-        Marcar verificado (demo)
-      </button>
+      </div>
     </div>
   )
 }
 
-/* ── Secciones ───────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   6 · SECCIÓN (la hoja de papel)
+   ══════════════════════════════════════════════════════════════════════ */
 
 export function Seccion({ titulo, descripcion, accion, children, className = '' }) {
   return (
-    <section className={`pf-seccion ${className}`}>
-      <div className="pf-seccion-head">
+    <section className={`vc-perf-hoja ${className}`}>
+      <div className="vc-perf-hoja__head">
         <div>
-          <h2>{titulo}</h2>
-          {descripcion && <p>{descripcion}</p>}
+          <h2 className="vc-perf-hoja__titulo">{titulo}</h2>
+          {descripcion && <p className="vc-perf-hoja__desc">{descripcion}</p>}
         </div>
-        {accion}
+        {accion && <div className="vc-perf-hoja__acciones">{accion}</div>}
       </div>
       {children}
     </section>
   )
 }
 
-/* ── Metricas ────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   7 · RECIBOS
+   Cuatro cajas iguales obligan a leer cuatro veces y no dicen que es lo
+   importante. Dos recibos si: cada uno tiene UN monto heroe y un dato de
+   apoyo debajo de la linea de corte.
 
-// Una metrica puede llevar "enlace": ahi la tarjeta suma un atajo al
-// final (por ejemplo "Ver favoritos" -> /favoritos, la misma ruta que
-// usa la barra inferior del home de clientes).
-export function Metricas({ items }) {
+   El monto en cordobas queda con el mismo peso visual que los puntos,
+   porque para el usuario nicaraguense el ahorro real ES el valor.
+
+   Sobre la moneda: el proyecto ya decidio (utils/moneda.js) escribir
+   "cordobas" con todas sus letras en los montos destacados, porque "C$"
+   se lee como dolar canadiense fuera de Nicaragua y los traductores del
+   navegador lo convierten. Aca se respeta esa decision: el simbolo queda
+   para los precios cortos en linea.
+   ══════════════════════════════════════════════════════════════════════ */
+
+function FilaApoyo({ m }) {
   return (
-    <ul className="pf-metricas">
-      {items.map((m) => (
-        <li key={m.id} className={`pf-metrica ${m.enlace ? 'pf-metrica--enlazada' : ''}`}>
-          <span className="pf-metrica-icono">
-            <Icon name={m.icono} size={17} />
-          </span>
-          <strong className="pf-metrica-valor">
-            {m.valor}
-            {/* La unidad va aparte y mas chica: el numero se lee grande
-                y la moneda queda escrita con todas sus letras. */}
-            {m.unidad && <span className="pf-metrica-unidad">{m.unidad}</span>}
-          </strong>
-          <span className="pf-metrica-label">{m.label}</span>
-          <span className="pf-metrica-detalle">{m.detalle}</span>
-
-          {m.enlace && (
-            <Link to={m.enlace} className="pf-metrica-enlace">
-              {m.enlaceLabel || 'Ver más'}
-              <Icon name="chevron-right" size={13} />
-            </Link>
-          )}
-        </li>
-      ))}
-    </ul>
+    <div className="vc-perf-apoyo">
+      <span className="vc-perf-cifra">{m.valor}</span>
+      <span className="vc-perf-apoyo__texto">
+        <span className="vc-perf-apoyo__label">
+          {m.unidad ? `${m.unidad} · ${m.label}` : m.label}
+        </span>
+        {m.detalle && <span className="vc-perf-apoyo__detalle">{m.detalle}</span>}
+      </span>
+      {m.enlace && (
+        <Link to={m.enlace} className="vc-perf-apoyo__enlace">
+          {m.enlaceLabel || 'Ver más'}
+          <Icon name="chevron-right" size={13} />
+        </Link>
+      )}
+    </div>
   )
 }
 
-/* ── Privacidad de los datos ─────────────────────────────── */
+export function Recibos({ items = [], grupos }) {
+  const porId = {}
+  items.forEach((m) => { porId[m.id] = m })
 
-// Clave donde se recuerda la preferencia. Si el usuario decide dejar
-// sus datos ocultos, la proxima vez que entre al perfil siguen ocultos.
+  // Sin configuracion de grupos, se parte al medio. Asi el componente
+  // sigue funcionando aunque le pasen una lista suelta.
+  const definicion = grupos && grupos.length
+    ? grupos
+    : [
+        { titulo: 'Tu movimiento', ids: items.slice(0, 2).map((m) => m.id) },
+        { titulo: 'Tu recompensa', ids: items.slice(2).map((m) => m.id) },
+      ]
+
+  return (
+    <div className="vc-perf-recibos">
+      {definicion.map((g) => {
+        const suyos = (g.ids || []).map((id) => porId[id]).filter(Boolean)
+        if (!suyos.length) return null
+        const [heroe, ...resto] = suyos
+
+        return (
+          <div className="vc-perf-recibo" key={g.titulo}>
+            <div className="vc-perf-recibo__hoja">
+              <p className="vc-perf-etiqueta vc-perf-recibo__titulo">{g.titulo}</p>
+
+              <span className="vc-perf-monto">
+                <span className="vc-perf-cifra">{heroe.valor}</span>
+                <span className="vc-perf-monto__unidad">
+                  {heroe.unidad ? `${heroe.unidad} · ${heroe.label}` : heroe.label}
+                </span>
+                {heroe.detalle && (
+                  <span className="vc-perf-monto__detalle">{heroe.detalle}</span>
+                )}
+              </span>
+
+              {heroe.enlace && (
+                <p className="vc-perf-recibo__atajo">
+                  <Link to={heroe.enlace} className="vc-perf-apoyo__enlace">
+                    {heroe.enlaceLabel || 'Ver más'}
+                    <Icon name="chevron-right" size={13} />
+                  </Link>
+                </p>
+              )}
+
+              {resto.length > 0 && <hr className="vc-perf-recibo__corte" />}
+              {resto.map((m) => <FilaApoyo key={m.id} m={m} />)}
+
+              {g.nota && (
+                <p className="vc-perf-recibo__nota">
+                  <Icon name={g.notaIcono || 'flame'} size={15} />
+                  {g.nota}
+                </p>
+              )}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// Alias por compatibilidad: si alguna pantalla vieja sigue llamando
+// <Metricas items={...} />, sigue funcionando y se ve como recibo.
+export function Metricas({ items }) {
+  return <Recibos items={items} />
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   8 · PRIVACIDAD (sin cambios de comportamiento)
+   ══════════════════════════════════════════════════════════════════════ */
+
 const CLAVE_PRIVACIDAD = 'vincco:perfil:datos-ocultos'
 
 function leerPreferencia(clave) {
   try {
     return window.localStorage.getItem(clave) === '1'
   } catch {
-    // Modo privado del navegador o storage bloqueado: por defecto visible
     return false
   }
 }
@@ -343,9 +582,9 @@ function guardarPreferencia(clave, oculto) {
   }
 }
 
-// Enmascara el valor dejando una pista para que el usuario reconozca
-// el dato sin exponerlo: el correo conserva la inicial y el dominio,
-// el telefono los ultimos dos digitos y el resto se cubre completo.
+// Enmascara dejando una pista para que el dueño reconozca el dato sin
+// exponerlo: el correo conserva inicial y dominio, el telefono los dos
+// ultimos digitos, el resto se cubre entero.
 function enmascarar(valor, tipo) {
   const texto = String(valor ?? '')
   if (!texto) return ''
@@ -364,25 +603,21 @@ function enmascarar(valor, tipo) {
   return '•'.repeat(Math.min(Math.max(texto.length, 6), 16))
 }
 
-/* ── Datos editables ─────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   9 · LA CREDENCIAL
+   Los datos personales dejan de ser un formulario y pasan a ser un
+   carnet: banda con guilloche arriba, folio, campos con su sello, banda
+   de seguridad abajo. Editar sigue siendo el mismo gesto de siempre.
+   ══════════════════════════════════════════════════════════════════════ */
 
-// Muestra los campos como ficha de lectura y, al tocar "Editar",
-// los cambia por inputs sin sacar al usuario de la pagina.
-// Con "ocultable" aparece el boton de ojo para esconder los datos
-// personales de un vistazo (util si le prestan el celular a alguien).
-//
-// El ojo puede funcionar de dos formas:
-//   - suelto: si no le pasan "ocultos", se maneja solo y recuerda la
-//     preferencia en localStorage
-//   - controlado: si le pasan "ocultos" y "onOcultos", la fuente de
-//     verdad es el store, y el mismo interruptor vive tambien en
-//     /config. Es una sola preferencia vista desde dos pantallas.
 export function BloqueDatos({
   campos,
   valores,
   onGuardar,
   titulo,
   descripcion,
+  documento = 'Credencial de comprador local',
+  folioCampo = 'cedula',
   ocultable = false,
   ocultos,
   onOcultos,
@@ -411,15 +646,8 @@ export function BloqueDatos({
     else setOcultosLocal((prev) => !prev)
   }
 
-  const abrir = () => {
-    setBorrador(valores)
-    setEditando(true)
-  }
-
-  const cancelar = () => {
-    setBorrador(valores)
-    setEditando(false)
-  }
+  const abrir = () => { setBorrador(valores); setEditando(true) }
+  const cancelar = () => { setBorrador(valores); setEditando(false) }
 
   const enviar = (e) => {
     e.preventDefault()
@@ -431,149 +659,335 @@ export function BloqueDatos({
 
   const cambiar = (id, valor) => setBorrador((prev) => ({ ...prev, [id]: valor }))
 
+  const folio = valores?.[folioCampo] || valores?.ruc || ''
+
   return (
-    <Seccion
-      titulo={titulo}
-      descripcion={descripcion}
-      accion={
-        !editando ? (
-          <div className="pf-head-acciones">
-            <AnimatePresence>
-              {guardado && (
-                <motion.span
-                  className="pf-guardado"
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <Icon name="check" size={14} /> Guardado
-                </motion.span>
-              )}
-            </AnimatePresence>
+    <section className="vc-perf-hoja vc-perf-credencial">
+      <div className="vc-perf-credencial__banda">
+        <span className="vc-perf-credencial__marca">
+          <span className="vc-perf-etiqueta">{documento}</span>
+          <span>Vincco · Nueva Guinea</span>
+        </span>
 
-            {ocultable && (
-              <button
-                type="button"
-                className={`pf-ojo ${enmascarado ? 'pf-ojo--activo' : ''}`}
-                onClick={alternarVisibilidad}
-                aria-pressed={enmascarado}
-                title={enmascarado ? 'Mostrar mis datos' : 'Ocultar mis datos'}
-                aria-label={enmascarado ? 'Mostrar mis datos personales' : 'Ocultar mis datos personales'}
-              >
-                <Icon name={enmascarado ? 'eye-off' : 'eye'} size={16} />
-              </button>
-            )}
+        {ocultable && (
+          <button
+            type="button"
+            className={`vc-perf-ojo ${enmascarado ? 'vc-perf-ojo--activo' : ''}`}
+            onClick={alternarVisibilidad}
+            aria-pressed={enmascarado}
+            title={enmascarado ? 'Mostrar mis datos' : 'Ocultar mis datos'}
+            aria-label={enmascarado ? 'Mostrar mis datos personales' : 'Ocultar mis datos personales'}
+          >
+            <Icon name={enmascarado ? 'eye-off' : 'eye'} size={16} />
+          </button>
+        )}
+      </div>
 
-            <button type="button" className="pf-btn pf-btn--linea" onClick={abrir}>
-              <Icon name="edit-3" size={14} /> Editar
-            </button>
-          </div>
-        ) : null
-      }
-    >
-      <form className="pf-datos" onSubmit={enviar}>
-        <div className="pf-datos-grid">
-          {campos.map((campo) => (
-            <div
-              key={campo.id}
-              className={`pf-campo ${campo.ancho ? 'pf-campo--ancho' : ''}`}
-            >
-              <span className="pf-campo-label">
-                <Icon name={campo.icono} size={14} />
-                {campo.label}
-              </span>
-
-              {editando ? (
-                campo.tipo === 'textarea' ? (
-                  <textarea
-                    className="pf-input pf-textarea"
-                    value={borrador[campo.id] || ''}
-                    onChange={(e) => cambiar(campo.id, e.target.value)}
-                    rows={3}
-                  />
-                ) : (
-                  <input
-                    className="pf-input"
-                    type={campo.tipo}
-                    value={borrador[campo.id] || ''}
-                    onChange={(e) => cambiar(campo.id, e.target.value)}
-                  />
-                )
-              ) : (
-                <span
-                  className={`pf-campo-valor ${enmascarado && campo.privado ? 'pf-campo-valor--oculto' : ''}`}
-                >
-                  {valores[campo.id]
-                    ? (enmascarado && campo.privado
-                        ? enmascarar(valores[campo.id], campo.tipo)
-                        : valores[campo.id])
-                    : <em className="pf-vacio">Sin completar</em>}
-                </span>
-              )}
+      <div className="vc-perf-credencial__cuerpo">
+        {(titulo || descripcion) && (
+          <div className="vc-perf-hoja__head">
+            <div>
+              {titulo && <h2 className="vc-perf-hoja__titulo">{titulo}</h2>}
+              {descripcion && <p className="vc-perf-hoja__desc">{descripcion}</p>}
             </div>
-          ))}
-        </div>
+            <div className="vc-perf-hoja__acciones">
+              <AnimatePresence>
+                {guardado && (
+                  <motion.span
+                    className="vc-perf-guardado"
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <Icon name="check" size={14} /> Guardado
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        )}
 
-        {enmascarado && (
-          <p className="pf-privacidad-aviso">
-            <Icon name="shield" size={13} />
-            Tus datos están ocultos. Tocá el ojo para mostrarlos.
+        {folio && (
+          <p className="vc-perf-credencial__folio">
+            <Icon name="key" size={15} />
+            {enmascarado ? enmascarar(folio, 'text') : folio}
+            {valores?.miembroDesde && (
+              <small>
+                Miembro desde
+                <br />
+                {valores.miembroDesde}
+              </small>
+            )}
           </p>
         )}
 
-        {editando && (
-          <div className="pf-datos-acciones">
-            <button type="button" className="pf-btn pf-btn--fantasma" onClick={cancelar}>
-              Cancelar
-            </button>
-            <button type="submit" className="pf-btn pf-btn--solido">
-              Guardar cambios
-            </button>
+        <form onSubmit={enviar}>
+          <div className="vc-perf-campos">
+            {campos.map((campo) => (
+              <div
+                key={campo.id}
+                className={`vc-perf-campo ${campo.ancho ? 'vc-perf-campo--ancho' : ''}`}
+              >
+                <span className="vc-perf-campo__label">
+                  <span className="vc-perf-campo__placa" aria-hidden="true">
+                    <Icon name={campo.icono} size={13} />
+                  </span>
+                  {campo.label}
+                </span>
+
+                {editando ? (
+                  campo.tipo === 'textarea' ? (
+                    <textarea
+                      className="vc-perf-input vc-perf-textarea"
+                      value={borrador[campo.id] || ''}
+                      onChange={(e) => cambiar(campo.id, e.target.value)}
+                      rows={3}
+                    />
+                  ) : (
+                    <input
+                      className="vc-perf-input"
+                      type={campo.tipo}
+                      value={borrador[campo.id] || ''}
+                      onChange={(e) => cambiar(campo.id, e.target.value)}
+                    />
+                  )
+                ) : (
+                  <span
+                    className={
+                      'vc-perf-campo__valor' +
+                      (enmascarado && campo.privado ? ' vc-perf-campo__valor--oculto' : '')
+                    }
+                  >
+                    {valores[campo.id]
+                      ? (enmascarado && campo.privado
+                          ? enmascarar(valores[campo.id], campo.tipo)
+                          : valores[campo.id])
+                      : <em className="vc-perf-campo__vacio">Sin completar</em>}
+                  </span>
+                )}
+              </div>
+            ))}
           </div>
-        )}
-      </form>
-    </Seccion>
+
+          {enmascarado && (
+            <p className="vc-perf-privacidad">
+              <Icon name="shield" size={13} />
+              Tus datos están ocultos. Tocá el ojo para mostrarlos.
+            </p>
+          )}
+
+          {editando ? (
+            <div className="vc-perf-credencial__acciones">
+              <button type="button" className="vc-perf-btn vc-perf-btn--fantasma" onClick={cancelar}>
+                Cancelar
+              </button>
+              <button type="submit" className="vc-perf-btn vc-perf-btn--solido">
+                Guardar cambios
+              </button>
+            </div>
+          ) : (
+            <div className="vc-perf-credencial__pie">
+              <span className="vc-perf-credencial__banda-seg" aria-hidden="true" />
+              <button type="button" className="vc-perf-btn vc-perf-btn--linea" onClick={abrir}>
+                <Icon name="edit-3" size={14} /> Actualizar mi ficha
+              </button>
+            </div>
+          )}
+        </form>
+      </div>
+    </section>
   )
 }
 
-/* ── Insignias ───────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   10 · EL MURAL DE RECONOCIMIENTOS
+   Sellos de caucho, no badges de app de gimnasio. El desbloqueado va
+   entintado; el bloqueado es un sello VACÍO — contorno punteado — con el
+   reto que falta a la vista. Al tocarlo, estampa en falso: se hunde y
+   vuelve, que es exactamente lo que hace un sello sin tinta.
+   ══════════════════════════════════════════════════════════════════════ */
 
 export function Insignias({ items }) {
   return (
-    <ul className="pf-insignias">
+    <ul className="vc-perf-mural">
       {items.map((i) => (
-        <li key={i.id} className={`pf-insignia ${i.activa ? '' : 'pf-insignia--bloqueada'}`}>
-          <span className="pf-insignia-icono">
-            <Icon name={i.icono} size={16} />
+        <li
+          key={i.id}
+          className={`vc-perf-medalla ${i.activa ? 'vc-perf-medalla--activa' : 'vc-perf-medalla--bloqueada'}`}
+          tabIndex={0}
+        >
+          <span className="vc-perf-medalla__disco" aria-hidden="true">
+            <Icon name={i.icono} size={22} />
           </span>
-          <span className="pf-insignia-texto">
-            <strong>{i.label}</strong>
-            <span>{i.descripcion}</span>
-          </span>
-          {!i.activa && <Icon name="shield" size={14} className="pf-insignia-candado" />}
+
+          <span className="vc-perf-medalla__label">{i.label}</span>
+          <span className="vc-perf-medalla__desc">{i.descripcion}</span>
+
+          {i.activa ? (
+            <span className="vc-perf-medalla__fecha">
+              <Icon name="check" size={11} />
+              {i.fecha ? i.fecha : 'Sellada'}
+            </span>
+          ) : (
+            <span className="vc-perf-medalla__reto">Próximo reto</span>
+          )}
         </li>
       ))}
     </ul>
   )
 }
 
-/* ── Actividad ───────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   11 · EL PASAPORTE DE SELLOS
+   Los favoritos no son una lista: son las paginas selladas del
+   pasaporte. Cada una dice que parte de tus puntos sale de ahi — que es
+   el dato que la lista vieja no daba. El porcentaje se calcula de los
+   mismos datos, no hace falta un campo nuevo.
+   ══════════════════════════════════════════════════════════════════════ */
 
-export function Actividad({ items }) {
+export function Pasaporte({ items = [] }) {
+  const total = items.reduce((suma, f) => suma + soloNumero(f.puntos), 0) || 1
+
   return (
-    <ol className="pf-actividad">
-      {items.map((a) => (
-        <li key={a.id} className={`pf-act pf-act--${a.tono}`}>
-          <span className="pf-act-marca">
-            <Icon name={a.icono} size={14} />
-          </span>
-          <div className="pf-act-cuerpo">
-            <strong className="pf-act-titulo">{a.titulo}</strong>
-            <span className="pf-act-detalle">{a.detalle}</span>
-          </div>
-          <time className="pf-act-fecha">{a.fecha}</time>
-        </li>
-      ))}
-    </ol>
+    <ul className="vc-perf-pasaporte">
+      {items.map((f) => {
+        const parte = soloNumero(f.puntos)
+        const pct = Math.round((parte / total) * 100)
+
+        return (
+          <li key={f.id} className="vc-perf-pagina" style={{ '--pf-marca': f.color }}>
+            <span className="vc-perf-pagina__marca" aria-hidden="true">
+              <Icon name="store" size={18} />
+            </span>
+
+            <span className="vc-perf-pagina__cuerpo">
+              <strong className="vc-perf-pagina__nombre">{f.nombre}</strong>
+              <span className="vc-perf-pagina__cat">{f.categoria}</span>
+
+              <span className="vc-perf-pagina__pista">
+                <span className="vc-perf-pagina__relleno" style={{ width: `${pct}%` }} />
+              </span>
+              <span className="vc-perf-pagina__reparto">
+                {pct}% de tus puntos salen de acá
+              </span>
+            </span>
+
+            <span className="vc-perf-pagina__puntos">{f.puntos}</span>
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   12 · EL EXTRACTO
+   La actividad se lee como un estado de cuenta del barrio: sello de
+   fecha a la izquierda, movimiento al centro, hora a la derecha, y un
+   resumen del mes pegado arriba mientras se recorre.
+
+   Cada tipo tiene COLOR Y FORMA. Los tonos calidos de la paleta se
+   separan apenas 1.0-1.5:1 de luminancia entre si: como puntos iguales
+   se confunden, sobre todo el dorado y el naranja. Con circulo, cuadrado,
+   rombo, escudo, aro y triangulo se distinguen aunque no veas el tono, y
+   la leyenda lo repite en texto.
+   ══════════════════════════════════════════════════════════════════════ */
+
+// El tipo se DEDUCE del icono que ya trae cada movimiento: no hay que
+// agregarle un campo a los datos.
+const TIPO_POR_ICONO = {
+  gift: 'canje', ticket: 'canje', percent: 'canje', tag: 'canje',
+  'shopping-bag': 'compra', 'shopping-cart': 'compra', 'dollar-sign': 'compra',
+  wallet: 'compra', 'trending-up': 'compra', 'bar-chart-2': 'compra',
+  star: 'resena', 'message-circle': 'resena',
+  award: 'nivel', medal: 'nivel', crown: 'nivel', flame: 'nivel', zap: 'nivel',
+  heart: 'vinculo', store: 'vinculo', users: 'vinculo', handshake: 'vinculo',
+  truck: 'vinculo', 'check-circle': 'vinculo', 'file-text': 'vinculo',
+  mail: 'aviso', package: 'aviso', 'alert-triangle': 'aviso', bell: 'aviso',
+}
+const TIPO_POR_TONO = { positivo: 'nivel', neutro: 'compra', alerta: 'aviso' }
+
+const NOMBRE_TIPO = {
+  canje: 'Canje',
+  compra: 'Compra',
+  resena: 'Reseña',
+  nivel: 'Logro o nivel',
+  vinculo: 'Vínculo',
+  aviso: 'Pendiente',
+}
+
+function tipoDeMovimiento(a) {
+  return TIPO_POR_ICONO[a.icono] || TIPO_POR_TONO[a.tono] || 'compra'
+}
+
+// "Hoy, 10:24" -> { etiqueta: 'HOY', hora: '10:24' }
+// "29 jul, 09:15" -> { dia: '29', mes: 'JUL', hora: '09:15' }
+function sellarFecha(fecha) {
+  const [izq = '', hora = ''] = String(fecha || '').split(/,\s*/)
+  const m = izq.trim().match(/^(\d{1,2})\s+(\p{L}{3,})/u)
+  if (m) return { dia: m[1], mes: m[2].slice(0, 3).toUpperCase(), hora }
+  return { etiqueta: izq.trim().toUpperCase(), hora }
+}
+
+export function Actividad({ items = [], resumen, resumenIcono = 'calendar' }) {
+  const tipos = [...new Set(items.map(tipoDeMovimiento))]
+
+  return (
+    <div className="vc-perf-extracto">
+      {resumen && (
+        <p className="vc-perf-extracto__resumen">
+          <Icon name={resumenIcono} size={16} />
+          {resumen}
+        </p>
+      )}
+
+      <ol className="vc-perf-mov-lista">
+        {items.map((a) => {
+          const tipo = tipoDeMovimiento(a)
+          const sello = sellarFecha(a.fecha)
+
+          return (
+            <li key={a.id} className={`vc-perf-mov vc-perf-mov--${tipo}`}>
+              <span className="vc-perf-mov__fecha" aria-hidden="true">
+                {sello.dia ? (
+                  <>
+                    <span className="vc-perf-mov__dia">{sello.dia}</span>
+                    <span className="vc-perf-mov__mes">{sello.mes}</span>
+                  </>
+                ) : (
+                  <span className="vc-perf-mov__mes">{sello.etiqueta}</span>
+                )}
+              </span>
+
+              <span className="vc-perf-mov__cuerpo">
+                <span className="vc-perf-mov__linea">
+                  <span className="vc-perf-mov__marca" aria-hidden="true" />
+                  <strong className="vc-perf-mov__titulo">{a.titulo}</strong>
+                </span>
+                <span className="vc-perf-mov__detalle">{a.detalle}</span>
+                {/* El tipo y la fecha completa, para quien usa lector de
+                    pantalla: la forma y el color no le llegan. */}
+                <span className="vc-perf-oculto-visual">
+                  {NOMBRE_TIPO[tipo]} · {a.fecha}
+                </span>
+              </span>
+
+              <time className="vc-perf-mov__hora">{sello.hora}</time>
+            </li>
+          )
+        })}
+      </ol>
+
+      {tipos.length > 1 && (
+        <ul className="vc-perf-leyenda">
+          {tipos.map((t) => (
+            <li key={t} className={`vc-perf-mov--${t}`}>
+              <span className="vc-perf-mov__marca" aria-hidden="true" />
+              <span className="vc-perf-leyenda__texto">{NOMBRE_TIPO[t]}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   )
 }

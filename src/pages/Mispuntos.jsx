@@ -58,7 +58,7 @@ function RecompensaCard({ r, puntos }) {
             top: 12,
             right: 12,
             backgroundColor: C.orange,
-            color: '#fff',
+            color: '#ead9c7',
             fontSize: 9,
             fontWeight: 800,
             textTransform: 'uppercase',
@@ -80,7 +80,7 @@ function RecompensaCard({ r, puntos }) {
           placeItems: 'center',
           marginBottom: 16,
         }}>
-          <Icon name={r.emoji} size={22} style={{ color: disponible ? '#fff' : C.textMuted }} />
+          <Icon name={r.emoji} size={22} style={{ color: disponible ? '#ead9c7' : C.textMuted }} />
         </div>
 
         <h4 style={{
@@ -121,7 +121,7 @@ function RecompensaCard({ r, puntos }) {
           {disponible ? (
             <button style={{
               backgroundColor: C.orange,
-              color: '#fff',
+              color: '#ead9c7',
               border: 'none',
               borderRadius: 999,
               padding: '7px 18px',
@@ -220,7 +220,7 @@ function CarouselAnunciosNegocios() {
           flexShrink: 0,
           border: `2px solid ${n.color}40`,
         }}>
-          <Icon name={n.icono} size={32} style={{ color: '#fff' }} />
+          <Icon name={n.icono} size={32} style={{ color: '#ead9c7' }} />
         </div>
         <div style={{ flex: 1 }}>
           <div style={{
@@ -241,7 +241,7 @@ function CarouselAnunciosNegocios() {
             margin: '0 0 4px',
             fontSize: 18,
             fontWeight: 700,
-            color: '#ffffff',
+            color: '#ead9c7',
             fontFamily: "'Sora', 'Inter', sans-serif",
           }}>
             {n.nombre}
@@ -249,7 +249,7 @@ function CarouselAnunciosNegocios() {
           <p style={{
             margin: '0 0 10px',
             fontSize: 13,
-            color: 'rgba(255,255,255,0.7)',
+            color: 'rgba(234, 217, 199, 0.7)',
             lineHeight: 1.5,
           }}>
             {n.desc}
@@ -288,7 +288,7 @@ function CarouselAnunciosNegocios() {
               height: 8,
               borderRadius: 999,
               border: 'none',
-              background: i === actual ? C.orange : 'rgba(255,255,255,0.25)',
+              background: i === actual ? C.orange : 'rgba(234, 217, 199, 0.25)',
               cursor: 'pointer',
               transition: 'all 0.3s',
               padding: 0,
@@ -352,7 +352,7 @@ export default function MisPuntos() {
               fontFamily: "'Sora', 'Inter', sans-serif",
               fontSize: 22,
               fontWeight: 700,
-              color: '#ffffff',
+              color: '#ead9c7',
             }}>Mis Recompensas</h2>
           </div>
         </div>
@@ -519,7 +519,7 @@ export default function MisPuntos() {
                   placeItems: 'center',
                   margin: '0 auto 12px',
                 }}>
-                  <Icon name={c.icono} size={20} style={{ color: '#fff' }} />
+                  <Icon name={c.icono} size={20} style={{ color: '#ead9c7' }} />
                 </div>
                 <h4 style={{
                   margin: '0 0 4px',

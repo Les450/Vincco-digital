@@ -9,217 +9,25 @@ import PapeleriaPanel from '../components/panel/PapeleriaPanel'
 import { useCategoriasInventario } from '../data/categoriasInventario'
 import { esPromocion, getEtiquetaPublicacion, claveInventario } from '../data/inventario'
 import { moverAPapelera } from '../data/papelera'
+import AvisoSucursal from '../components/panel/AvisoSucursal'
 import './Panel.css'
+
+// El `|| []` dentro del selector creaba un array nuevo en cada lectura.
+// Zustand compara por referencia para decidir si redibuja, y como
+// [] !== [] siempre le daba distinto: este componente se redibujaba
+// ante cualquier cambio del store, aunque las sucursales no cambiaran.
+// Con una constante fija la referencia se mantiene.
+const SIN_SUCURSALES = []
 
 const TABS = [
   { id: 'publicaciones', label: 'Publicaciones', icon: 'megaphone' },
   { id: 'inventario', label: 'Inventario', icon: 'bar-chart-2' },
-  { id: 'proveedores', label: 'Proveedores', icon: 'truck' },
   { id: 'cotizaciones', label: 'Cotizaciones', icon: 'dollar-sign' },
   { id: 'resenas', label: 'Reseñas y Ranking', icon: 'star' },
   { id: 'Papeleria', label: 'Papelería', icon: 'trash-2' },
 ]
 
 const UNIDADES = ['unidad', 'kg', 'lb', 'litro', 'caja', 'paquete', 'metros']
-
-function ProveedoresSection() {
-  const negociosAsociados = useStore((s) => s.negociosAsociados)
-  const perfilProveedor = useStore((s) => s.perfiles.proveedor)
-  const estadoVerifProveedor = useStore((s) => s.estadosVerificacion.proveedor)
-
-  // Esta es una demo de una sola identidad: no hay un directorio de
-  // muchos proveedores reales, solo el que se usa para probar ese rol
-  // (Vincco Proveedor). Por eso, en cuanto exista alguna asociacion
-  // ya aceptada (sin importar el nombre de negocio con el que se pidio),
-  // se muestra una tarjeta con los datos reales de ese perfil.
-  const hayAsociacionAceptada = negociosAsociados.some((n) => n.estado === 'aceptada')
-  const lista = hayAsociacionAceptada
-    ? [{
-        id: 'proveedor-actual',
-        nombre: perfilProveedor.nombre,
-        descripcion: perfilProveedor.descripcion,
-        estado: estadoVerifProveedor === 'aprobada' ? 'Verificado' : 'Premium',
-        categorias: [perfilProveedor.categoria].filter(Boolean),
-        contacto: perfilProveedor.correo,
-        telefono: perfilProveedor.telefono,
-        ubicacion: perfilProveedor.cobertura,
-        productos: [],
-      }]
-    : []
-  const [favoritos, setFavoritos] = useState([])
-  const [selectedProveedor, setSelectedProveedor] = useState(null)
-  const [filtro, setFiltro] = useState('todos')
-  const [filtroCategoria, setFiltroCategoria] = useState('todas')
-  const [filtroUbicacion, setFiltroUbicacion] = useState('todas')
-
-  const toggleFav = (id) => {
-    setFavoritos((prev) =>
-      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
-    )
-  }
-
-  const categoriasDisponibles = [...new Set(lista.flatMap((p) => p.categorias))].sort()
-  const ubicacionesDisponibles = [...new Set(lista.map((p) => p.ubicacion))].sort()
-
-  const listaFiltrada = lista
-    .filter((p) => filtro !== 'favoritos' || favoritos.includes(p.id))
-    .filter((p) => filtroCategoria === 'todas' || p.categorias.includes(filtroCategoria))
-    .filter((p) => filtroUbicacion === 'todas' || p.ubicacion === filtroUbicacion)
-
-  return (
-    <div className="panel-seccion">
-      <div className="panel-seccion-header">
-        <div>
-          <h2 className="panel-seccion-titulo">Proveedores</h2>
-          <p className="panel-seccion-desc">Encuentra y administra tus proveedores</p>
-        </div>
-      </div>
-
-      <div className="panel-acciones-barra">
-        <button className="panel-btn panel-btn-primary" onClick={() => setFiltro('todos')}>
-          <Icon name="search" size={16} /> Buscar nuevos proveedores
-        </button>
-        <button className="panel-btn panel-btn-outline" onClick={() => setFiltro('todos')}>
-          <Icon name="map-pin" size={16} /> Localizar
-        </button>
-        <button
-          className={`panel-btn ${filtro === 'favoritos' ? 'panel-btn-primary' : 'panel-btn-outline'}`}
-          onClick={() => setFiltro(filtro === 'favoritos' ? 'todos' : 'favoritos')}
-        >
-          <Icon name="star" filled size={16} /> Favoritos {favoritos.length > 0 && `(${favoritos.length})`}
-        </button>
-      </div>
-
-      <div className="panel-filtros-fila">
-        <label className="panel-filtro">
-          <span className="panel-filtro-etiqueta">Categoría</span>
-          <select
-            className="panel-form-select"
-            value={filtroCategoria}
-            onChange={(e) => setFiltroCategoria(e.target.value)}
-          >
-            <option value="todas">Todas las categorías</option>
-            {categoriasDisponibles.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
-        </label>
-        <label className="panel-filtro">
-          <span className="panel-filtro-etiqueta">Ubicación</span>
-          <select
-            className="panel-form-select"
-            value={filtroUbicacion}
-            onChange={(e) => setFiltroUbicacion(e.target.value)}
-          >
-            <option value="todas">Todas las ubicaciones</option>
-            {ubicacionesDisponibles.map((ubic) => (
-              <option key={ubic} value={ubic}>{ubic}</option>
-            ))}
-          </select>
-        </label>
-        {(filtroCategoria !== 'todas' || filtroUbicacion !== 'todas') && (
-          <button
-            className="panel-btn panel-btn-outline"
-            onClick={() => { setFiltroCategoria('todas'); setFiltroUbicacion('todas') }}
-          >
-            Limpiar filtros
-          </button>
-        )}
-      </div>
-
-      {listaFiltrada.length === 0 ? (
-        <div className="panel-vacio">
-          <div className="panel-vacio-icono"><Icon name="package" size={32} /></div>
-          <p>{filtro === 'favoritos' ? 'No tienes proveedores favoritos.' : 'Todavía no tenés proveedores asociados. Cuando aceptes una solicitud de asociación desde Avisos, va a aparecer acá.'}</p>
-        </div>
-      ) : (
-        <div className="panel-lista">
-          {listaFiltrada.map((prov) => (
-            <div key={prov.id} className="panel-proveedor-card">
-              <div className="panel-proveedor-icono">
-                <Icon name={prov.categoria === 'alimentos' ? 'package' : 'box'} size={22} />
-              </div>
-              <div className="panel-proveedor-info">
-                <h3 className="panel-proveedor-nombre">{prov.nombre}</h3>
-                <p className="panel-proveedor-detalle">
-                  {prov.descripcion} ·{' '}
-                  <span className={prov.estado === 'Verificado' ? 'panel-verify' : 'panel-premium'}>
-                    {prov.estado}
-                  </span>
-                </p>
-              </div>
-              <button
-                className="panel-btn panel-btn-outline panel-proveedor-btn-info"
-                onClick={() => setSelectedProveedor(prov)}
-              >
-                Ver información
-              </button>
-              <button
-                className={`panel-proveedor-fav ${favoritos.includes(prov.id) ? 'panel-proveedor-fav--activo' : ''}`}
-                onClick={() => toggleFav(prov.id)}
-                title={favoritos.includes(prov.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-              >
-                <Icon name="star" filled={favoritos.includes(prov.id)} size={16} />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {selectedProveedor && (
-        <div className="panel-modal-overlay" onClick={() => setSelectedProveedor(null)}>
-          <div className="panel-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="panel-modal-header">
-              <h3 className="panel-modal-titulo">{selectedProveedor.nombre}</h3>
-              <button className="panel-modal-cerrar" onClick={() => setSelectedProveedor(null)}><Icon name="x" size={16} /></button>
-            </div>
-            <div className="panel-modal-body">
-              <p className="panel-modal-texto">
-                {selectedProveedor.descripcion}
-              </p>
-              <div>
-                <span className="panel-modal-info-label">Categorías</span>
-                <div className="panel-modal-productos">
-                  {selectedProveedor.categorias.map((cat) => (
-                    <span key={cat} className="panel-modal-producto-tag">{cat}</span>
-                  ))}
-                </div>
-              </div>
-              <div className="panel-modal-info-row">
-                <span className="panel-modal-info-label">Contacto</span>
-                <span className="panel-modal-info-value">{selectedProveedor.contacto}</span>
-              </div>
-              <div className="panel-modal-info-row">
-                <span className="panel-modal-info-label">Teléfono</span>
-                <span className="panel-modal-info-value">{selectedProveedor.telefono}</span>
-              </div>
-              <div className="panel-modal-info-row">
-                <span className="panel-modal-info-label">Ubicación</span>
-                <span className="panel-modal-info-value">{selectedProveedor.ubicacion}</span>
-              </div>
-              <div className="panel-modal-info-row">
-                <span className="panel-modal-info-label">Estado</span>
-                <span className={`panel-modal-info-value ${selectedProveedor.estado === 'Verificado' ? 'panel-verify' : 'panel-premium'}`}>
-                  {selectedProveedor.estado}
-                </span>
-              </div>
-              {selectedProveedor.productos.length > 0 && (
-                <div>
-                  <span className="panel-modal-info-label">Productos</span>
-                  <div className="panel-modal-productos">
-                    {selectedProveedor.productos.map((prod) => (
-                      <span key={prod} className="panel-modal-producto-tag">{prod}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
 
 function InventarioSection() {
   const sucursalId = useStore((s) => s.sucursalActiva[s.userType])
@@ -360,7 +168,7 @@ function InventarioSection() {
 
   const totalProductos = items.length
   const totalUnidades = items.reduce((s, i) => s + i.cantidad, 0)
-  const stockBajo = items.filter((i) => !esPromocion(i) && i.cantidad > 0 && i.cantidad <= i.stockMinimo).length
+  const stockBajo = items.filter((i) => i.stockMinimo > 0 && i.cantidad > 0 && i.cantidad <= i.stockMinimo).length
   const agotados = items.filter((i) => !esPromocion(i) && i.cantidad === 0).length
 
   return (
@@ -607,6 +415,12 @@ function InventarioSection() {
                   <span className="panel-modal-info-value">{detalleItem.cantidad} {detalleItem.unidad}(s)</span>
                 </div>
               )}
+              {esPromocion(detalleItem) && detalleItem.stockMinimo > 0 && (
+                <div className="panel-modal-info-row">
+                  <span className="panel-modal-info-label">Alerta de stock</span>
+                  <span className="panel-modal-info-value">{detalleItem.stockMinimo} {detalleItem.unidad}(s)</span>
+                </div>
+              )}
               {!esPromocion(detalleItem) && (
                 <>
                   <div className="panel-modal-info-row">
@@ -638,16 +452,16 @@ export default function PanelNegocio() {
   const [searchParams] = useSearchParams()
   const userType = useStore((s) => s.userType)
   const usuario = useStore((s) => s.usuario)
-  const sucursales = useStore((s) => s.sucursales[userType] || [])
+  const sucursales = useStore((s) => s.sucursales[userType] ?? SIN_SUCURSALES)
   const sucursalActivaId = useStore((s) => s.sucursalActiva[userType])
   const sucursal = sucursales.find((s) => s.id === sucursalActivaId) || sucursales[0]
   const [tabActiva, setTabActiva] = useState('publicaciones')
 
   const esNegocio = userType === 'negocio'
 
-  // Permite entrar directo a una seccion desde fuera (ej: el home
-  // lleva a ?tab=proveedores). Se respeta el valor de la URL la
-  // primera vez; despues el usuario navega como siempre con las tabs.
+  // Permite entrar directo a una seccion desde fuera. Se respeta el
+  // valor de la URL la primera vez; despues el usuario navega como
+  // siempre con las tabs.
   useEffect(() => {
     const tabDeUrl = searchParams.get('tab')
     if (tabDeUrl && TABS.some((t) => t.id === tabDeUrl)) {
@@ -688,14 +502,15 @@ export default function PanelNegocio() {
         ))}
       </nav>
 
+      <AvisoSucursal />
+
       <div className="panel-contenido">
         {tabActiva === 'publicaciones' && <PublicacionesPanel />}
-        {tabActiva === 'proveedores' && <ProveedoresSection />}
         {tabActiva === 'inventario' && <InventarioSection />}
         {tabActiva === 'resenas' && <ResenasPanel />}
         {tabActiva === 'cotizaciones' && <CotizacionesPanel />}
         {tabActiva === 'Papeleria' && <PapeleriaPanel />}
-        {tabActiva !== 'publicaciones' && tabActiva !== 'proveedores' && tabActiva !== 'inventario' && tabActiva !== 'resenas' && tabActiva !== 'cotizaciones' && tabActiva !== 'Papeleria' && (
+        {tabActiva !== 'publicaciones' && tabActiva !== 'inventario' && tabActiva !== 'resenas' && tabActiva !== 'cotizaciones' && tabActiva !== 'Papeleria' && (
           <div className="panel-seccion panel-placeholder">
             <h2 className="panel-seccion-titulo">
               {TABS.find((t) => t.id === tabActiva)?.label}

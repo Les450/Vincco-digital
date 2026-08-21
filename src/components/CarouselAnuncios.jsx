@@ -17,7 +17,7 @@ const contentStyle = {
 }
 
 const BLOBS = [
-  { size: 620, top: '-20%', left: '-14%', color: 'rgba(255,255,255,0.22)', duration: 13, delay: 0 },
+  { size: 620, top: '-20%', left: '-14%', color: 'rgba(234, 217, 199, 0.22)', duration: 13, delay: 0 },
   { size: 560, top: '10%', left: '52%', color: 'rgba(255,194,107,0.28)', duration: 15, delay: 2 },
   { size: 540, top: '50%', left: '6%', color: 'rgba(94,234,212,0.24)', duration: 14, delay: 4 },
 ]
@@ -116,7 +116,7 @@ export default function CarouselAnuncios({ slides }) {
                 borderRadius: '50%',
                 border: 'none',
                 cursor: 'pointer',
-                backgroundColor: i === current ? '#ffc26b' : 'rgba(255,255,255,0.25)',
+                backgroundColor: i === current ? '#ffc26b' : 'rgba(234, 217, 199, 0.25)',
                 padding: 0,
                 transition: 'background-color 0.3s',
               }}

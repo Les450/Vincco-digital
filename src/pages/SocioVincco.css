@@ -1,0 +1,665 @@
+/* ══════════════════════════════════════════════════════════
+   Socio Vincco — paleta oficial de esta pantalla.
+
+   Naranja marca #dd6600, dorado #fca02f, turquesa #007a7b,
+   azul profundo #003f5a, hueso #ebe5df. No son colores nuevos:
+   son los mismos que ya usa el resto de la app (el registro real,
+   el chat de Kiara), acá nada más quedan escritos como variables
+   propias de esta pantalla.
+
+   Las tarjetas siguen una referencia visual que mandó el dueño
+   (fondo amarillo/negro, sombra dura desplazada tipo "botón
+   físico"). Se tradujo así, siguiendo sus propias reglas de la
+   paleta:
+     - fondo de sección amarillo  -> hueso (ya lo era)
+     - tarjeta ambar (Negocio)    -> dorado de fondo, TODO el
+                                      texto en azul profundo
+                                      (dorado nunca lleva texto
+                                      encima, así que el texto va
+                                      en azul, no en dorado)
+     - tarjeta negra (Proveedor)  -> azul profundo de fondo, texto
+                                      claro, acentos turquesa
+     - sombras duras negras       -> nunca negro puro: azul
+                                      profundo en la tarjeta de
+                                      Negocio, turquesa oscuro en
+                                      la de Proveedor
+   ══════════════════════════════════════════════════════════ */
+
+.sv {
+  --sv-naranja: #dd6600;
+  --sv-naranja-oscuro: #c05900;
+  --sv-dorado: #fca02f;
+  --sv-turquesa: #007a7b;
+  --sv-turquesa-oscuro: #005c5e;
+  --sv-azul: #003f5a;
+  --sv-hueso: #ebe5df;
+
+  /* ── Fondo decorativo — variables ─────────────────────────
+     La referencia del dueño era negro con rayos cian; acá no va
+     ninguno de los dos ("no va ese color negro" fue textual).
+     Quedan como variables, arriba y comentadas, para poder
+     cambiarlas rápido si se pide otro tono sin rastrear todo el
+     CSS de las capas de abajo.
+
+     - base clara/oscura: el degradado radial de fondo, de un azul
+       un poco más claro (esquina superior izq.) hacia un azul más
+       profundo que el de marca (mismo tono, no negro)
+     - rayo: turquesa, el acento natural sobre azul profundo
+     - rayo-acento: naranja, solo en UNO de los cinco rayos y con
+       poca opacidad — un toque de vida, no un segundo color
+       dominante */
+  --sv-fondo-claro: #0e5a7d;
+  --sv-fondo-oscuro: #00263a;
+  --sv-fondo-rayo: var(--sv-turquesa);
+  --sv-fondo-rayo-acento: var(--sv-naranja);
+
+  position: relative;
+  overflow: hidden;
+  background: var(--sv-fondo-oscuro);
+  min-height: 100vh;
+  /* Antes 32px arriba: con eso más el aire del encabezado, la
+     primera tarjeta no se asomaba al cargar en celular. */
+  padding: 20px 20px 36px;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* ── Fondo decorativo ─────────────────────────────────────────
+   Capas superpuestas dentro de .sv (position:relative, overflow:
+   hidden más arriba), todas absolutas cubriendo el contenedor
+   entero. El contenido real (.sv-header, .sv-tarjetas) va con
+   z-index encima, en su propia regla más abajo. Es estático — la
+   referencia tampoco lo animaba, así que no hace falta guardia de
+   prefers-reduced-motion acá: no hay movimiento que pausar.
+   ══════════════════════════════════════════════════════════ */
+
+.sv-fondo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.sv-fondo > * {
+  position: absolute;
+  inset: 0;
+}
+
+/* Capa 1: el degradado radial de base. Se desvanece hacia la
+   esquina opuesta con una máscara — así no queda un círculo con
+   borde duro, se funde solo con --sv-fondo-oscuro (el fondo sólido
+   de .sv, que ya cubre todo por detrás). */
+.sv-fondo-base {
+  background: radial-gradient(100% 100% at 0% 0%, var(--sv-fondo-claro) 0%, var(--sv-fondo-oscuro) 100%);
+  -webkit-mask: radial-gradient(125% 100% at 0% 0%, #000 0%, rgba(0, 0, 0, 0.224) 88%, transparent 100%);
+  mask: radial-gradient(125% 100% at 0% 0%, #000 0%, rgba(0, 0, 0, 0.224) 88%, transparent 100%);
+}
+
+/* Capa 2: cinco "rayos" diagonales. Cada uno es el mismo degradado
+   vertical (color -> transparente) recortado por una máscara
+   distinta, que deja ver una sola franja angosta en una posición
+   distinta — la variedad de anchos y posiciones es lo que hace que
+   parezcan haces de luz irregulares en vez de una sola franja
+   repetida. El skewX los inclina a 45°; el inset negativo da
+   margen de sobra para que la inclinación no deje una esquina sin
+   cubrir. */
+.sv-fondo-rayo {
+  inset: -60% -30%;
+  background: linear-gradient(180deg, var(--sv-fondo-rayo) 0%, transparent 72%);
+  opacity: 0.2;
+  transform: skewX(45deg);
+}
+
+.sv-fondo-rayo--acento {
+  background: linear-gradient(180deg, var(--sv-fondo-rayo-acento) 0%, transparent 72%);
+  opacity: 0.14;
+}
+
+.sv-fondo-rayo--1 {
+  -webkit-mask: linear-gradient(90deg, transparent 6%, #000 6%, #000 9%, transparent 9%);
+  mask: linear-gradient(90deg, transparent 6%, #000 6%, #000 9%, transparent 9%);
+}
+
+.sv-fondo-rayo--2 {
+  -webkit-mask: linear-gradient(90deg, transparent 21%, #000 21%, #000 30%, transparent 30%);
+  mask: linear-gradient(90deg, transparent 21%, #000 21%, #000 30%, transparent 30%);
+}
+
+.sv-fondo-rayo--3 {
+  -webkit-mask: linear-gradient(90deg, transparent 41%, #000 41%, #000 44%, transparent 44%);
+  mask: linear-gradient(90deg, transparent 41%, #000 41%, #000 44%, transparent 44%);
+}
+
+.sv-fondo-rayo--4 {
+  -webkit-mask: linear-gradient(90deg, transparent 57%, #000 57%, #000 68%, transparent 68%);
+  mask: linear-gradient(90deg, transparent 57%, #000 57%, #000 68%, transparent 68%);
+}
+
+.sv-fondo-rayo--5 {
+  -webkit-mask: linear-gradient(90deg, transparent 81%, #000 81%, #000 85%, transparent 85%);
+  mask: linear-gradient(90deg, transparent 81%, #000 81%, #000 85%, transparent 85%);
+}
+
+/* Capa 3: grano sutil. Nada de CDN externo (el de la referencia
+   apuntaba a framerusercontent.com): se genera con un feTurbulence
+   embebido como SVG en data-URI, así no depende de que un servidor
+   de un tercero siga respondiendo. */
+.sv-fondo-grano {
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 150px 150px;
+}
+
+/* Capa 4: patrón de puntos */
+.sv-fondo-puntos {
+  opacity: 0.2;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.5) 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+/* Capa 5: realce radial suave, casi imperceptible */
+.sv-fondo-realce {
+  background: radial-gradient(60% 45% at 50% 0%, rgba(255, 255, 255, 0.07), transparent 72%);
+}
+
+/* Celular: menos capas de rayo por rendimiento (son varias capas a
+   pantalla completa, y el público de Vincco usa celulares de gama
+   baja). Con 3 de los 5 ya se lee el mismo efecto de haces de luz. */
+@media (max-width: 480px) {
+  .sv-fondo-rayo--2,
+  .sv-fondo-rayo--4 {
+    display: none;
+  }
+}
+
+/* ── Botón volver ─────────────────────────────────────────────
+   Ancla fija arriba-izquierda de TODA la pantalla (no del bloque
+   del encabezado, que está centrado): position:absolute contra
+   .sv, que ya es el padre posicionado. top:0/left:0 caen justo en
+   el borde del padding de .sv, a la misma altura que el logo.
+   44px de alto para el área de toque, aunque visualmente el texto
+   sea chico. navigate(-1) en el componente: vuelve a donde estaba
+   el usuario (llegó acá desde el menú hamburguesa).
+
+   Es el mismo sistema de botón secundario que "Anterior" en
+   Register.css (.rk-btn--outline / .rk-btn--ghost): outline
+   translúcido, nunca relleno sólido, para no competir con el CTA
+   "Registrarme". Radio de 12px, borde de 1.5px, mismo ritmo de
+   transición y el mismo gesto de "hundirse" al presionar
+   (scale(0.97), igual que .rk-btn:active) — para que se lean como
+   parte de un mismo sistema aunque viven en archivos separados
+   (cada pantalla tiene su propio prefijo de CSS, por convención
+   del proyecto). La diferencia es de color, no de forma: acá el
+   texto/borde van en blanco en vez del crema que usa Register,
+   porque esta pantalla ya venía usando blanco para su propio texto
+   claro (el título, el subtítulo) — usar el crema de Register acá
+   hubiera sido MÁS inconsistente, no menos, al lado de esos otros
+   textos. Contraste medido en el navegador: ver el resumen de la
+   entrega. ───────────────────────────────────────────────────── */
+
+.sv-volver {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 15;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 14px 0 10px;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  border-radius: 12px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+  cursor: pointer;
+  transition: background 0.25s, border-color 0.25s, color 0.25s, transform 0.2s;
+}
+
+.sv-volver:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.7);
+  color: #ffffff;
+}
+
+.sv-volver:active {
+  transform: scale(0.97);
+}
+
+.sv-volver:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* ── Encabezado ──────────────────────────────────────────── */
+
+.sv-header {
+  position: relative;
+  z-index: 10;
+  max-width: 480px;
+  /* Antes 28px: el pedido fue compactar el bloque del encabezado
+     contra las tarjetas, sobre todo en celular. */
+  margin: 0 auto 16px;
+  text-align: center;
+}
+
+/* Logo oficial (vincco-logo.png, el mismo cuadrado V + "VINCCO"
+   que usa Register.jsx al entrar al registro real). Ya viene en
+   tonos hueso/dorado — se lee solo sobre el fondo oscuro, así que
+   no hace falta el cuadrado con fondo tintado que llevaba el
+   ícono de relleno. */
+.sv-header-logo {
+  display: block;
+  height: 44px;
+  width: auto;
+  margin: 0 auto 10px;
+}
+
+.sv-titulo {
+  margin: 0 0 6px;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  /* Con el fondo hueso esto era azul profundo; sobre el fondo
+     oscuro nuevo, azul sobre azul sería ilegible. Blanco mide
+     15.4:1 sobre --sv-fondo-oscuro — de sobra. */
+  color: #ffffff;
+}
+
+.sv-subtitulo {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.55;
+  /* Blanco con opacidad en vez de un gris nuevo: 0.82 mide 8.7:1
+     sobre --sv-fondo-oscuro, bien por encima del mínimo (4.5:1). */
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* App.css fuerza min-height: calc(100vh - nav) !important a TODO
+   hijo directo de .page-shell (".page-shell > *"), pensado para
+   pantallas de una sola sección. Acá .sv-header, .sv-tarjetas y
+   .sv-volver son hijos directos más, y ese min-height los estiraba
+   a casi toda la altura de pantalla aunque su contenido fuera
+   chico — en .sv-volver eso además volvía su área de clic un
+   rectángulo invisible de toda la pantalla, tapando parte de las
+   tarjetas. ".sv > X" pesa más que ".page-shell > *" (dos clases
+   contra una), así que gana sin tocar la regla global. */
+.sv > .sv-header,
+.sv > .sv-tarjetas,
+.sv > .sv-volver {
+  min-height: auto !important;
+}
+
+/* ── Contenedor de tarjetas ──────────────────────────────── */
+
+.sv-tarjetas {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ── Tarjeta ─────────────────────────────────────────────────
+   Ya no es un <button> clickeable: el dueño pidió que solo el
+   botón "Registrarme" navegue, así que esto pasó a ser un div sin
+   cursor:pointer ni foco propio (ver el componente en el .jsx).
+   Tampoco lleva más el hover de elevación que tenía antes: en un
+   contenedor no interactivo, ese "se levanta al pasar el mouse" es
+   justo la señal que sugiere que se puede tocar — se sacó junto
+   con el resto del comportamiento de click, no solo el handler. El
+   único hover/active que queda vive en .sv-btn más abajo. ────── */
+
+.sv-tarjeta {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  padding: 34px 30px;
+  border: none;
+  border-radius: 30px;
+  text-align: left;
+  font-family: inherit;
+}
+
+/* Tarjeta de Negocio: fondo dorado, sombra suave (es la tarjeta
+   "clara") */
+.sv-tarjeta--negocio {
+  background: var(--sv-dorado);
+  box-shadow: 0 10px 30px rgba(0, 63, 90, 0.16);
+}
+
+/* Tarjeta de Proveedor: fondo azul profundo, sombra marcada (es
+   la tarjeta "oscura"). Con el fondo de la pantalla ahora TAMBIÉN
+   azul, esta tarjeta corría el riesgo de perderse contra el fondo
+   — una sombra oscura no ayuda cuando lo de alrededor ya es oscuro.
+   Se despega con un borde turquesa sutil (el acento de "proveedor"
+   en la paleta) en vez de tocarle el color de marca. */
+.sv-tarjeta--proveedor {
+  background: var(--sv-azul);
+  border: 1.5px solid rgba(0, 122, 123, 0.55);
+  box-shadow: 0 18px 44px rgba(0, 20, 32, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* ── Revelado escalonado: cada hijo directo de la tarjeta entra
+   con su propio retraso cuando .sv-tarjeta--visible se prende
+   (IntersectionObserver en el componente). Sin dependencias
+   nuevas: todo el "timeline" es CSS puro. ───────────────────── */
+
+.sv-tarjeta > * {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.sv-tarjeta--visible > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sv-tarjeta > *:nth-child(1) { transition-delay: 0ms; }
+.sv-tarjeta > *:nth-child(2) { transition-delay: 70ms; }
+.sv-tarjeta > *:nth-child(3) { transition-delay: 140ms; }
+.sv-tarjeta > *:nth-child(4) { transition-delay: 210ms; }
+.sv-tarjeta > *:nth-child(5) { transition-delay: 260ms; }
+.sv-tarjeta > *:nth-child(6) { transition-delay: 320ms; }
+.sv-tarjeta > *:nth-child(7) { transition-delay: 400ms; }
+
+/* ── Badge ───────────────────────────────────────────────── */
+
+.sv-badge {
+  align-self: flex-start;
+  padding: 5px 13px;
+  margin-bottom: 18px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.sv-badge--negocio {
+  background: var(--sv-azul);
+  /* Dorado nunca va como color de texto (regla de la paleta), ni
+     siquiera en un badge chico: blanco sobre azul. */
+  color: #ffffff;
+}
+
+.sv-badge--proveedor {
+  background: var(--sv-turquesa);
+  color: #ffffff;
+}
+
+/* ── Encabezado: ícono + título en una línea ────────────────*/
+
+.sv-tarjeta-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+/* El naranja es "para íconos y gráficos grandes" en la paleta:
+   el ícono grande del encabezado lo usa, el resto de la tarjeta
+   (título, texto, filas) se queda en azul para no mezclar. */
+.sv-tarjeta--negocio .sv-tarjeta-icono {
+  color: var(--sv-naranja);
+}
+
+.sv-tarjeta--proveedor .sv-tarjeta-icono {
+  color: var(--sv-turquesa);
+}
+
+.sv-tarjeta-titulo {
+  margin: 0;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 23px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.sv-tarjeta--negocio .sv-tarjeta-titulo {
+  color: var(--sv-azul);
+}
+
+.sv-tarjeta--proveedor .sv-tarjeta-titulo {
+  color: #ffffff;
+}
+
+/* ── Descripción ─────────────────────────────────────────── */
+
+.sv-tarjeta-desc {
+  margin: 0 0 22px;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.sv-tarjeta--negocio .sv-tarjeta-desc {
+  /* 0.82 medía 4.2:1 sobre el dorado, por debajo del mínimo AA
+     (4.5:1). Con 0.88 queda en ~4.7:1: sigue leyéndose como texto
+     secundario, pero ya no "lavado". */
+  color: rgba(0, 63, 90, 0.88);
+}
+
+.sv-tarjeta--proveedor .sv-tarjeta-desc {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+/* ── Separador ───────────────────────────────────────────── */
+
+.sv-divisor {
+  display: block;
+  height: 1px;
+  margin: 0 0 18px;
+}
+
+.sv-tarjeta--negocio .sv-divisor {
+  background: rgba(0, 63, 90, 0.22);
+}
+
+.sv-tarjeta--proveedor .sv-divisor {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ── Título de la lista de beneficios ────────────────────────
+   Reemplaza al bloque grande "Gratis" + línea de apoyo. Ya no es
+   un dato destacado (precio/estadística), es el encabezado de la
+   lista de abajo — por eso el tamaño baja mucho: apenas un poco
+   más grande que las filas (13.5px), no el tamaño display que
+   tenía el número. La línea de apoyo ("para empezar a vender/
+   distribuir") se quitó entera: acompañaba específicamente al
+   "Gratis" y no tiene sentido propio junto a un título de sección,
+   ninguna de las dos frases sobrevive sin la otra. */
+.sv-filas-titulo {
+  margin: 0 0 12px;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.sv-tarjeta--negocio .sv-filas-titulo {
+  color: var(--sv-azul);
+}
+
+.sv-tarjeta--proveedor .sv-filas-titulo {
+  color: #ffffff;
+}
+
+/* ── Filas de beneficios ─────────────────────────────────────
+   Antes eran pares etiqueta+"Incluido" en una sola línea. Ahora
+   son 6 frases completas por tarjeta (algunas largas), así que el
+   patrón cambió a lista: ícono arriba-alineado + texto que envuelve
+   libremente, sin columna derecha. align-items: flex-start es lo
+   que evita que el ícono quede centrado entre dos renglones cuando
+   el texto envuelve. Gap y tamaño de fuente más ajustados que antes
+   porque ahora son el doble de filas — si no, la tarjeta se dispara
+   de alto en celular. ───────────────────────────────────────── */
+
+.sv-filas {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin-bottom: 22px;
+}
+
+.sv-fila {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+.sv-fila-check {
+  flex-shrink: 0;
+  /* Ajuste fino de 1px para que el ícono quede a la altura de la
+     primera línea del texto (su caja SVG es un poco más alta que
+     el alto-x de la letra). */
+  margin-top: 1px;
+}
+
+.sv-fila-texto {
+  font-weight: 500;
+}
+
+.sv-tarjeta--negocio .sv-fila-check {
+  color: var(--sv-azul);
+}
+
+.sv-tarjeta--negocio .sv-fila-texto {
+  color: var(--sv-azul);
+}
+
+.sv-tarjeta--proveedor .sv-fila-check {
+  color: var(--sv-turquesa);
+}
+
+.sv-tarjeta--proveedor .sv-fila-texto {
+  /* Mismo motivo que antes: turquesa sobre azul profundo falla
+     contraste como texto de párrafo, se queda solo en el ícono. */
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* ── Botón "físico": sombra dura desplazada, sin negro ──────
+   Al presionar se corre 3px en x/y hacia la sombra y la pierde,
+   como si el botón se hundiera. Mismo idioma visual que la
+   referencia, en los colores de Vincco. ───────────────────── */
+
+.sv-btn-envoltorio {
+  display: block;
+  width: 100%;
+  /* .sv-tarjeta ya es flex-column: esto empuja el botón al fondo
+     de la tarjeta sin tocar nada de lo que va arriba. En escritorio
+     el grid ya iguala el alto de las dos tarjetas (stretch por
+     defecto), así que con esto los dos "Registrarme" quedan a la
+     misma altura sin importar que la descripción o la lista de
+     beneficios ocupen distinta cantidad de líneas en cada una. En
+     celular (una columna, cada tarjeta mide lo que su propio
+     contenido pide) esto no genera hueco: no hay espacio extra que
+     repartir, así que se comporta igual que antes. */
+  margin-top: auto;
+}
+
+/* .sv-btn ahora es un <button> real (antes era un span decorativo
+   dentro de la tarjeta-botón grande) — appearance/font-family/
+   cursor pisan los estilos que el navegador le pone por defecto a
+   un <button>, que un span nunca tuvo. */
+.sv-btn {
+  display: block;
+  width: 100%;
+  height: 48px;
+  border-radius: 14px;
+  text-align: center;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 48px;
+  appearance: none;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease;
+}
+
+.sv-btn:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+.sv-btn--negocio {
+  border: 2px solid var(--sv-azul);
+  background: var(--sv-naranja);
+  color: #ffffff;
+  box-shadow: 5px 5px 0 var(--sv-azul);
+}
+
+.sv-btn--negocio:hover {
+  background: var(--sv-naranja-oscuro);
+}
+
+.sv-btn--negocio:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+.sv-btn--proveedor {
+  border: 2px solid var(--sv-turquesa-oscuro);
+  background: var(--sv-turquesa);
+  color: #ffffff;
+  box-shadow: 5px 5px 0 var(--sv-turquesa-oscuro);
+}
+
+.sv-btn--proveedor:hover {
+  background: #006869;
+}
+
+.sv-btn--proveedor:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+/* ── Tablet, laptop y escritorio ─────────────────────────── */
+
+@media (min-width: 481px) {
+  .sv {
+    /* Antes 56px: sigue el mismo recorte que en celular, con más
+       aire porque acá sí sobra pantalla. */
+    padding-top: 40px;
+  }
+
+  .sv-header {
+    margin-bottom: 26px;
+  }
+
+  .sv-header-logo {
+    height: 54px;
+    margin-bottom: 14px;
+  }
+
+  .sv-titulo {
+    font-size: 27px;
+  }
+}
+
+/* Recién en laptop hay lugar cómodo para dos tarjetas tan
+   completas una al lado de la otra sin apretarse. */
+@media (min-width: 1025px) {
+  .sv-tarjetas {
+    grid-template-columns: 1fr 1fr;
+    max-width: 900px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sv-tarjeta,
+  .sv-tarjeta > *,
+  .sv-btn {
+    transition: none;
+  }
+
+  .sv-tarjeta > * {
+    opacity: 1;
+    transform: none;
+  }
+}

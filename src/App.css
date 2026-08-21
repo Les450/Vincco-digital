@@ -437,6 +437,14 @@ body:not(.dark) .bottom-nav {
   transition: color 0.15s;
 }
 
+.side-nav-img-icon {
+  width: 19px;
+  height: 19px;
+  border-radius: 5px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .side-nav-item:hover .side-nav-icon {
   color: rgba(255, 255, 255, 0.85);
 }
@@ -1191,6 +1199,127 @@ body.vincco--alto-contraste .pf-metrica-enlace {
   }
 }
 
+/* ── Texto muy grande ────────────────────────────────────── */
+/* Segundo nivel del selector "Tamaño del texto" de /config.
+   Mismo criterio que texto-grande: crece lo relativo, los px fijos
+   no se tocan para no romper layouts. */
+body.vincco--texto-muy-grande {
+  font-size: 125%;
+}
+
+body.vincco--texto-muy-grande p,
+body.vincco--texto-muy-grande span,
+body.vincco--texto-muy-grande li,
+body.vincco--texto-muy-grande label,
+body.vincco--texto-muy-grande button,
+body.vincco--texto-muy-grande input,
+body.vincco--texto-muy-grande textarea {
+  font-size: 1.08em;
+  line-height: 1.6;
+}
+
+/* ── Reducir animaciones ─────────────────────────────────── */
+/* El ajuste manual del usuario: mismas reglas que la preferencia
+   del sistema de arriba, pero la decide dentro de Vincco quien
+   no sabe (o no puede) cambiar la de su teléfono. */
+body.vincco--sin-animaciones *,
+body.vincco--sin-animaciones *::before,
+body.vincco--sin-animaciones *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* ── Tema oscuro ─────────────────────────────────────────── */
+/* Usa la clase .dark que el proyecto ya maneja (tailwind
+   darkMode:class, las variables de index.css y el tema propio del
+   calendario). Acá se extienden a las variables de marca y se
+   remapean las superficies claras más comunes, para que el modo
+   oscuro cubra también lo que está pintado con colores fijos.
+
+   La barra inferior y el fondo navy de la app ya son oscuros:
+   solo hace falta voltear las tarjetas y el texto que va encima. */
+body.dark {
+  --surface: #12242f;
+  --surface-alt: #0d1b24;
+  --ink-900: #e6eef4;
+  --slate-600: #a9bdca;
+  --slate-400: #7f93a3;
+  --slate-200: #2c4254;
+  --line: rgba(255, 255, 255, 0.12);
+  --line-strong: rgba(255, 255, 255, 0.24);
+  --shadow-navy: 0 24px 60px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 2px 14px rgba(0, 0, 0, 0.35);
+  --shadow-card-lg: 0 10px 34px rgba(0, 0, 0, 0.45);
+
+  color: var(--ink-900);
+}
+
+/* Utilidades de Tailwind con colores claros fijos. Van sin !important:
+   la especificidad de body.dark .clase ya le gana a la utilidad. */
+body.dark .bg-white {
+  background-color: #12242f;
+}
+
+body.dark .bg-gray-200 {
+  background-color: #22384a;
+}
+
+body.dark .text-gray-900,
+body.dark .text-gray-800,
+body.dark .text-gray-700 {
+  color: #e6eef4;
+}
+
+body.dark .text-gray-600,
+body.dark .text-gray-500 {
+  color: #a9bdca;
+}
+
+body.dark .text-gray-400 {
+  color: #7f93a3;
+}
+
+body.dark .border-gray-100,
+body.dark .border-gray-200,
+body.dark .border-gray-300 {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+/* Paleta hueso/tinta (premios, proveedores): hueso es el fondo de
+   página y de tarjeta, tinta el texto que va encima. Los badges
+   claros con texto tinta pasan a ser badges oscuros con texto claro,
+   así siguen legibles sin tocar cada componente. */
+body.dark .bg-hueso-50 {
+  background-color: #12242f;
+}
+
+body.dark .bg-hueso-100 {
+  background-color: #0d1b24;
+}
+
+body.dark .bg-hueso-200,
+body.dark .bg-hueso-300 {
+  background-color: #22384a;
+}
+
+body.dark .border-hueso-200,
+body.dark .border-hueso-300 {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+body.dark .text-tinta-900,
+body.dark .text-tinta-800,
+body.dark .text-tinta-700 {
+  color: #e6eef4;
+}
+
+body.dark .text-tinta-600,
+body.dark .text-tinta-500 {
+  color: #a9bdca;
+}
+
 /* =====================================================================
    HEADER DEL HERO — logo + menú hamburguesa   (V2.2)
    El logo usa vincco-logo-nav.png: el mismo logo original, recortado
@@ -1314,4 +1443,2701 @@ body.vincco--alto-contraste .pf-metrica-enlace {
 
 @media (prefers-reduced-motion: reduce) {
   .hero-banner-logo, .hb-burger, .hb-burger span { transition: none; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FLUJO DE COMPRA · Hoja y detalle de una promoción
+   ──────────────────────────────────────────────────────────
+   Lo que ve el cliente cuando toca "Ver" en una promoción del
+   Home: la hoja que sube desde abajo, el detalle de adentro
+   (foto → descripción → negocio → acciones) y la pantalla
+   completa en /promocion/:id, que reusa el mismo detalle.
+
+   Movil primero. Cortes en 481px y 768px, area tactil de
+   44px minimo y contraste medido contra el manual v2.1:
+   naranja-600 sobre blanco 4.50:1, turquesa-700 7.25:1.
+   ══════════════════════════════════════════════════════════ */
+
+/* ── La hoja ───────────────────────────────────────────── */
+
+.vc-hoja__fondo {
+  position: fixed;
+  inset: 0;
+  /* Por encima del sidebar (1200), que es lo mas alto de la app */
+  z-index: 1400;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 29, 42, 0.55);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+.vc-hoja {
+  position: relative;
+  width: 100%;
+  /* dvh y no vh: en celular la barra del navegador aparece y
+     desaparece, y con vh la hoja quedaba cortada por abajo */
+  max-height: 92dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-radius: 24px 24px 0 0;
+  box-shadow: var(--shadow-navy);
+  padding-bottom: var(--safe-bottom);
+  overflow: hidden;
+}
+
+.vc-hoja__agarre {
+  flex-shrink: 0;
+  width: 44px;
+  height: 4px;
+  margin: 10px auto 2px;
+  border-radius: 999px;
+  background: var(--slate-200);
+}
+
+.vc-hoja__cerrar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--navy-800);
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 32, 46, 0.18);
+}
+
+.vc-hoja__contenido {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Detalle de la promoción ───────────────────────────── */
+
+.vc-promo__media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 210px;
+  overflow: hidden;
+}
+
+.vc-promo__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vc-promo__media-icono {
+  color: #ffffff;
+  opacity: 0.92;
+}
+
+.vc-promo__badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+}
+
+/* Abajo a la izquierda para no chocar con el boton de cerrar */
+.vc-promo__badge--limitada {
+  top: auto;
+  bottom: 14px;
+  background: var(--navy-800);
+  color: #ffffff;
+}
+
+.vc-promo__cuerpo {
+  padding: 20px 20px 24px;
+}
+
+.vc-promo__categoria {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--slate-400);
+}
+
+.vc-promo__titulo {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: clamp(20px, 5vw, 25px);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--ink-900);
+}
+
+.vc-promo__descripcion {
+  margin: 0 0 16px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--slate-600);
+}
+
+/* El precio de un producto: es lo primero que la persona busca,
+   así que va grande y antes que los chips. Turquesa-700 sobre
+   blanco da 7.25:1; el naranja se reserva para el botón. */
+.vc-promo__precio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 14px;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 6vw, 30px);
+  font-weight: 800;
+  color: var(--teal-700);
+  font-variant-numeric: tabular-nums;
+}
+
+.vc-promo__precio-stock {
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--slate-400);
+}
+
+.vc-promo__chip--likes {
+  background: #ffe4e9;
+  border-color: rgba(225, 29, 72, 0.22);
+  color: #b3123f;
+}
+
+.vc-promo__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.vc-promo__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface-alt);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--slate-600);
+  font-variant-numeric: tabular-nums;
+}
+
+.vc-promo__chip--puntos {
+  background: #ecfdf5;
+  border-color: rgba(23, 105, 63, 0.2);
+  color: var(--ok);
+}
+
+.vc-promo__chip--descuento {
+  background: rgba(192, 89, 0, 0.1);
+  border-color: rgba(192, 89, 0, 0.24);
+  color: var(--orange-700);
+}
+
+.vc-promo__chip--vigencia {
+  background: rgba(143, 90, 0, 0.1);
+  border-color: rgba(143, 90, 0, 0.24);
+  color: var(--warn);
+}
+
+/* ── Tarjeta del negocio que publicó ───────────────────── */
+
+.vc-promo__negocio {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f7fbfd 0%, #ffffff 100%);
+}
+
+.vc-promo__negocio-avatar {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--navy-800);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.vc-promo__negocio-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vc-promo__negocio-datos {
+  min-width: 0;
+}
+
+.vc-promo__negocio-etiqueta {
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate-400);
+}
+
+.vc-promo__negocio-nombre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0 3px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink-900);
+}
+
+.vc-promo__verificado {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(0, 122, 123, 0.1);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--teal-700);
+}
+
+/* "Tu proveedor": el proveedor con el que este negocio ya trabaja.
+   Va en naranja y no en turquesa para que no se confunda de un
+   vistazo con la insignia de verificado, que está al lado.
+   Naranja-700 sobre su propio tinte da 5.89:1. */
+.vc-promo__verificado--asociado {
+  background: rgba(192, 89, 0, 0.1);
+  color: var(--orange-700);
+}
+
+.vc-promo__negocio-sub {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--slate-600);
+}
+
+.vc-promo__negocio-tel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 5px 0 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--slate-400);
+}
+
+/* ── Acciones ──────────────────────────────────────────── */
+
+.vc-promo__acciones {
+  display: grid;
+  gap: 10px;
+}
+
+.vc-promo__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 18px;
+  border: 1.5px solid transparent;
+  border-radius: 14px;
+  font-family: var(--font-family);
+  font-size: 14.5px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: filter 0.18s, background-color 0.18s, transform 0.18s;
+}
+
+/* Naranja-600 y no naranja-500: sobre blanco el 500 se queda en
+   3.51:1 y el texto no pasa. El 600 da 4.50:1 justo. */
+.vc-promo__btn--primario {
+  background: var(--orange-600);
+  color: #ffffff;
+}
+
+.vc-promo__btn--primario:hover {
+  filter: brightness(1.08);
+}
+
+.vc-promo__btn--secundario {
+  background: var(--surface);
+  border-color: var(--teal-600);
+  color: var(--teal-700);
+}
+
+.vc-promo__btn--secundario:hover {
+  background: rgba(0, 122, 123, 0.08);
+}
+
+.vc-promo__btn--fantasma {
+  background: transparent;
+  border-color: var(--line-strong);
+  color: var(--slate-600);
+}
+
+.vc-promo__btn--inactivo {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.vc-promo__btn:active {
+  transform: scale(0.985);
+}
+
+.vc-promo__btn:focus-visible {
+  outline: 3px solid var(--gold-500);
+  outline-offset: 2px;
+}
+
+.vc-promo__vertodo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 14px auto 0;
+  padding: 10px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--teal-700);
+  cursor: pointer;
+}
+
+.vc-promo__aviso-rol {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface-alt);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--slate-600);
+}
+
+/* ── Formulario de consulta ────────────────────────────── */
+
+.vc-promo__form {
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.vc-promo__form-titulo {
+  margin: 0 0 14px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink-900);
+}
+
+.vc-promo__campo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.vc-promo__campo--bloque {
+  display: block;
+}
+
+.vc-promo__campo-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--slate-600);
+}
+
+.vc-promo__campo--bloque .vc-promo__campo-label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.vc-promo__campo-label em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--slate-400);
+}
+
+.vc-promo__contador {
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 12px;
+}
+
+.vc-promo__contador-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: var(--surface-alt);
+  color: var(--navy-800);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.vc-promo__contador-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.vc-promo__contador-valor {
+  min-width: 52px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-900);
+}
+
+/* Selector de unidad de medida. Mismo alto que el contador para que
+   los dos campos del formulario queden alineados. */
+.vc-promo__select {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-900);
+  cursor: pointer;
+}
+
+.vc-promo__select:focus {
+  outline: none;
+  border-color: var(--teal-600);
+  box-shadow: 0 0 0 3px rgba(0, 122, 123, 0.16);
+}
+
+.vc-promo__form-nota {
+  margin: -4px 0 12px;
+  font-size: 12px;
+  color: var(--slate-400);
+}
+
+.vc-promo__textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-900);
+  resize: vertical;
+}
+
+.vc-promo__textarea:focus {
+  outline: none;
+  border-color: var(--teal-600);
+  box-shadow: 0 0 0 3px rgba(0, 122, 123, 0.16);
+}
+
+.vc-promo__form-acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* "Enviar al negocio" es la accion; "Cancelar" ocupa solo lo
+   suyo. Repartidos mitad y mitad, en un celular de 390px el
+   boton de enviar partia el texto en dos lineas. */
+.vc-promo__form-acciones .vc-promo__btn--primario {
+  flex: 1;
+}
+
+.vc-promo__form-acciones .vc-promo__btn--fantasma {
+  flex: 0 0 auto;
+  padding: 0 16px;
+}
+
+/* ── Confirmación de enviado ───────────────────────────── */
+
+.vc-promo__enviado {
+  padding: 6px 0 2px;
+  text-align: center;
+}
+
+.vc-promo__enviado-icono {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: rgba(23, 105, 63, 0.12);
+  color: var(--ok);
+}
+
+.vc-promo__enviado-titulo {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink-900);
+}
+
+.vc-promo__enviado-texto {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--slate-600);
+}
+
+/* ── Pantalla completa /promocion/:id ──────────────────── */
+
+.vc-promo-pagina {
+  min-height: 100vh;
+  padding: 18px 16px 40px;
+  background: linear-gradient(180deg, #002e43 0%, #003f5a 38%, #3f6f84 100%);
+}
+
+.vc-promo-pagina__barra {
+  max-width: 720px;
+  margin: 0 auto 14px;
+}
+
+.vc-promo-pagina__volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 9px 18px;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.vc-promo-pagina__volver:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.vc-promo-pagina__caja {
+  max-width: 720px;
+  margin: 0 auto;
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow-navy);
+}
+
+.vc-promo-pagina__vacio {
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.vc-promo-pagina__vacio-icono {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: rgba(192, 89, 0, 0.12);
+  color: var(--orange-700);
+}
+
+.vc-promo-pagina__vacio h3 {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink-900);
+}
+
+.vc-promo-pagina__vacio p {
+  margin: 0 0 18px;
+  font-size: 14px;
+  color: var(--slate-600);
+}
+
+/* ── Responsive ────────────────────────────────────────── */
+
+/* Celular grande: los dos botones de accion entran lado a lado */
+@media (min-width: 481px) {
+  .vc-promo__acciones {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Tablet y laptop: la hoja deja de estar pegada abajo y se centra.
+   En una pantalla ancha una hoja de 1200px de ancho se lee mal, y
+   el gesto de arrastrar hacia abajo ahi no existe. */
+@media (min-width: 768px) {
+  .vc-hoja__fondo {
+    align-items: center;
+    padding: 24px;
+  }
+
+  .vc-hoja {
+    max-width: 560px;
+    max-height: 88vh;
+    border-radius: 24px;
+  }
+
+  .vc-hoja__agarre {
+    display: none;
+  }
+
+  .vc-promo__media {
+    height: 240px;
+  }
+
+  .vc-promo__cuerpo {
+    padding: 24px 26px 28px;
+  }
+
+  .vc-promo--pantalla .vc-promo__media {
+    height: 300px;
+  }
+
+  .vc-promo--pantalla .vc-promo__cuerpo {
+    padding: 28px 30px 32px;
+  }
+}
+
+
+/* ==========================================================================
+   20 · PERFILES — "La libreta Vincco"
+   Cliente, negocio y proveedor. Un solo objeto con tres portadas.
+
+   LA IDEA
+   El perfil no es un muro social: es una libreta de papel que se sella.
+   Portada de tinta (azul petroleo) + hojas de papel hueso + sellos de
+   caucho. Todo el valor acumulado se muestra como recibo, no como caja
+   con numero.
+
+   REGLAS QUE SE RESPETAN (manual v2.1)
+   · Cinco colores, nada fuera de la lista. El verde solo aparece como
+     estado de exito (verde bosque #1b6b42), nunca como color de marca.
+   · El dorado NUNCA es color de texto. Solo fondo, o grafico sobre tinta.
+   · Sobre arena (#ead9c7) no hay un tono "suave" valido para texto chico:
+     por eso el cuerpo de las hojas es papel #faf6f1 y la arena queda para
+     bandas, placas de sello y recibos.
+   · Todos los ratios de abajo estan MEDIDOS con WCAG 2.1.
+
+   Movil primero. Cortes del proyecto: <=480 / 481-1024 / >=1025.
+   Prefijo: vc-perf
+   ========================================================================== */
+
+.vc-perf {
+  /* --- superficies ---------------------------------------------------- */
+  --pf-tinta-alta: #001d2a;   /* azul-900 */
+  --pf-tinta:      #002e43;   /* azul-700 */
+  --pf-tinta-baja: #003f5a;   /* azul-500 */
+  --pf-papel:      #faf6f1;   /* hueso-100 · superficie de lectura */
+  --pf-papel-2:    #f4eae0;   /* hueso-300 · filas alternas, pistas */
+  --pf-arena:      #ead9c7;   /* hueso-500 · bandas y placas */
+  --pf-arena-linea:#cdbdab;   /* hueso-600 · perforados y divisores (decorativo) */
+
+  /* Contorno de CONTROLES. Va aparte del divisor decorativo porque es lo
+     que le dice a la persona "esto se toca". El hueso-600 daba 1.70:1
+     contra el papel: se veia como una linea de adorno, no como un boton.
+     hueso-800 llega a 3.51 sobre papel y 3.18 sobre papel-2.
+     Sobre la portada hace falta subir el hueso al 55% para llegar a 3.56. */
+  --pf-borde-control: #908170;
+  --pf-borde-inv:     rgba(234, 217, 199, 0.55);
+
+  /* --- tinta ---------------------------------------------------------- */
+  --pf-txt:        #003f5a;   /* 10.50 sobre papel */
+  --pf-txt-suave:  #3f6f84;   /*  5.11 sobre papel — NO usar sobre arena */
+  --pf-txt-tenue:  #908170;   /*  3.51 — solo iconos y >=24px */
+  --pf-inv:        #faf6f1;   /* 16.14 / 10.50 sobre la portada */
+  --pf-inv-suave:  #ead9c7;   /* 12.61 /  8.20 */
+  --pf-inv-tenue:  #aac0cb;   /*  9.19 /  5.98 */
+
+  /* --- marca ---------------------------------------------------------- */
+  --pf-oro:        #fea02f;   /* solo fondo o grafico sobre tinta */
+  --pf-oro-tinta:  #995e15;   /* la version que SI se puede escribir: 4.92 */
+  --pf-naranja:    #dd6600;   /* identidad y graficos grandes */
+  --pf-naranja-sol:#c05900;   /* boton con texto blanco: 4.50 */
+  --pf-naranja-tin:#a34b00;   /* texto sobre papel: 5.48 */
+  --pf-turquesa:   #007a7b;
+  --pf-turquesa-tin:#005c5e;  /* texto sobre papel: 7.25 */
+  --pf-exito:      #1b6b42;   /* 6.05 sobre papel */
+  --pf-error:      #b3261e;   /* 6.07 sobre papel */
+
+  /* --- color del rol (cada perfil lo sobreescribe) --------------------- */
+  --pf-rol:        var(--pf-oro);
+  --pf-rol-tinta:  var(--pf-oro-tinta);
+  --pf-rol-solido: var(--pf-naranja-sol);
+
+  /* --- color del nivel (lo pone la clase --nivel-*) -------------------- */
+  --pf-nivel:      #aac0cb;
+
+  /* --- forma y ritmo -------------------------------------------------- */
+  --pf-r:       18px;
+  --pf-r-chico: 12px;
+  --pf-dent:    9px;          /* radio del dentado de los recibos */
+  --pf-toque:   44px;
+  /* Old Standard TT es la cara institucional del manual: titulos y
+     cifras grandes. Es lo que hace que "1,240" se lea como un monto de
+     verdad y no como el marcador de un juego.
+     La UI sigue en Inter, que es la que usa el resto de la app. El
+     manual pide Plus Jakarta Sans; el dia que se cargue en index.html
+     para toda la app, esta linea pasa a var(--font-jakarta) y listo. */
+  --pf-cifra: var(--font-serif, 'Old Standard TT', 'Iowan Old Style', Palatino, Georgia, serif);
+  --pf-ui:    var(--font-family, 'Inter', system-ui, sans-serif);
+
+  position: relative;
+  min-height: 100vh;
+  font-family: var(--pf-ui);
+  color: var(--pf-txt);
+  /* Antes el degradado terminaba en azul-400 (#3f6f84). Ahi el hueso cae a
+     3.99:1 y el dorado a 2.69:1 — o sea, la mitad de abajo de la pagina no
+     sostenia ni texto ni grafico. Termina en azul-500. */
+  background:
+    repeating-radial-gradient(circle at 82% -6%,
+      transparent 0 41px, rgba(234, 217, 199, 0.045) 41px 42px),
+    repeating-radial-gradient(circle at 8% 34%,
+      transparent 0 53px, rgba(234, 217, 199, 0.032) 53px 54px),
+    linear-gradient(180deg, #001d2a 0%, #002e43 44%, #003f5a 100%);
+  background-attachment: fixed, fixed, fixed;
+}
+
+/* El rol pinta el acento. Coincide con el ciclo de marca:
+   consumidor = dorado · comercio = naranja · proveedor = turquesa. */
+.vc-perf--usuario   { --pf-rol: #fea02f; --pf-rol-tinta: #995e15; --pf-rol-solido: #c05900; }
+.vc-perf--negocio   { --pf-rol: #dd6600; --pf-rol-tinta: #a34b00; --pf-rol-solido: #c05900; }
+.vc-perf--proveedor { --pf-rol: #007a7b; --pf-rol-tinta: #005c5e; --pf-rol-solido: #005c5e; }
+
+/* Anillo del avatar segun nivel. Medidos sobre la portada:
+   bronce 9.20 · plata 9.19 · oro 8.50 · vip 11.95 */
+.vc-perf--nivel-bronce { --pf-nivel: #eeb07a; }
+.vc-perf--nivel-plata  { --pf-nivel: #aac0cb; }
+.vc-perf--nivel-oro    { --pf-nivel: #fea02f; }
+.vc-perf--nivel-vip    { --pf-nivel: #fece90; }
+
+.vc-perf__cuerpo {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 18px 16px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ── Cifras: siempre tabulares, si no bailan al actualizarse ─────────── */
+.vc-perf .vc-perf-cifra {
+  font-family: var(--pf-cifra);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+/* ── Etiqueta de seccion: "01 — TU RECOMPENSA" ───────────────────────── */
+.vc-perf-etiqueta {
+  display: block;
+  font-family: var(--pf-ui);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* ==========================================================================
+   20.1 · PORTADA — la tapa de la libreta
+   ========================================================================== */
+
+.vc-perf-portada {
+  position: relative;
+  overflow: hidden;
+  padding: 58px 16px 22px;
+  color: var(--pf-inv);
+  background: linear-gradient(158deg, #001d2a 0%, #002e43 56%, #003f5a 100%);
+  border-bottom: 1px solid rgba(234, 217, 199, 0.14);
+}
+
+/* Textura de mapa: curvas de nivel, no un mapa literal. Se apaga sola en
+   alto contraste porque ahi el sistema reemplaza los colores. */
+.vc-perf-portada__trama {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-radial-gradient(circle at 78% 12%,
+      transparent 0 27px, rgba(234, 217, 199, 0.055) 27px 28px),
+    repeating-radial-gradient(circle at 12% 96%,
+      transparent 0 34px, rgba(234, 217, 199, 0.04) 34px 35px);
+  mask-image: linear-gradient(180deg, #000 0%, #000 62%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 62%, transparent 100%);
+}
+
+/* Halo del color del rol, detras del avatar */
+.vc-perf-portada::after {
+  content: '';
+  position: absolute;
+  top: -140px;
+  left: -70px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: var(--pf-rol);
+  opacity: 0.16;
+  filter: blur(72px);
+  pointer-events: none;
+}
+
+.vc-perf-portada__volver,
+.vc-perf-portada__esquina {
+  position: absolute;
+  top: 14px;
+  z-index: 6;
+}
+.vc-perf-portada__volver { left: 14px; }
+.vc-perf-portada__esquina { right: 14px; }
+
+/* El selector de sucursal vive FUERA de la portada a proposito: la
+   portada recorta con overflow hidden y el menu desplegable quedaria
+   cortado. Se ancla contra .vc-perf, que es position: relative. */
+.vc-perf-esquina {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 7;
+}
+.vc-perf-esquina .panel-sucursal-btn {
+  border: 1.5px solid rgba(234, 217, 199, 0.3);
+}
+
+/* El aspecto del boton vive en la seccion 21 (.vc-volver), que es el
+   mismo boton que usan Calendario y Avisos. Aca solo se posiciona. */
+
+.vc-perf-portada__interior {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vc-perf-portada__kicker {
+  color: var(--pf-inv-tenue);          /* 9.19 / 5.98 */
+  margin-bottom: 10px;
+}
+
+/* ── Identidad: avatar con anillo de nivel + nombre ──────────────────── */
+
+.vc-perf-identidad {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* El anillo NO es decoracion: dice en que nivel esta la persona.
+   Por eso lleva ademas el nombre del nivel escrito abajo. */
+.vc-perf-anillo {
+  position: relative;
+  flex-shrink: 0;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  padding: 4px;
+  background:
+    conic-gradient(from -90deg,
+      var(--pf-nivel) 0deg 300deg,
+      rgba(234, 217, 199, 0.22) 300deg 360deg);
+}
+.vc-perf--nivel-vip .vc-perf-anillo {
+  background: conic-gradient(from -90deg, #fece90 0deg, #fea02f 180deg, #fece90 360deg);
+  box-shadow: 0 0 0 2px rgba(254, 160, 47, 0.35);
+}
+
+.vc-perf-anillo__disco {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(150deg, #002536, #003f5a);
+  border: 3px solid var(--pf-tinta-alta);
+  color: var(--pf-inv);
+  font-family: var(--pf-cifra);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0;
+  cursor: default;
+}
+button.vc-perf-anillo__disco { cursor: pointer; }
+.vc-perf-anillo__img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Capa de camara: solo aparece al pasar o al enfocar */
+.vc-perf-anillo__capa {
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 29, 42, 0.62);
+  color: var(--pf-inv);
+  opacity: 0;
+  transition: opacity 0.16s;
+}
+.vc-perf-anillo__disco:hover .vc-perf-anillo__capa,
+.vc-perf-anillo__disco:focus-visible .vc-perf-anillo__capa { opacity: 1; }
+
+.vc-perf-anillo__nivel {
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  transform: translateX(-50%);
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: var(--pf-nivel);
+  color: #002e43;                       /* sobre dorado y sobre azul-200: >=6.4 */
+  border: 2px solid var(--pf-tinta-alta);
+}
+
+.vc-perf-anillo__quitar {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid var(--pf-tinta-alta);
+  background: var(--pf-arena);
+  color: #833d00;
+  cursor: pointer;
+}
+
+.vc-perf-identidad__texto { min-width: 0; flex: 1; }
+
+.vc-perf-nombre {
+  font-family: var(--pf-cifra);
+  font-size: clamp(22px, 6vw, 30px);
+  font-weight: 700;
+  line-height: 1.14;
+  margin: 0 0 4px;
+  color: var(--pf-inv);
+  overflow-wrap: anywhere;
+}
+
+.vc-perf-sub {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--pf-inv-suave);           /* 12.61 / 8.20 */
+}
+
+/* ── Sellos de la portada (nivel, puntos, verificado, pionero) ───────── */
+
+.vc-perf-sellos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+/* El sello de caucho: placa con doble aro y una inclinacion minima.
+   La inclinacion es lo que lo separa de un "chip" de app generica. */
+.vc-perf-sello {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border: 1.5px solid rgba(234, 217, 199, 0.34);
+  background: rgba(234, 217, 199, 0.09);
+  color: var(--pf-inv-suave);
+  box-shadow: inset 0 0 0 1px rgba(234, 217, 199, 0.12);
+  transform: rotate(-1.2deg);
+}
+.vc-perf-sello:nth-child(even) { transform: rotate(1deg); }
+.vc-perf-sello svg { stroke-width: 2.3; }
+
+/* Sello entintado: el estado que se gano */
+.vc-perf-sello--tinta {
+  background: var(--pf-rol);
+  border-color: var(--pf-rol);
+  color: #002e43;                       /* sobre dorado 6.99 · sobre naranja usa la variante */
+  box-shadow: inset 0 0 0 1.5px rgba(0, 46, 67, 0.28);
+}
+.vc-perf--negocio .vc-perf-sello--tinta,
+.vc-perf--proveedor .vc-perf-sello--tinta {
+  background: var(--pf-rol-solido);     /* naranja-600 4.50 · turquesa-700 7.80 */
+  border-color: var(--pf-rol-solido);
+  color: #ffffff;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.26);
+}
+
+/* Sello de pionero: los primeros miembros. Va aparte porque no es un
+   estado del sistema, es una marca de antiguedad. */
+.vc-perf-sello--pionero {
+  border-style: dashed;
+  border-color: #fece90;
+  color: #fece90;                       /* 11.95 / 7.77 sobre la portada */
+  background: transparent;
+}
+
+/* ==========================================================================
+   20.2 · CINTA DE PROGRESO — cuanto falta para el proximo nivel
+   Reemplaza la barra plana. Es una cinta con los cuatro barrios marcados:
+   se ve donde estas y cuantas paradas faltan, no solo un porcentaje.
+   ========================================================================== */
+
+.vc-perf-cinta {
+  position: relative;
+  padding: 14px 16px 16px;
+  border-radius: 14px;
+  background: rgba(234, 217, 199, 0.07);
+  border: 1px solid rgba(234, 217, 199, 0.2);
+  /* Muescas de cinta en los extremos */
+  clip-path: polygon(
+    0 0, 100% 0, 100% 100%, 0 100%,
+    0 calc(50% + 9px), 9px 50%, 0 calc(50% - 9px)
+  );
+}
+
+.vc-perf-cinta__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.vc-perf-cinta__puntos {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  color: var(--pf-inv);
+}
+.vc-perf-cinta__puntos .vc-perf-cifra { font-size: 30px; }
+.vc-perf-cinta__unidad {
+  font-family: var(--pf-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--pf-inv-tenue);
+}
+
+.vc-perf-cinta__falta {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--pf-inv-suave);
+  text-align: right;
+}
+/* El numero que falta se resalta en dorado-300: 11.95 / 7.77 sobre tinta.
+   El dorado-500 puro tambien pasa (8.50/5.53) pero en texto de 12px
+   conviene el tono claro. */
+.vc-perf-cinta__falta strong { color: #fece90; font-weight: 800; }
+
+/* La pista y el relleno: dorado sobre azul-600 = 6.21:1.
+   OJO: esta misma barra en fondo claro daria 1.60:1. Solo vive aca. */
+.vc-perf-cinta__pista {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background: #00374e;
+  /* El aro NO es adorno: el tramo vacio de la pista se despega solo
+     1.05:1 del fondo de la cinta, o sea que sin el no se ve donde
+     termina la barra. Con hueso al 58% llega a 3.75 / 3.25. */
+  box-shadow: inset 0 0 0 1.5px rgba(234, 217, 199, 0.58),
+              inset 0 1px 2px rgba(0, 0, 0, 0.35);
+  overflow: visible;
+}
+.vc-perf-cinta__relleno {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #de8b27, #fea02f 70%, #fece90);
+  transform-origin: left center;
+  transition: width 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Los cuatro barrios de la cinta */
+.vc-perf-cinta__hitos {
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+}
+.vc-perf-cinta__hito {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--pf-inv-tenue);
+  flex: 1;
+}
+.vc-perf-cinta__hito::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 2px solid var(--pf-inv-tenue);
+  background: transparent;
+}
+.vc-perf-cinta__hito--hecho { color: var(--pf-inv); }
+.vc-perf-cinta__hito--hecho::before {
+  background: #fea02f;
+  border-color: #fea02f;
+}
+.vc-perf-cinta__hito--actual { color: #fece90; }
+.vc-perf-cinta__hito--actual::before {
+  background: #fece90;
+  border-color: #fece90;
+  box-shadow: 0 0 0 4px rgba(254, 160, 47, 0.22);
+}
+
+/* Confeti de subida de nivel. Se dibuja solo cuando el JSX pone
+   data-subio="true" en la cinta. Ambar, corto y sin sonido visual. */
+.vc-perf-cinta__confeti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 14px;
+}
+.vc-perf-cinta__confeti i {
+  position: absolute;
+  top: -10px;
+  width: 5px;
+  height: 9px;
+  border-radius: 1px;
+  background: var(--c, #fea02f);
+  opacity: 0;
+  animation: vc-perf-caer 900ms ease-out forwards;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes vc-perf-caer {
+  0%   { opacity: 0; transform: translateY(-8px) rotate(0deg); }
+  15%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(78px) rotate(220deg); }
+}
+
+/* ── Acciones de la portada ──────────────────────────────────────────── */
+
+.vc-perf-portada__acciones {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  margin: 16px auto 0;
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   20.3 · BOTONES DEL PERFIL
+   ========================================================================== */
+
+.vc-perf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 10px 16px;
+  border-radius: 11px;
+  border: 1.5px solid transparent;
+  font-family: var(--pf-ui);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.16s, border-color 0.16s, color 0.16s, transform 0.12s;
+}
+.vc-perf-btn:active { transform: translateY(1px); }
+.vc-perf-btn svg { stroke-width: 2.3; }
+
+/* Solido — naranja-600 + blanco = 4.50:1, el unico naranja que pasa AA */
+.vc-perf-btn--solido {
+  background: var(--pf-naranja-sol);
+  border-color: var(--pf-naranja-sol);
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(192, 89, 0, 0.28);
+}
+.vc-perf-btn--solido:hover { background: #a34b00; border-color: #a34b00; }
+
+/* Claro — sobre la portada de tinta */
+.vc-perf-btn--claro {
+  background: rgba(234, 217, 199, 0.1);
+  border-color: var(--pf-borde-inv);
+  color: var(--pf-inv-suave);
+}
+.vc-perf-btn--claro:hover { background: rgba(234, 217, 199, 0.2); }
+
+/* Linea — sobre papel. El contorno llega a 3:1, si no no se lee como control */
+.vc-perf-btn--linea {
+  min-height: 36px;
+  padding: 8px 13px;
+  font-size: 12.5px;
+  background: transparent;
+  border-color: var(--pf-borde-control); /* 3.51 — sin esto se lee como texto */
+  color: var(--pf-turquesa-tin);        /* 7.25 sobre papel */
+}
+.vc-perf-btn--linea:hover {
+  background: var(--pf-papel-2);
+  border-color: var(--pf-turquesa-tin);
+}
+
+.vc-perf-btn--fantasma {
+  background: transparent;
+  border-color: transparent;
+  color: var(--pf-txt-suave);
+}
+.vc-perf-btn--fantasma:hover { background: var(--pf-papel-2); }
+
+/* ==========================================================================
+   20.4 · HOJA — el contenedor de todas las secciones
+   Papel hueso-100, no arena: sobre arena no hay tono valido para texto
+   secundario chico.
+   ========================================================================== */
+
+.vc-perf-hoja {
+  padding: 16px;
+  border-radius: var(--pf-r);
+  background: var(--pf-papel);
+  border: 1px solid rgba(0, 63, 90, 0.07);
+  box-shadow: 0 10px 28px rgba(0, 20, 32, 0.16);
+}
+
+.vc-perf-hoja__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.vc-perf-hoja__titulo {
+  font-family: var(--pf-cifra);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 3px;
+  color: var(--pf-txt);
+}
+.vc-perf-hoja__desc {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--pf-txt-suave);           /* 5.11 sobre papel */
+}
+.vc-perf-hoja__acciones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.vc-perf-columnas {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 1fr;
+}
+
+/* ==========================================================================
+   20.5 · RECIBOS — los stats como ticket de valor acumulado
+   Dos grupos, no cuatro cajas iguales: "lo que moviste" y "lo que ganaste".
+   El monto en cordobas es el heroe: misma altura visual que los puntos.
+   ========================================================================== */
+
+.vc-perf-recibos {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+}
+
+/* El wrapper lleva la sombra: si la sombra fuera al elemento enmascarado,
+   la mascara se la comeria junto con el dentado. */
+.vc-perf-recibo {
+  filter: drop-shadow(0 10px 22px rgba(0, 20, 32, 0.22));
+}
+
+.vc-perf-recibo__hoja {
+  position: relative;
+  padding: 15px 16px calc(15px + var(--pf-dent));
+  background: var(--pf-papel);
+  border-radius: var(--pf-r) var(--pf-r) 0 0;
+  /* Dentado inferior de ticket. Con @supports abajo por si falla. */
+  -webkit-mask:
+    radial-gradient(var(--pf-dent) at 50% 100%, #0000 98%, #000)
+      0 100% / calc(var(--pf-dent) * 2) var(--pf-dent) repeat-x,
+    linear-gradient(#000 0 0)
+      0 0 / 100% calc(100% - var(--pf-dent)) no-repeat;
+  mask:
+    radial-gradient(var(--pf-dent) at 50% 100%, #0000 98%, #000)
+      0 100% / calc(var(--pf-dent) * 2) var(--pf-dent) repeat-x,
+    linear-gradient(#000 0 0)
+      0 0 / 100% calc(100% - var(--pf-dent)) no-repeat;
+}
+@supports not (mask: radial-gradient(#000, #000)) {
+  .vc-perf-recibo__hoja {
+    border-radius: var(--pf-r);
+    padding-bottom: 15px;
+    border-bottom: 3px dashed var(--pf-arena-linea);
+  }
+}
+
+/* Perforado superior: la linea de arranque del ticket */
+.vc-perf-recibo__hoja::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--pf-rol) 0 44%, var(--pf-arena-linea) 44%);
+  border-radius: var(--pf-r) var(--pf-r) 0 0;
+}
+
+.vc-perf-recibo__titulo {
+  color: var(--pf-rol-tinta);           /* dorado-800 4.92 · naranja-700 5.48 · turq-700 7.25 */
+  margin: 6px 0 12px;
+}
+
+/* El monto heroe */
+.vc-perf-monto { display: block; }
+.vc-perf-monto .vc-perf-cifra {
+  font-size: clamp(38px, 11vw, 46px);
+  color: var(--pf-txt);
+  display: block;
+  overflow-wrap: anywhere;
+}
+.vc-perf-monto__unidad {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--pf-txt);
+}
+.vc-perf-monto__detalle {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--pf-txt-suave);
+}
+
+/* Linea de corte entre el heroe y el dato de apoyo */
+.vc-perf-recibo__corte {
+  height: 0;
+  margin: 13px 0;
+  border: 0;
+  border-top: 1.5px dashed var(--pf-arena-linea);
+}
+
+/* Dato de apoyo del recibo: numero + etiqueta en una linea */
+.vc-perf-apoyo {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+}
+.vc-perf-apoyo .vc-perf-cifra { font-size: 24px; color: var(--pf-txt); }
+.vc-perf-apoyo__texto { min-width: 0; }
+.vc-perf-apoyo__label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--pf-txt);
+  line-height: 1.25;
+}
+.vc-perf-apoyo__detalle {
+  display: block;
+  font-size: 11.5px;
+  color: var(--pf-txt-suave);
+}
+/* Atajo del monto heroe ("Ver favoritos") */
+.vc-perf-recibo__atajo { margin: 9px 0 0; }
+.vc-perf-recibo__atajo .vc-perf-apoyo__enlace { margin-left: 0; }
+
+.vc-perf-apoyo__enlace {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--pf-turquesa-tin);        /* 7.25 */
+  text-decoration: none;
+  white-space: nowrap;
+}
+.vc-perf-apoyo__enlace:hover { text-decoration: underline; }
+
+/* Micro-copy del recibo: la frase que le da sentido al numero */
+.vc-perf-recibo__nota {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 12px 0 0;
+  padding: 9px 11px;
+  border-radius: var(--pf-r-chico);
+  background: var(--pf-arena);
+  color: var(--pf-txt);                 /* 8.20 sobre arena — el unico tono valido */
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.vc-perf-recibo__nota svg { stroke-width: 2.3; flex-shrink: 0; margin-top: 1px; }
+
+/* ==========================================================================
+   20.6 · CREDENCIAL — los datos personales como carnet, no como formulario
+   ========================================================================== */
+
+.vc-perf-credencial {
+  padding: 0;
+  overflow: hidden;
+}
+
+.vc-perf-credencial__banda {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--pf-arena);
+  border-bottom: 2px solid var(--pf-arena-linea);
+  position: relative;
+}
+/* Guilloche: las lineas finas de los documentos oficiales */
+.vc-perf-credencial__banda::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    -52deg,
+    rgba(0, 63, 90, 0.05) 0 1px,
+    transparent 1px 7px
+  );
+}
+.vc-perf-credencial__marca {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+}
+.vc-perf-credencial__marca .vc-perf-etiqueta { color: var(--pf-txt); }
+.vc-perf-credencial__marca span:last-child {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pf-txt);
+  opacity: 0.72;
+  margin-top: 2px;
+}
+
+.vc-perf-credencial__cuerpo { padding: 15px 16px 16px; }
+
+/* Numero de credencial: se lee como el de un carnet real */
+.vc-perf-credencial__folio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  margin-bottom: 15px;
+  border-radius: var(--pf-r-chico);
+  border: 1.5px dashed var(--pf-arena-linea);
+  background: var(--pf-papel-2);
+  font-family: var(--pf-cifra);
+  font-variant-numeric: tabular-nums;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--pf-txt);
+}
+.vc-perf-credencial__folio small {
+  margin-left: auto;
+  font-family: var(--pf-ui);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pf-txt-suave);
+  text-align: right;
+  line-height: 1.3;
+}
+
+.vc-perf-campos {
+  display: grid;
+  gap: 13px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.vc-perf-campo { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.vc-perf-campo--ancho { grid-column: 1 / -1; }
+
+/* Cada campo lleva su sello: placa de 24px, no un icono suelto */
+.vc-perf-campo__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pf-txt-suave);
+}
+.vc-perf-campo__placa {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  background: var(--pf-arena);
+  border: 1.5px solid var(--pf-arena-linea);
+  color: var(--pf-txt);
+  transform: rotate(-2deg);
+}
+.vc-perf-campo__placa svg { stroke-width: 2.2; }
+
+.vc-perf-campo__valor {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--pf-txt);
+  overflow-wrap: anywhere;
+  transition: filter 0.18s ease;
+}
+.vc-perf-campo__valor--oculto {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+  color: var(--pf-txt-suave);
+}
+.vc-perf-campo__vacio { font-style: italic; color: var(--pf-txt-suave); font-weight: 500; }
+
+.vc-perf-input {
+  width: 100%;
+  padding: 10px 11px;
+  border-radius: 9px;
+  border: 1.5px solid var(--pf-borde-control);
+  background: #ffffff;
+  color: var(--pf-txt);
+  font-size: 14px;
+  font-family: var(--pf-ui);
+}
+.vc-perf-input:focus {
+  outline: 3px solid var(--pf-turquesa);
+  outline-offset: 1px;
+  border-color: var(--pf-turquesa);
+}
+.vc-perf-textarea { resize: vertical; min-height: 74px; line-height: 1.5; }
+
+/* Banda de seguridad + accion de editar */
+.vc-perf-credencial__pie {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 13px;
+  border-top: 1.5px dashed var(--pf-arena-linea);
+}
+.vc-perf-credencial__banda-seg {
+  flex: 1;
+  height: 18px;
+  border-radius: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--pf-arena) 0 2px,
+    transparent 2px 5px,
+    var(--pf-arena-linea) 5px 6px,
+    transparent 6px 11px
+  );
+  opacity: 0.85;
+}
+
+.vc-perf-ojo {
+  position: relative;
+  z-index: 1;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  border: 1.5px solid var(--pf-borde-control);
+  background: var(--pf-papel);
+  color: var(--pf-txt);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+.vc-perf-ojo--activo {
+  background: var(--pf-turquesa-tin);
+  border-color: var(--pf-turquesa-tin);
+  color: #ffffff;                        /* 7.80 */
+}
+
+.vc-perf-privacidad {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 13px 0 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--pf-turquesa-tin);
+}
+
+.vc-perf-guardado {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--pf-exito);               /* 6.05 sobre papel */
+}
+
+.vc-perf-credencial__acciones {
+  display: flex;
+  gap: 9px;
+  justify-content: flex-end;
+  margin-top: 15px;
+}
+
+/* ==========================================================================
+   20.7 · MURAL DE RECONOCIMIENTOS — sellos de caucho, no badges de fitness
+   ========================================================================== */
+
+.vc-perf-mural {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vc-perf-medalla {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  padding: 15px 11px 13px;
+  text-align: center;
+  border-radius: var(--pf-r-chico);
+  background: var(--pf-papel-2);
+  border: 1.5px solid var(--pf-arena-linea);
+  cursor: default;
+  transition: transform 0.16s, box-shadow 0.16s;
+}
+.vc-perf-medalla__disco {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transform: rotate(-5deg);
+  transition: transform 0.16s;
+}
+
+/* Desbloqueado: tinta llena, doble aro, y un poco de "sangrado" de tinta */
+.vc-perf-medalla--activa .vc-perf-medalla__disco {
+  color: var(--pf-rol-tinta);
+  border: 2.5px solid currentColor;
+  box-shadow: inset 0 0 0 2px var(--pf-papel), inset 0 0 0 4px currentColor;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.6), transparent 62%),
+    var(--pf-arena);
+}
+.vc-perf-medalla--activa .vc-perf-medalla__disco svg { stroke-width: 2.4; }
+
+/* Bloqueado: sello vacio. Contorno punteado, nada de gris frio. */
+.vc-perf-medalla--bloqueada {
+  background: transparent;
+  border-style: dashed;
+}
+.vc-perf-medalla--bloqueada .vc-perf-medalla__disco {
+  color: var(--pf-txt-tenue);           /* 3.51 — solo icono, permitido */
+  border: 2.5px dashed currentColor;
+  background: transparent;
+  opacity: 0.9;
+}
+
+.vc-perf-medalla__label {
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1.25;
+  color: var(--pf-txt);
+}
+.vc-perf-medalla--bloqueada .vc-perf-medalla__label { color: var(--pf-txt-suave); }
+
+.vc-perf-medalla__desc {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--pf-txt-suave);           /* 5.11 */
+}
+
+/* Fecha de sellado o marca de sellado */
+.vc-perf-medalla__fecha {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--pf-exito);
+}
+
+/* El reto que falta, en su propia pastilla */
+.vc-perf-medalla__reto {
+  display: inline-block;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pf-turquesa-tin);
+  border: 1.5px solid var(--pf-borde-control);
+}
+
+/* Micro-interaccion: al tocar un sello bloqueado, "estampa en falso" */
+.vc-perf-medalla--bloqueada:active .vc-perf-medalla__disco,
+.vc-perf-medalla--bloqueada:focus-within .vc-perf-medalla__disco {
+  animation: vc-perf-estampar 340ms ease-out;
+}
+@keyframes vc-perf-estampar {
+  0%   { transform: rotate(-5deg) scale(1); }
+  35%  { transform: rotate(-2deg) scale(0.9); }
+  100% { transform: rotate(-5deg) scale(1); }
+}
+.vc-perf-medalla--activa:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0, 20, 32, 0.12); }
+.vc-perf-medalla--activa:hover .vc-perf-medalla__disco { transform: rotate(-2deg); }
+
+/* ==========================================================================
+   20.8 · PASAPORTE — negocios favoritos como paginas selladas
+   Cada negocio es un sello con su color y su porcentaje del total.
+   ========================================================================== */
+
+.vc-perf-pasaporte {
+  display: grid;
+  gap: 11px;
+  grid-template-columns: 1fr;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vc-perf-pagina {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--pf-r-chico);
+  background: var(--pf-papel-2);
+  border: 1.5px solid var(--pf-arena-linea);
+  overflow: hidden;
+  transition: transform 0.16s, border-color 0.16s;
+}
+.vc-perf-pagina:hover { transform: translateX(2px); border-color: var(--pf-txt-suave); }
+
+/* Matasellos: el aro de correo que se estampa encima de la pagina */
+.vc-perf-pagina::after {
+  content: '';
+  position: absolute;
+  top: -18px;
+  right: -14px;
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  box-shadow: inset 0 0 0 3px transparent, inset 0 0 0 5px currentColor;
+  color: var(--pf-marca, #003f5a);
+  opacity: 0.1;
+  pointer-events: none;
+  transform: rotate(-14deg);
+}
+
+.vc-perf-pagina__marca {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--pf-marca, #003f5a);
+  color: #faf6f1;
+  transform: rotate(-3deg);
+  box-shadow: 0 3px 8px rgba(0, 20, 32, 0.18);
+}
+.vc-perf-pagina__marca svg { stroke-width: 2.3; }
+
+.vc-perf-pagina__cuerpo { flex: 1; min-width: 0; }
+.vc-perf-pagina__nombre {
+  display: block;
+  font-family: var(--pf-cifra);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--pf-txt);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.vc-perf-pagina__cat {
+  display: block;
+  font-size: 11.5px;
+  color: var(--pf-txt-suave);
+  margin-bottom: 6px;
+}
+
+/* La barra de reparto: que porcentaje de tus puntos sale de aca */
+.vc-perf-pagina__pista {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--pf-arena);
+  overflow: hidden;
+}
+.vc-perf-pagina__relleno {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--pf-marca, #003f5a);
+  transition: width 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.vc-perf-pagina__reparto {
+  display: block;
+  margin-top: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--pf-txt-suave);
+}
+
+.vc-perf-pagina__puntos {
+  flex-shrink: 0;
+  text-align: right;
+  font-family: var(--pf-cifra);
+  font-variant-numeric: tabular-nums;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--pf-txt);
+}
+
+/* ==========================================================================
+   20.9 · EXTRACTO — la actividad como estado de cuenta del barrio
+   Cada tipo tiene color Y forma. Los tres colores calidos de la paleta
+   se separan apenas 1.0-1.5:1 de luminancia entre si: sin forma propia,
+   quien no distingue tonos ve la misma marca cinco veces.
+   ========================================================================== */
+
+.vc-perf-extracto { position: relative; }
+
+/* Resumen del mes, pegado arriba mientras se recorre la lista */
+.vc-perf-extracto__resumen {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: -16px -16px 14px;
+  padding: 11px 16px;
+  background: var(--pf-arena);
+  border-bottom: 1.5px solid var(--pf-arena-linea);
+  color: var(--pf-txt);                 /* 8.20 — el unico tono valido sobre arena */
+  font-size: 12.5px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 20, 32, 0.06);
+}
+.vc-perf-extracto__resumen .vc-perf-cifra { font-size: 17px; }
+.vc-perf-extracto__resumen svg { stroke-width: 2.3; flex-shrink: 0; }
+
+.vc-perf-mov-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.vc-perf-mov {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 0 0 16px;
+}
+/* Hilo punteado entre sellos de fecha */
+.vc-perf-mov:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 44px;
+  bottom: 2px;
+  width: 0;
+  border-left: 2px dotted var(--pf-arena-linea);
+}
+.vc-perf-mov:last-child { padding-bottom: 0; }
+
+/* Sello de fecha: el nodo de la linea de tiempo es un matasellos */
+.vc-perf-mov__fecha {
+  flex-shrink: 0;
+  width: 41px;
+  min-height: 42px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 4px 2px;
+  border-radius: 9px;
+  background: var(--pf-papel);
+  border: 1.5px solid currentColor;
+  box-shadow: inset 0 0 0 1.5px var(--pf-papel), inset 0 0 0 3px currentColor;
+  transform: rotate(-2.5deg);
+  color: inherit;   /* el aro toma el color del tipo: 4.92-10.50 sobre papel */
+}
+.vc-perf-mov__dia {
+  font-family: var(--pf-cifra);
+  font-variant-numeric: tabular-nums;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--pf-txt);
+}
+.vc-perf-mov__mes {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--pf-txt-suave);
+}
+
+.vc-perf-mov__cuerpo { flex: 1; min-width: 0; padding-top: 2px; }
+.vc-perf-mov__linea {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+/* La marca de tipo: forma + color, nunca solo color */
+.vc-perf-mov__marca {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  background: currentColor;
+  align-self: center;
+}
+.vc-perf-mov__titulo {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--pf-txt);
+  line-height: 1.3;
+}
+.vc-perf-mov__detalle {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--pf-txt-suave);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.vc-perf-mov__hora {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--pf-txt-suave);
+  padding-top: 3px;
+}
+
+/* --- Tipos de movimiento: color medido sobre papel + forma propia ----- */
+.vc-perf-mov--canje    { color: #a34b00; }   /* naranja-700 · 5.48 */
+.vc-perf-mov--compra   { color: #003f5a; }   /* azul-500    · 10.50 */
+.vc-perf-mov--resena   { color: #1b6b42; }   /* verde bosque· 6.05 */
+.vc-perf-mov--nivel    { color: #995e15; }   /* dorado-800  · 4.92 */
+.vc-perf-mov--vinculo  { color: #005c5e; }   /* turquesa-700· 7.25 */
+.vc-perf-mov--aviso    { color: #b3261e; }   /* error       · 6.07 */
+
+.vc-perf-mov--canje   .vc-perf-mov__marca { border-radius: 50%; }
+.vc-perf-mov--compra  .vc-perf-mov__marca { border-radius: 1px; }
+.vc-perf-mov--resena  .vc-perf-mov__marca { border-radius: 1px; transform: rotate(45deg); }
+.vc-perf-mov--nivel   .vc-perf-mov__marca {
+  border-radius: 1px;
+  clip-path: polygon(50% 0, 100% 38%, 82% 100%, 18% 100%, 0 38%);
+}
+.vc-perf-mov--vinculo .vc-perf-mov__marca {
+  background: transparent;
+  box-shadow: inset 0 0 0 2.5px currentColor;
+  border-radius: 50%;
+}
+.vc-perf-mov--aviso   .vc-perf-mov__marca {
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+/* Leyenda: la traduccion en texto de las formas */
+.vc-perf-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0 0;
+  padding: 12px 0 0;
+  list-style: none;
+  border-top: 1.5px dashed var(--pf-arena-linea);
+}
+/* OJO: la li NO declara color. El color es el del tipo (--canje, --compra…)
+   y la marca lo hereda con currentColor. Si la li pusiera su propio color,
+   las seis marcas saldrian todas del mismo tono. */
+.vc-perf-leyenda li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.vc-perf-leyenda__texto { color: var(--pf-txt-suave); }
+
+/* Texto solo para lectores de pantalla: la forma y el color no les llegan,
+   asi que el tipo de movimiento y la fecha completa van escritos. */
+.vc-perf-oculto-visual {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ==========================================================================
+   20.10 · PIEZAS PROPIAS DE NEGOCIO Y PROVEEDOR
+   ========================================================================== */
+
+/* --- Vitrina: "asi te ven tus clientes" ------------------------------- */
+.vc-perf-vitrina {
+  padding: 13px 15px;
+  border-radius: 14px;
+  background: rgba(234, 217, 199, 0.09);
+  border: 1px solid rgba(234, 217, 199, 0.22);
+}
+.vc-perf-vitrina .vc-perf-etiqueta { color: var(--pf-inv-tenue); margin-bottom: 6px; }
+.vc-perf-vitrina__texto {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--pf-inv-suave);
+}
+.vc-perf-vitrina__contacto {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--pf-inv-suave);
+}
+.vc-perf-vitrina__contacto span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  overflow-wrap: anywhere;
+}
+
+/* --- Horario ---------------------------------------------------------- */
+.vc-perf-horario { list-style: none; margin: 0; padding: 0; }
+.vc-perf-horario li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  font-size: 13px;
+  border-bottom: 1px dashed var(--pf-arena-linea);
+}
+.vc-perf-horario li:last-child { border-bottom: 0; }
+.vc-perf-horario__dia { font-weight: 700; color: var(--pf-txt); }
+.vc-perf-horario__horas {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--pf-txt-suave);
+}
+.vc-perf-horario__cerrado .vc-perf-horario__horas {
+  color: var(--pf-error);
+  font-weight: 700;
+}
+
+/* --- Reseñas ---------------------------------------------------------- */
+.vc-perf-resenas { list-style: none; margin: 0; padding: 0; display: grid; gap: 11px; }
+.vc-perf-resena {
+  padding: 12px;
+  border-radius: var(--pf-r-chico);
+  background: var(--pf-papel-2);
+  border-left: 4px solid var(--pf-rol-tinta);
+}
+.vc-perf-resena__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  margin-bottom: 5px;
+}
+.vc-perf-resena__autor { font-size: 13px; font-weight: 800; color: var(--pf-txt); }
+.vc-perf-resena__texto {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--pf-txt);
+}
+.vc-perf-resena__fecha { font-size: 11px; color: var(--pf-txt-suave); font-weight: 600; }
+.vc-perf-estrellas { display: inline-flex; gap: 1px; color: #995e15; }  /* dorado-800 · 4.92 */
+
+/* --- Redes conectadas -------------------------------------------------- */
+.vc-perf-redes { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+.vc-perf-red {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px;
+  border-radius: var(--pf-r-chico);
+  background: var(--pf-papel-2);
+  border: 1.5px solid var(--pf-arena-linea);
+}
+.vc-perf-red__icono {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  transform: rotate(-3deg);
+}
+.vc-perf-red__info { flex: 1; min-width: 0; }
+.vc-perf-red__info strong { display: block; font-size: 13px; color: var(--pf-txt); }
+.vc-perf-red__info span {
+  display: block;
+  font-size: 11.5px;
+  color: var(--pf-txt-suave);
+  overflow-wrap: anywhere;
+}
+.vc-perf-red__check { color: var(--pf-exito); flex-shrink: 0; }
+
+/* --- Líneas del proveedor --------------------------------------------- */
+.vc-perf-lineas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr;
+}
+.vc-perf-linea {
+  padding: 12px;
+  border-radius: var(--pf-r-chico);
+  background: var(--pf-papel-2);
+  border: 1.5px solid var(--pf-arena-linea);
+}
+.vc-perf-linea__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+.vc-perf-linea__nombre {
+  font-family: var(--pf-cifra);
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--pf-txt);
+}
+.vc-perf-linea__pie {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--pf-txt-suave);
+}
+
+/* El stock lleva forma ademas de color: punto lleno / medio / hueco */
+.vc-perf-stock {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1.5px solid currentColor;
+  white-space: nowrap;
+}
+.vc-perf-stock::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.vc-perf-stock--alto  { color: var(--pf-exito); }
+.vc-perf-stock--medio { color: #833d00; }   /* 6.72 · el dorado-800 caia a 4.46 y esto es texto de 10.5px */
+.vc-perf-stock--medio::before { background: linear-gradient(90deg, currentColor 50%, transparent 50%); box-shadow: inset 0 0 0 1.5px currentColor; }
+.vc-perf-stock--bajo  { color: var(--pf-error); }
+.vc-perf-stock--bajo::before { background: transparent; box-shadow: inset 0 0 0 2px currentColor; }
+
+/* --- Cobertura del proveedor ------------------------------------------ */
+.vc-perf-cobertura {
+  padding: 13px 15px;
+  border-radius: 14px;
+  background: rgba(234, 217, 199, 0.09);
+  border: 1px solid rgba(234, 217, 199, 0.22);
+}
+.vc-perf-cobertura__lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  list-style: none;
+  margin: 9px 0 10px;
+  padding: 0;
+}
+.vc-perf-cobertura__lista li {
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--pf-inv-suave);
+  border: 1.5px dashed rgba(234, 217, 199, 0.36);
+}
+.vc-perf-cobertura__pie { margin: 0; font-size: 12.5px; color: var(--pf-inv-suave); }
+.vc-perf-cobertura__pie strong { color: var(--pf-inv); font-family: var(--pf-cifra); font-size: 16px; }
+
+/* ==========================================================================
+   20.11 · VERIFICACIÓN
+   ========================================================================== */
+
+.vc-perf-verif {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border-radius: var(--pf-r);
+  background: var(--pf-papel);
+  border-left: 5px solid var(--pf-naranja-sol);
+  box-shadow: 0 8px 22px rgba(0, 20, 32, 0.14);
+}
+.vc-perf-verif--pendiente { border-left-color: var(--pf-turquesa); }
+.vc-perf-verif__icono {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--pf-arena);
+  border: 1.5px solid var(--pf-arena-linea);
+  color: var(--pf-naranja-tin);
+  transform: rotate(-3deg);
+}
+.vc-perf-verif--pendiente .vc-perf-verif__icono { color: var(--pf-turquesa-tin); }
+.vc-perf-verif__texto { flex: 1; min-width: 180px; }
+.vc-perf-verif__texto strong { display: block; font-size: 13.5px; color: var(--pf-txt); margin-bottom: 3px; }
+.vc-perf-verif__texto p { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--pf-txt-suave); }
+.vc-perf-verif__acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ==========================================================================
+   20.12 · ERRORES DE FOTO
+   ========================================================================== */
+
+.vc-perf-error-foto {
+  margin: 8px 0 0;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #eb8a85;                       /* la version clara del rojo, sobre tinta */
+}
+.vc-perf-input-oculto {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap; border: 0;
+}
+
+/* ==========================================================================
+   20.13 · RESPONSIVE — cortes del proyecto: 481px y 1025px
+   ========================================================================== */
+
+@media (min-width: 481px) {
+  .vc-perf-portada { padding: 62px 24px 26px; }
+  .vc-perf__cuerpo { padding: 22px 24px 36px; gap: 22px; }
+  .vc-perf-hoja { padding: 20px; }
+  .vc-perf-recibos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vc-perf-pasaporte { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vc-perf-lineas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vc-perf-mural { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); }
+  .vc-perf-anillo { width: 96px; height: 96px; }
+  .vc-perf-anillo__disco { font-size: 30px; }
+  .vc-perf-extracto__resumen { margin: -20px -20px 16px; padding: 12px 20px; }
+}
+
+@media (min-width: 1025px) {
+  .vc-perf-portada { padding: 66px 32px 30px; }
+  .vc-perf__cuerpo { padding: 26px 32px 44px; }
+  .vc-perf-columnas { grid-template-columns: minmax(0, 1.55fr) minmax(280px, 1fr); }
+  .vc-perf-columnas--iguales { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vc-perf-recibos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vc-perf-pasaporte { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vc-perf-identidad { gap: 20px; }
+  .vc-perf-extracto__resumen { margin: -20px -20px 18px; }
+}
+
+/* Movil chico: el nombre y la cifra bajan un punto para no desbordar */
+@media (max-width: 360px) {
+  .vc-perf-campos { grid-template-columns: 1fr; }
+  .vc-perf-monto .vc-perf-cifra { font-size: 34px; }
+  .vc-perf-cinta__puntos .vc-perf-cifra { font-size: 26px; }
+  .vc-perf-cinta__hito { font-size: 8.5px; letter-spacing: 0.05em; }
+}
+
+/* ==========================================================================
+   20.14 · ACCESIBILIDAD
+   ========================================================================== */
+
+/* Foco visible en toda la pantalla */
+.vc-perf :where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 3px solid #79babb;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+.vc-perf-hoja :where(a, button, input, textarea, select):focus-visible {
+  outline-color: #005c5e;
+}
+
+/* Quien pidio menos movimiento no ve confeti ni transiciones */
+@media (prefers-reduced-motion: reduce) {
+  .vc-perf *,
+  .vc-perf *::before,
+  .vc-perf *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .vc-perf-cinta__confeti { display: none; }
+}
+
+/* Quien pidio mas contraste: contornos mas gruesos y tonos mas firmes */
+@media (prefers-contrast: more) {
+  .vc-perf-hoja { border-color: var(--pf-txt); border-width: 1.5px; }
+  .vc-perf-btn { border-width: 2.5px; }
+  .vc-perf-btn--linea { border-color: var(--pf-turquesa-tin); }
+  .vc-perf-medalla { border-width: 2.5px; }
+  .vc-perf-hoja__desc,
+  .vc-perf-campo__label,
+  .vc-perf-medalla__desc,
+  .vc-perf-mov__detalle { color: var(--pf-txt); }
+  .vc-perf-mov--nivel { color: #79490c; }   /* dorado-900 · 7.06 sobre papel */
+  .vc-perf-mov--canje { color: #833d00; }   /* naranja-800 · 7.42 */
+}
+
+/* Alto contraste del sistema: se cae el color, quedan las formas.
+   Aca se cobra que cada tipo de movimiento tenga forma propia. */
+@media (forced-colors: active) {
+  .vc-perf-portada__trama,
+  .vc-perf-portada::after,
+  .vc-perf-pagina::after,
+  .vc-perf-credencial__banda::after,
+  .vc-perf-credencial__banda-seg { display: none; }
+
+  .vc-perf-hoja,
+  .vc-perf-medalla,
+  .vc-perf-pagina,
+  .vc-perf-recibo__hoja,
+  .vc-perf-btn,
+  .vc-perf-sello { border: 1.5px solid ButtonBorder; }
+
+  .vc-perf-mov__marca { background: CanvasText; }
+  .vc-perf-mov--vinculo .vc-perf-mov__marca { box-shadow: inset 0 0 0 2.5px CanvasText; }
+  .vc-perf-cinta__relleno { background: Highlight; }
+  .vc-perf-recibo__hoja { -webkit-mask: none; mask: none; }
+}
+
+/* ==========================================================================
+   20.15 · NAVEGACIÓN — el sello de "estás acá"
+   No cambia la estructura de BottomNav.jsx ni de Sidebar.jsx: solo el
+   tratamiento del item activo. La pestaña activa deja de ser "un icono
+   naranja" y pasa a ser un sello estampado sobre la barra.
+   ========================================================================== */
+
+.bottom-nav-btn--active .bottom-nav-icon {
+  transform: scale(1);
+  border-radius: 11px;
+  padding: 6px;
+  width: 34px;
+  height: 34px;
+  background: rgba(254, 160, 47, 0.16);
+  box-shadow: inset 0 0 0 1.5px rgba(254, 160, 47, 0.55);
+  animation: vc-perf-sellar 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+body:not(.dark) .bottom-nav-btn--active .bottom-nav-icon {
+  background: rgba(192, 89, 0, 0.1);
+  box-shadow: inset 0 0 0 1.5px rgba(192, 89, 0, 0.4);
+}
+@keyframes vc-perf-sellar {
+  0%   { transform: scale(1.22) rotate(-4deg); }
+  60%  { transform: scale(0.96) rotate(1deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* El item de Perfil del menu lateral: "estas en tu casa".
+   Sello lleno en vez de tinte, para que se lea distinto a los demas. */
+.side-nav-item--active .side-nav-icon {
+  border-radius: 10px;
+  padding: 5px;
+  width: 30px;
+  height: 30px;
+  background: rgba(254, 160, 47, 0.16);
+  box-shadow: inset 0 0 0 1.5px rgba(254, 160, 47, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottom-nav-btn--active .bottom-nav-icon { animation: none; }
+}
+
+/* ==========================================================================
+   20.16 · LOS AJUSTES DE /config
+   La app tiene sus propios interruptores de accesibilidad (Alto contraste,
+   Texto grande, Reducir animaciones) y hasta ahora enganchaban en las
+   clases viejas: .pf-seccion, .pf-metrica, .pf-campo-valor, .pf-favorito.
+   Al renombrar habia que volver a engancharlos: si no, el ajuste deja de
+   hacer efecto en el perfil y nadie se entera.
+   ========================================================================== */
+
+body.vincco--alto-contraste .vc-perf-hoja,
+body.vincco--alto-contraste .vc-perf-recibo__hoja,
+body.vincco--alto-contraste .vc-perf-medalla,
+body.vincco--alto-contraste .vc-perf-pagina,
+body.vincco--alto-contraste .vc-perf-linea,
+body.vincco--alto-contraste .vc-perf-red {
+  border: 1.5px solid var(--pf-txt);
+  box-shadow: none;
+}
+
+/* El texto secundario sube de azul-400 a azul-800: de 5.11 a 13.40 */
+body.vincco--alto-contraste .vc-perf-hoja__desc,
+body.vincco--alto-contraste .vc-perf-campo__label,
+body.vincco--alto-contraste .vc-perf-campo__valor,
+body.vincco--alto-contraste .vc-perf-medalla__desc,
+body.vincco--alto-contraste .vc-perf-mov__detalle,
+body.vincco--alto-contraste .vc-perf-mov__hora,
+body.vincco--alto-contraste .vc-perf-monto__detalle,
+body.vincco--alto-contraste .vc-perf-apoyo__detalle,
+body.vincco--alto-contraste .vc-perf-pagina__cat,
+body.vincco--alto-contraste .vc-perf-pagina__reparto,
+body.vincco--alto-contraste .vc-perf-horario__horas {
+  color: #002536;
+}
+
+body.vincco--alto-contraste .vc-perf-apoyo__enlace,
+body.vincco--alto-contraste .vc-perf a {
+  text-decoration: underline;
+}
+
+body.vincco--sin-animaciones .vc-perf-cinta__confeti { display: none; }
+
+/* ==========================================================================
+   20.17 · TEMA OSCURO (body.dark)
+   No es invertir: sobre fondo oscuro la paleta se comporta al reves y hay
+   que volver a medir. Como todo el perfil lee tokens y no colores sueltos,
+   alcanza con redefinir los tokens una vez.
+
+   El papel deja de ser hueso y pasa a azul-700; la arena baja a hueso-900
+   para no perder lo calido. Los acentos suben de brillo: el naranja-700 y
+   el dorado-800 que funcionan de dia no se leen de noche.
+   ========================================================================== */
+
+body.dark .vc-perf {
+  --pf-papel:      #002e43;   /* azul-700  · texto hueso-100 a 13.26 */
+  --pf-papel-2:    #002536;   /* azul-800  · 14.81 */
+  --pf-arena:      #746454;   /* hueso-900 ·  5.28 */
+  --pf-arena-linea:#3f6f84;   /* azul-400  · divisor visible sin gritar */
+
+  --pf-txt:        #faf6f1;   /* 13.26 */
+  --pf-txt-suave:  #aac0cb;   /*  7.55 */
+  --pf-txt-tenue:  #7a9caa;   /*  4.87 */
+  --pf-borde-control: #7a9caa;/*  4.87 — sigue por encima de 3:1 */
+
+  --pf-oro-tinta:      #feb862;  /* dorado-400  · 8.32 */
+  --pf-naranja-tin:    #e68c3f;  /* naranja-400 · 5.56 */
+  --pf-turquesa-tin:   #79babb;  /* turquesa-300· 6.49 */
+  --pf-exito:          #5cd697;  /*  7.83 */
+  --pf-error:          #eb8a85;  /*  5.78 */
+}
+
+body.dark .vc-perf--usuario   { --pf-rol-tinta: #feb862; }
+body.dark .vc-perf--negocio   { --pf-rol-tinta: #e68c3f; }
+body.dark .vc-perf--proveedor { --pf-rol-tinta: #79babb; }
+
+body.dark .vc-perf-hoja { border-color: rgba(255, 255, 255, 0.1); }
+body.dark .vc-perf-input { background: #001d2a; }
+body.dark .vc-perf-credencial__banda::after {
+  background: repeating-linear-gradient(-52deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 7px);
+}
+body.dark .vc-perf-estrellas { color: #feb862; }
+body.dark .vc-perf-ojo--activo { color: #001d2a; background: #79babb; border-color: #79babb; }
+
+/* Los tipos de movimiento tambien se remiden: el naranja-700 cae a 2.4:1
+   contra el azul-700 y el movimiento se pierde. */
+body.dark .vc-perf-mov--canje   { color: #e68c3f; }   /* 5.56 */
+body.dark .vc-perf-mov--compra  { color: #aac0cb; }   /* 7.55 */
+body.dark .vc-perf-mov--resena  { color: #5cd697; }   /* 7.83 */
+body.dark .vc-perf-mov--nivel   { color: #feb862; }   /* 8.32 */
+body.dark .vc-perf-mov--vinculo { color: #79babb; }   /* 6.49 */
+body.dark .vc-perf-mov--aviso   { color: #eb8a85; }   /* 5.78 */
+
+body.dark .vc-perf-stock--alto  { color: #5cd697; }
+body.dark .vc-perf-stock--medio { color: #feb862; }
+body.dark .vc-perf-stock--bajo  { color: #eb8a85; }
+
+body.dark .vc-perf-btn--solido {
+  /* modo oscuro: relleno CLARO + texto tinta. El naranja-600 solo se
+     despega 3.54:1 del fondo oscuro y el boton desaparece. */
+  background: #dd6600;
+  border-color: #dd6600;
+  color: #001d2a;                        /* 4.94 */
+  box-shadow: none;
+}
+body.dark .vc-perf-btn--solido:hover { background: #e68c3f; border-color: #e68c3f; }
+
+/* ==========================================================================
+   21 · BOTÓN DE RETROCESO — uno solo para toda la app
+   Lo usan Perfil, Calendario y Avisos (components/BotonVolver.jsx).
+
+   44px porque es el area tactil minima del proyecto. El tono tinta va
+   relleno en hueso: un contorno tenue se perdia contra el degradado
+   del encabezado y el boton parecia adorno. Dos tonos, porque no es
+   lo mismo un boton sobre azul petroleo que sobre un fondo claro.
+   ========================================================================== */
+
+.vc-volver {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 14px;
+  border: 1.5px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, transform .12s;
+}
+.vc-volver:active { transform: translateY(1px); }
+.vc-volver svg { stroke-width: 2.3; }
+
+/* Sobre tinta — perfil y calendario. Chip relleno en hueso con icono
+   tinta (~8:1 de contraste): se encuentra de una mirada. */
+.vc-volver--tinta {
+  border-color: #ead9c7;
+  background: #ead9c7;
+  color: #003f5a;
+}
+.vc-volver--tinta:hover { background: #f6ecdd; }
+
+/* Sobre papel — avisos. Borde hueso-800: 3.78 sobre blanco,
+   3.22 en el punto mas oscuro del degradado de la pantalla. */
+.vc-volver--papel {
+  border-color: #908170;
+  background: #ffffff;
+  color: #003f5a;                       /* 11.30 */
+}
+.vc-volver--papel:hover { background: #faf6f1; border-color: #003f5a; }
+
+.vc-volver:focus-visible {
+  outline: 3px solid #007a7b;
+  outline-offset: 2px;
+}
+.vc-volver--tinta:focus-visible { outline-color: #fea02f; }
+
+/* En el perfil el boton va flotando sobre la portada. La posicion la
+   pone .vc-perf-portada__volver, que ya esta en la seccion 20 junto a
+   la esquina de sucursales; el aspecto sale de aca. Un solo lugar para
+   cada cosa. */
+
+/* --- Encabezado del calendario ------------------------------------------
+   .cal-header sigue con space-between para las acciones de la derecha;
+   el boton y el titulo se agrupan a la izquierda. */
+.cal-header__titulo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+@media (prefers-contrast: more) {
+  .vc-volver { border-width: 2.5px; }
+  .vc-volver--papel { border-color: #003f5a; }
+  .vc-volver--tinta { border-color: #faf6f1; }
+}
+
+@media (forced-colors: active) {
+  .vc-volver { border: 2px solid ButtonBorder; background: ButtonFace; }
 }

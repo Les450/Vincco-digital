@@ -101,7 +101,7 @@ export function ConfigNav({ secciones, activa, onIr, abierta, onCerrar, rol, pie
                 x="36"
                 y="45"
                 textAnchor="middle"
-                fill="#ffffff"
+                fill="#ead9c7"
                 fontSize="32"
                 fontWeight="800"
                 fontFamily="Sora, Inter, sans-serif"

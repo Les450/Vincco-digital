@@ -6,7 +6,15 @@ import PublicacionesPanel from '../components/panel/PublicacionesPanel'
 import PapeleriaPanel from '../components/panel/PapeleriaPanel'
 import { moverAPapelera } from '../data/papelera'
 import { claveInventario } from '../data/inventario'
+import AvisoSucursal from '../components/panel/AvisoSucursal'
 import './Panel.css'
+
+// El `|| []` dentro del selector creaba un array nuevo en cada lectura.
+// Zustand compara por referencia para decidir si redibuja, y como
+// [] !== [] siempre le daba distinto: este componente se redibujaba
+// ante cualquier cambio del store, aunque las sucursales no cambiaran.
+// Con una constante fija la referencia se mantiene.
+const SIN_SUCURSALES = []
 
 // Base de secciones. El proveedor no ve las que pertenecen al
 // negocio (Proveedores, Cotizaciones y Directorio son de su panel):
@@ -256,7 +264,7 @@ export default function PanelSocio() {
   const location = useLocation()
   const userType = useStore((s) => s.userType)
   const usuario = useStore((s) => s.usuario)
-  const sucursales = useStore((s) => s.sucursales[userType] || [])
+  const sucursales = useStore((s) => s.sucursales[userType] ?? SIN_SUCURSALES)
   const sucursalActivaId = useStore((s) => s.sucursalActiva[userType])
   const sucursal = sucursales.find((s) => s.id === sucursalActivaId) || sucursales[0]
   const seccionInicial = location.pathname === '/publicaciones' ? 'publicaciones' : 'publicaciones'
@@ -314,6 +322,8 @@ export default function PanelSocio() {
           </button>
         ))}
       </nav>
+
+      <AvisoSucursal />
 
       <div className="panel-contenido">
         {seccionActiva === 'publicaciones' && <PublicacionesPanel />}

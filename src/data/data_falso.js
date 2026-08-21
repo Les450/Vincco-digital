@@ -243,7 +243,11 @@ export const categoriasFavoritos = [
 export const negociosFavoritos = [
   { id: 1, nombre: "Soda Doña Mercedes", categoria: "La soda", icono: "coffee", direccion: "Barrio Monseñor Lezcano, Managua", rating: 4.6, descripcion: "Comida casera nicaragüense a precios accesibles, ambiente familiar." },
   { id: 2, nombre: "Fonda El Buen Sabor", categoria: "La fonda", icono: "utensils", direccion: "Reparto Schick, Managua", rating: 4.4, descripcion: "Almuerzos ejecutivos y platillos tradicionales todos los días." },
-  { id: 3, nombre: "Ferretería Don Chico", categoria: "La ferretería", icono: "tool", direccion: "Mercado Roberto Huembes, Managua", rating: 4.8, descripcion: "Herramientas, materiales de construcción y asesoría técnica." },
+  // `sucursalId` conecta este favorito con el panel de negocio: lo que
+  // el dueño suba en su inventario (sucursal n1) es lo que el cliente ve
+  // cuando toca "Ver inventario". Los demás favoritos son negocios de
+  // demo y muestran su catálogo de ejemplo (data/catalogoNegocios.js).
+  { id: 3, nombre: "Ferretería Don Chico", categoria: "La ferretería", icono: "tool", direccion: "Mercado Roberto Huembes, Managua", rating: 4.8, descripcion: "Herramientas, materiales de construcción y asesoría técnica.", sucursalId: "n1" },
   { id: 4, nombre: "Farmacia San Rafael", categoria: "La farmacia", icono: "heart", direccion: "Linda Vista, Managua", rating: 4.5, descripcion: "Medicamentos genéricos y de marca, atención las 24 horas." },
   { id: 5, nombre: "Repostería Dulce Encanto", categoria: "Repostería", icono: "gift", direccion: "Altamira, Managua", rating: 4.9, descripcion: "Pasteles, postres y repostería fina para toda ocasión." },
   { id: 6, nombre: "Salón Bella Imagen", categoria: "Salón de belleza", icono: "zap", direccion: "Bolonia, Managua", rating: 4.3, descripcion: "Cortes, tintes y tratamientos de belleza con estilistas certificados." },
@@ -260,7 +264,50 @@ export const promocionesLimitadas = [
 ]
 
 export const categoriasNegocioAsociado = [
-  "Pulpería", "Ferretería", "Farmacia", "Boutique", "Restaurante", "Cafetería", "Agroservicio", "Tecnología", "Otro",
+  "Pulpería", "Restaurante", "Ferretería", "Farmacia", "Boutique", "Supermercado", "Barbería", "Otro",
+]
+
+export const categoriasProveedorAsociado = [
+  "Bebidas", "Abarrotes", "Lácteos", "Carnes", "Panadería", "Limpieza", "Electrónica", "Otro",
+]
+
+// Directorio de ejemplo para que el proveedor pueda buscar y elegir
+// un negocio al que pedirle asociacion, en vez de escribir todos sus
+// datos a mano. Cuando exista backend, esto sale de GET /negocios
+// (un directorio publico de negocios registrados en Vincco).
+export const negociosDirectorio = [
+  { id: 'dn1', nombre: 'Pulpería El Buen Precio', categoria: 'Pulpería', propietario: 'María Gutiérrez', municipio: 'Nueva Guinea', departamento: 'RACCS', telefono: '+505 8811 2233', correo: 'pulperiabuenprecio@gmail.com', whatsapp: true, verificado: true, color: '#007a7b', descripcion: 'Pulpería de barrio con productos de primera necesidad y abarrotes.' },
+  { id: 'dn2', nombre: 'Ferretería Central', categoria: 'Ferretería', propietario: 'Carlos Espinoza', municipio: 'Nueva Guinea', departamento: 'RACCS', telefono: '+505 8822 3344', correo: 'ferreteriacentral@gmail.com', whatsapp: true, verificado: true, color: '#c05900', descripcion: 'Herramientas, materiales de construcción y accesorios eléctricos.' },
+  { id: 'dn3', nombre: 'Farmacia San José', categoria: 'Farmacia', propietario: 'Ana Lucía Morales', municipio: 'León', departamento: 'León', telefono: '+505 8833 4455', correo: '', whatsapp: true, verificado: false, color: '#005c5e', descripcion: 'Medicamentos genéricos y de marca, atención todos los días.' },
+  { id: 'dn4', nombre: 'Boutique Estilo', categoria: 'Boutique', propietario: 'Jennifer Rocha', municipio: 'Granada', departamento: 'Granada', telefono: '+505 8844 5566', correo: 'boutiqueestilo@gmail.com', whatsapp: false, verificado: false, color: '#a34b00', descripcion: 'Ropa y accesorios de moda para toda la familia.' },
+  { id: 'dn5', nombre: 'Restaurante La Terraza', categoria: 'Restaurante', propietario: 'Roberto Sánchez', municipio: 'Rivas', departamento: 'Rivas', telefono: '+505 8855 6677', correo: 'laterraza.restaurante@gmail.com', whatsapp: true, verificado: true, color: '#dd6600', descripcion: 'Comida típica nicaragüense y platillos a la carta.' },
+  { id: 'dn6', nombre: 'Supermercado La Colonia', categoria: 'Supermercado', propietario: 'Eddy Castillo', municipio: 'Managua', departamento: 'Managua', telefono: '+505 2255 0099', correo: 'compras@lacolonia.com.ni', whatsapp: false, verificado: true, color: '#003f5a', descripcion: 'Abarrotes, lácteos, limpieza y más.' },
+  { id: 'dn7', nombre: 'Barbería El Corte', categoria: 'Barbería', propietario: 'Kevin Salinas', municipio: 'Bluefields', departamento: 'RACCS', telefono: '+505 8899 1122', correo: '', whatsapp: true, verificado: false, color: '#6b4226', descripcion: 'Cortes clásicos y modernos, barba y afeitado tradicional.' },
+]
+
+// Directorio simétrico para el flujo inverso: el negocio busca y
+// elige un proveedor al que pedirle asociacion. GET /proveedores
+// cuando exista backend.
+export const proveedoresDirectorio = [
+  { id: 'dp1', nombre: 'Distribuidora Norte', categoria: 'Abarrotes', contacto: 'Roberto Sánchez', municipio: 'Managua', departamento: 'Managua', telefono: '+505 8844 2200', correo: 'ventas@distribuidoranorte.com', whatsapp: true, verificado: true, color: '#007a7b', descripcion: 'Distribuimos arroz, frijoles, aceite y abarrotes a negocios de todo el país.' },
+  { id: 'dp2', nombre: 'Lácteos del Valle', categoria: 'Lácteos', contacto: 'Carla Membreño', municipio: 'León', departamento: 'León', telefono: '+505 8712 4488', correo: '', whatsapp: true, verificado: false, color: '#0f766e', descripcion: 'Queso, cuajada y crema fresca directo de finca, entrega semanal.' },
+  { id: 'dp3', nombre: 'Materiales La Unión', categoria: 'Ferretería', contacto: 'Silvio Ortega', municipio: 'Granada', departamento: 'Granada', telefono: '+505 8277 6699', correo: 'ventas@materialeslaunion.com', whatsapp: false, verificado: true, color: '#a34b00', descripcion: 'Cemento, varilla, pintura y tubería para ferreterías y constructoras.' },
+  { id: 'dp4', nombre: 'Bebidas del Pacífico', categoria: 'Bebidas', contacto: 'Henry Baltodano', municipio: 'Rivas', departamento: 'Rivas', telefono: '+505 8555 3311', correo: 'pedidos@bebidaspacifico.com', whatsapp: true, verificado: false, color: '#005c5e', descripcion: 'Gaseosas, jugos y agua embotellada, entregas dos veces por semana.' },
+  { id: 'dp5', nombre: 'Carnes El Establo', categoria: 'Carnes', contacto: 'Douglas Mendoza', municipio: 'Nueva Guinea', departamento: 'RACCS', telefono: '+505 8933 7744', correo: '', whatsapp: false, verificado: false, color: '#7c2d12', descripcion: 'Carne de res y cerdo, cortes por mayor con cadena de frío.' },
+  { id: 'dp6', nombre: 'Panificadora Aroma', categoria: 'Panadería', contacto: 'Yessenia Rugama', municipio: 'Bluefields', departamento: 'RACCS', telefono: '+505 8611 9922', correo: 'aroma.panificadora@gmail.com', whatsapp: true, verificado: true, color: '#92400e', descripcion: 'Pan dulce, pan francés y repostería, producción diaria.' },
+  { id: 'dp7', nombre: 'Limpieza Total S.A.', categoria: 'Limpieza', contacto: 'Óscar Vado', municipio: 'Managua', departamento: 'Managua', telefono: '+505 2266 3300', correo: 'contacto@limpiezatotal.com.ni', whatsapp: true, verificado: false, color: '#334155', descripcion: 'Detergentes, desinfectantes y artículos de limpieza al por mayor.' },
+]
+
+// Espejo del lado del negocio: los proveedores que están (o quieren
+// estar) asociados a él. Misma forma que negociosAsociados, porque la
+// pantalla que los muestra es la misma interfaz por cada rol.
+export const proveedoresAsociados = [
+  { id: 1, nombre: "Distribuidora Norte", categoria: "Abarrotes", propietario: "Roberto Sánchez", whatsapp: "+505 8844 2200", correo: "ventas@distribuidoranorte.com", direccion: "Carretera a Masaya, km 8", municipio: "Managua", departamento: "Managua", descripcion: "Distribuimos arroz, frijoles, aceite y abarrotes a negocios de todo el país.", imagen: null, estado: "aceptada", color: "#007a7b" },
+  { id: 2, nombre: "Lácteos del Valle", categoria: "Lácteos", propietario: "Carla Membreño", whatsapp: "+505 8712 4488", correo: "", direccion: "Finca El Valle, salida a Telica", municipio: "León", departamento: "León", descripcion: "Queso, cuajada y crema fresca directo de finca, entrega semanal.", imagen: null, estado: "aceptada", color: "#0f766e" },
+  { id: 3, nombre: "Materiales La Unión", categoria: "Ferretería", propietario: "Silvio Ortega", whatsapp: "+505 8277 6699", correo: "ventas@materialeslaunion.com", direccion: "Calle Real, contiguo al banco", municipio: "Granada", departamento: "Granada", descripcion: "Cemento, varilla, pintura y tubería para ferreterías y constructoras.", imagen: null, estado: "pendiente", color: "#a34b00" },
+  { id: 4, nombre: "Bebidas del Pacífico", categoria: "Bebidas", propietario: "Henry Baltodano", whatsapp: "+505 8555 3311", correo: "pedidos@bebidaspacifico.com", direccion: "Salida a San Jorge, km 2", municipio: "Rivas", departamento: "Rivas", descripcion: "Gaseosas, jugos y agua embotellada, entregas dos veces por semana.", imagen: null, estado: "pendiente", color: "#005c5e" },
+  { id: 5, nombre: "Panificadora Aroma", categoria: "Panadería", propietario: "Yessenia Rugama", whatsapp: "+505 8611 9922", correo: "aroma.panificadora@gmail.com", direccion: "Barrio Santa Rosa, frente al parque", municipio: "Bluefields", departamento: "RACCS", descripcion: "Pan dulce, pan francés y repostería, producción diaria.", imagen: null, estado: "aceptada", color: "#92400e" },
+  { id: 6, nombre: "Limpieza Total S.A.", categoria: "Limpieza", propietario: "Óscar Vado", whatsapp: "+505 2266 3300", correo: "contacto@limpiezatotal.com.ni", direccion: "Zona industrial, bodega 14", municipio: "Managua", departamento: "Managua", descripcion: "Detergentes, desinfectantes y artículos de limpieza al por mayor.", imagen: null, estado: "aceptada", color: "#334155" },
 ]
 
 // Estados: 'pendiente' (el proveedor la mandó, el negocio no respondió

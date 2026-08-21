@@ -1,5 +1,12 @@
 export const INVENTARIO_KEY = 'pn_inventario'
 
+/* Unidades de medida del comercio local. Vivían escritas dentro del
+   formulario de cotización del proveedor; ahora también las usa el
+   negocio cuando pide, y las dos listas tienen que ser la misma o
+   al copiar el pedido a la cotización aparecería una unidad que el
+   select del proveedor no conoce. */
+export const UNIDADES = ['unidad', 'kg', 'lb', 'litro', 'caja', 'paquete', 'metros']
+
 // Cada sucursal tiene su propio inventario: la clave se compone con
 // el id de la sucursal activa. Sin id se usa la clave clasica para
 // no romper nada que aun no conozca las sucursales.
@@ -16,7 +23,14 @@ export function cargarInventario(clave = INVENTARIO_KEY) {
 }
 
 export function guardarInventario(items, clave = INVENTARIO_KEY) {
-  localStorage.setItem(clave, JSON.stringify(items))
+  // Si el almacenamiento esta lleno no revienta la pantalla: se
+  // avisa por consola y la app sigue (las imagenes ya se comprimen
+  // al subirlas, asi que esto solo pasaria en un caso extremo).
+  try {
+    localStorage.setItem(clave, JSON.stringify(items))
+  } catch (e) {
+    console.warn('localStorage lleno: no se pudo guardar el inventario', clave, e)
+  }
 }
 
 export const esPromocion = (item) => item?.tipoPublicacion === 'promocion'
@@ -43,7 +57,7 @@ function construirEntrada(pub) {
       cantidad: Number(pub.unidades) || 0,
       unidad: 'unidad',
       precio: 0,
-      stockMinimo: 0,
+      stockMinimo: Number(pub.alertaStock) || 0,
       tipoPublicacion: 'promocion',
       subtipoPromocion: limitada ? 'limitada' : 'normal',
       descuento: pub.descuento ? Number(pub.descuento) : null,

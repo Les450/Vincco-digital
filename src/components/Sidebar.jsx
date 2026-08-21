@@ -17,13 +17,22 @@ function getMenuItems(userType) {
     { label: 'Inicio', icon: 'home', path: '/inicio' },
   ]
 
-  if (!esCliente) {
-if (!esCliente && !esProveedor) {
-    // Los proveedores del negocio viven en el panel, con la misma
-    // interfaz (filtros por categoría y ubicación): el menú abre
-    // directo esa seccion.
-    items.push({ label: 'Proveedores', icon: 'truck', path: '/panel-negocio?tab=proveedores' })
+  if (esCliente) {
+    items.push({
+      label: 'Socio de Vincco',
+      icon: 'handshake',
+      imagen: `${process.env.PUBLIC_URL}/assets/icons/socio-vincco.png`,
+      path: '/socio-vincco',
+    })
   }
+
+  if (!esCliente) {
+    if (!esCliente && !esProveedor) {
+      // El negocio abre su pantalla de proveedores asociados (gemela
+      // de la del proveedor); desde ahí busca en el directorio de
+      // proveedores (/proveedores), que comparte el diseño del módulo.
+      items.push({ label: 'Proveedores', icon: 'truck', path: '/proveedores-asociados' })
+    }
 
   items.push(
       esProveedor
@@ -132,7 +141,11 @@ export default function Sidebar({ open, onClose }) {
                     onClick={() => handleNav(item.path)}
                     className={`side-nav-item${activo ? ' side-nav-item--active' : ''}`}
                   >
-                    <Icon name={item.icon} size={19} className="side-nav-icon" />
+                    {item.imagen ? (
+                      <img src={item.imagen} alt="" className="side-nav-img-icon" />
+                    ) : (
+                      <Icon name={item.icon} size={19} className="side-nav-icon" />
+                    )}
                     <span className="side-nav-label">{item.label}</span>
                     {activo && <span className="side-nav-dot" />}
                   </button>

@@ -39,7 +39,7 @@
   font-family: 'Sora', 'Inter', sans-serif;
   font-size: 17px;
   font-weight: 700;
-  color: #ffffff;
+  color: #ead9c7;
 }
 
 .rds-seccion-head p {
@@ -53,11 +53,11 @@
   flex-shrink: 0;
   padding: 5px 13px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(234, 217, 199, 0.2);
   background: rgba(197, 18, 18, 0.08);
   font-size: 12px;
   font-weight: 700;
-  color: #ffffff;
+  color: #ead9c7;
   white-space: nowrap;
 }
 
@@ -94,14 +94,14 @@
   gap: 14px;
   padding: 16px;
   border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(234, 217, 199, 0.12);
+  background: rgba(234, 217, 199, 0.06);
   transition: border-color 0.2s, background 0.2s;
 }
 
 .red-card--activa {
-  border-color: rgba(255, 255, 255, 0.26);
-  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(234, 217, 199, 0.26);
+  background: rgba(234, 217, 199, 0.1);
 }
 
 .red-card-top {
@@ -130,12 +130,12 @@
 .red-card-nombre {
   font-size: 14.5px;
   font-weight: 700;
-  color: #ffffff;
+  color: #ead9c7;
 }
 
 .red-card-valor {
   font-size: 12.5px;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(234, 217, 199, 0.7);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -143,7 +143,7 @@
 
 .red-card-sin {
   font-size: 12.5px;
-  color: rgba(255, 255, 255, 0.42);
+  color: rgba(234, 217, 199, 0.42);
 }
 
 .red-card-check {
@@ -176,7 +176,7 @@
 
 .red-btn--conectar {
   flex: 1;
-  color: #ffffff;
+  color: #ead9c7;
 }
 
 .red-btn--conectar:hover {
@@ -185,21 +185,21 @@
 
 .red-btn--ver {
   flex: 1;
-  background: rgba(255, 255, 255, 0.14);
-  color: #ffffff;
+  background: rgba(234, 217, 199, 0.14);
+  color: #ead9c7;
 }
 
 .red-btn--ver:hover {
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(234, 217, 199, 0.22);
 }
 
 .red-btn--editar {
-  background: rgba(255, 255, 255, 0.09);
-  color: rgba(255, 255, 255, 0.85);
+  background: rgba(234, 217, 199, 0.09);
+  color: rgba(234, 217, 199, 0.85);
 }
 
 .red-btn--editar:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(234, 217, 199, 0.16);
 }
 
 .red-btn--quitar {
@@ -325,7 +325,7 @@
   border: none;
   border-radius: 11px;
   background: var(--navy-800);
-  color: #ffffff;
+  color: #ead9c7;
   font-family: inherit;
   font-size: 12.5px;
   font-weight: 700;
@@ -356,7 +356,7 @@
   flex: 1;
   padding: 12px 14px;
   border-radius: 13px;
-  color: #ffffff;
+  color: #ead9c7;
   font-size: 13.5px;
   font-weight: 700;
   transition: filter 0.2s;
@@ -500,7 +500,7 @@
 
 .rds-btn-primario {
   background: linear-gradient(135deg, var(--orange-500), var(--orange-600));
-  color: #ffffff;
+  color: #ead9c7;
 }
 
 .rds-btn-primario:hover {
