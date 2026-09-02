@@ -7,30 +7,6 @@
 // escritura, poder, acta, certificaciones) son los que pide la Ley
 // 977 y su reglamento para conocer al cliente.
 
-export const ROLES_KYC = [
-  {
-    id: 'usuario',
-    nombre: 'Cliente',
-    descripcion: 'Verificá tu identidad para que tus reseñas y puntos valgan como Cliente verificado.',
-    icono: 'user',
-    acento: 'cyan',
-  },
-  {
-    id: 'negocio',
-    nombre: 'Negocio',
-    descripcion: 'Desbloqueá publicaciones, cotizaciones y negocios asociados verificando tu comercio.',
-    icono: 'store',
-    acento: 'emerald',
-  },
-  {
-    id: 'proveedor',
-    nombre: 'Proveedor',
-    descripcion: 'Verificá tu empresa para publicar productos y cotizarle a los negocios asociados.',
-    icono: 'truck',
-    acento: 'amber',
-  },
-]
-
 export const PASOS_KYC = [
   { numero: 1, titulo: 'Identificación personal', corto: 'Identidad', icono: 'user' },
   { numero: 2, titulo: 'Documentos', corto: 'Documentos', icono: 'file-text' },

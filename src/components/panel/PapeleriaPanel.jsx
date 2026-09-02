@@ -183,7 +183,7 @@ export default function PapeleriaPanel() {
             <div key={item.papeleraId} className="panel-inv-item">
               <div className="panel-inv-item-icono">
                 {item.imagen ? (
-                  <img src={item.imagen} alt={item.nombre} className="panel-inv-item-img" />
+                  <img src={item.imagen} alt={item.nombre} className="panel-inv-item-img" loading="lazy" />
                 ) : (
                   <Icon name="package" size={20} />
                 )}

@@ -279,6 +279,8 @@ export default function Register() {
           break
         case 8:
           break
+        default:
+          break
       }
     } else {
       if (step === 1) {
@@ -719,24 +721,6 @@ export default function Register() {
         return null
     }
   }
-
-  const renderComingSoon = () => (
-    <div className="rk-coming-soon">
-      <img src={VINCCO_LOGO} alt="VINCCO" className="rk-logo-img" />
-      <h2 className="rk-coming-title">Próximamente</h2>
-      <p className="rk-coming-msg">
-        El flujo de registro para <strong>Proveedor</strong> estará disponible pronto.
-      </p>
-      <button
-        className="rk-btn rk-btn--primary"
-        onClick={() => { setStep(0); setAccountType(''); setDirection('backward') }}
-        type="button"
-        style={{ width: '100%', marginTop: 12 }}
-      >
-        Volver a seleccionar tipo de cuenta
-      </button>
-    </div>
-  )
 
   const renderNegocioStep = () => {
     switch (step) {

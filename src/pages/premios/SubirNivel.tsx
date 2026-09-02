@@ -1,6 +1,7 @@
-import { useState } from 'react'
-import { Store, Gift, Sparkles, ChevronDown, Star } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Store, Gift, Sparkles, ChevronDown, Star, Check } from 'lucide-react'
 import { ANUNCIOS_SUBIR_NIVEL, type AnuncioSubirNivel } from '../../data/premios'
+import { META_NIVEL, nivelActual, siguienteNivel, estadoNivel, NIVELES } from './nivelesUI'
 import { cn } from '../../lib/utils'
 
 // Tile (fondo del icono) y chip (etiqueta de puntos) por anuncio.
@@ -78,7 +79,138 @@ function BloqueAnuncio({ anuncio }: { anuncio: AnuncioSubirNivel }) {
   )
 }
 
-export default function SubirNivel() {
+/* Progresion de niveles: la misma historia que el hero de arriba.
+ * La barra se divide en 4 tramos iguales (uno por nivel, alineados
+ * con las tarjetas de abajo) y el relleno avanza DENTRO del tramo
+ * del nivel actual: con Plata, el marcador cae en el segundo tramo
+ * y esa tarjeta queda bordeada en dorado #fea02f. Los puntos vienen
+ * del mismo store que el saldo y el badge "Nivel X" de arriba, asi
+ * no pueden desincronizarse. */
+function ProgresionNiveles({ puntos }: { puntos: number }) {
+  const actual = nivelActual(puntos)
+  const sig = siguienteNivel(puntos)
+
+  // Mismo % que el hero: cuanto del tramo actual llevas recorrido.
+  const fraccion = sig
+    ? (puntos - actual.puntosMin) / (sig.puntosMin - actual.puntosMin)
+    : 1
+
+  // Posicion sobre la barra completa: tramo actual + lo recorrido
+  // dentro de el. Con niveles de 25% cada uno, el marcador siempre
+  // queda encima de la tarjeta de tu nivel.
+  const indice = NIVELES.findIndex((n) => n.id === actual.id)
+  const posicion = ((indice + Math.min(Math.max(fraccion, 0), 1)) / NIVELES.length) * 100
+
+  // El relleno arranca en 0 y crece hasta su posicion real, igual
+  // que la barra del hero.
+  const [ancho, setAncho] = useState(0)
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setAncho(posicion))
+    return () => cancelAnimationFrame(id)
+  }, [posicion])
+
+  return (
+    <div className="mt-8 rounded-3xl border border-hueso-300 bg-white p-5 shadow-[0_2px_18px_-6px_rgba(0,63,90,0.14)] sm:p-6">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h3 className="font-display text-lg font-bold text-tinta-900">Los niveles de Vincco</h3>
+        {sig ? (
+          <p className="text-sm text-tinta-600">
+            Estás en <span className="font-extrabold text-tinta-900">{actual.nombre}</span> · Vas{' '}
+            <span className="font-extrabold text-turquesa-700">{Math.round(fraccion * 100)}%</span>{' '}
+            hacia {sig.nombre}
+          </p>
+        ) : (
+          <p className="text-sm font-extrabold text-naranja-700">Nivel maximo alcanzado</p>
+        )}
+      </div>
+
+      {/* Barra partida en 4 tramos; el relleno termina dentro del
+          tramo del nivel actual, igual que el % del hero. */}
+      <div
+        role="progressbar"
+        aria-label="Progreso por los niveles de Vincco"
+        aria-valuenow={Math.round(fraccion * 100)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuetext={`Nivel ${actual.nombre}${sig ? `, ${Math.round(fraccion * 100)}% hacia ${sig.nombre}` : ''}`}
+        className="relative mt-6 h-3 rounded-full bg-hueso-200 ring-1 ring-hueso-300"
+      >
+        {/* Separadores de tramo (uno por cambio de nivel) */}
+        {[25, 50, 75].map((pct) => (
+          <span
+            key={pct}
+            aria-hidden="true"
+            className="absolute top-1/2 h-4 w-0.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-tinta-900/10"
+            style={{ left: `${pct}%` }}
+          />
+        ))}
+        <div
+          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-naranja-500 to-dorado-400 transition-[width] duration-1000 ease-out"
+          style={{ width: `${Math.min(ancho, 100)}%` }}
+        />
+        {/* Marcador de posicion: viaja con el relleno */}
+        <span
+          aria-hidden="true"
+          className="absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-dorado-500 bg-white shadow-md transition-[left] duration-1000 ease-out"
+          style={{ left: `${Math.min(ancho, 100)}%` }}
+        />
+      </div>
+
+      <ol className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {NIVELES.map((n) => {
+          const m = META_NIVEL[n.id]
+          const Icono = m.icono
+          const esActual = n.id === actual.id
+          const superado = n.puntosMax < puntos
+          return (
+            <li
+              key={n.id}
+              aria-current={esActual ? 'step' : undefined}
+              className={cn(
+                'rounded-2xl border-2 p-4 transition',
+                esActual
+                  ? 'border-dorado-500 bg-dorado-50 shadow-[0_6px_18px_-8px_rgba(254,160,47,0.55)]'
+                  : 'border-hueso-200 bg-hueso-50'
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <span
+                  className={cn(
+                    'grid h-10 w-10 place-items-center rounded-xl',
+                    esActual ? 'bg-dorado-500/15' : 'bg-white'
+                  )}
+                >
+                  <Icono
+                    className={cn('h-5 w-5', superado && !esActual ? 'text-turquesa-600' : m.acentoOscuro)}
+                    aria-hidden="true"
+                  />
+                </span>
+                {superado && !esActual && (
+                  <Check className="h-4 w-4 text-turquesa-600" aria-hidden="true" />
+                )}
+              </div>
+              <p className="mt-3 text-sm font-extrabold text-tinta-900">{n.nombre}</p>
+              <span
+                className={cn(
+                  'mt-2 inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide',
+                  esActual
+                    ? 'bg-dorado-500 text-tinta-900'
+                    : superado
+                      ? 'bg-turquesa-100 text-turquesa-800'
+                      : 'text-tinta-500'
+                )}
+              >
+                {estadoNivel(n, puntos)}
+              </span>
+            </li>
+          )
+        })}
+      </ol>
+    </div>
+  )
+}
+
+export default function SubirNivel({ puntos }: { puntos: number }) {
   return (
     <section aria-label="Como subir tu nivel en Vincco">
       <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-tinta-500">
@@ -91,6 +223,8 @@ export default function SubirNivel() {
         Hay tres caminos para acumular puntos. Elegi el que mas te convenga:
         cada accion suma directo a tu saldo.
       </p>
+
+      <ProgresionNiveles puntos={puntos} />
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {ANUNCIOS_SUBIR_NIVEL.map((a) => (

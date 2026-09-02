@@ -633,7 +633,7 @@ function TarjetaPublicacion({ item, index, onVer, pie }) {
           <span style={{ ...promoBadgeStyle, color: item.color }}>{item.badge}</span>
         )}
         {item.imagen ? (
-          <img src={item.imagen} alt={item.titulo} style={promoImgStyle} />
+          <img src={item.imagen} alt={item.titulo} style={promoImgStyle} loading="lazy" />
         ) : (
           <motion.div
             style={promoIconWrapStyle}

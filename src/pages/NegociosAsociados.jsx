@@ -275,7 +275,7 @@ export default function NegociosAsociados() {
                   <label>Imagen del negocio</label>
                   {form.imagen ? (
                     <div className="na-form-imagen-preview">
-                      <img src={form.imagen} alt="Vista previa" />
+                      <img src={form.imagen} alt="Vista previa" loading="lazy" />
                       <button
                         type="button"
                         className="na-form-imagen-quitar"

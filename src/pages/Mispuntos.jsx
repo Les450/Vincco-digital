@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import useStore from '../store/puntos_usestore'
 import Icon from '../components/icons/Icon'
-import { recompensas, niveles, consejosPuntos, negociosFavoritos } from '../data/data_falso'
+import { recompensas, niveles, consejosPuntos } from '../data/data_falso'
 import { COLORES_PUNTOS } from '../styles/colores'
 
 // Los hex vivian escritos aca y repetidos en Home.jsx.
@@ -30,8 +30,11 @@ function nivelActual(puntos) {
   return [...niveles].reverse().find(n => puntos >= n.puntosMin) || niveles[0]
 }
 
+// El proximo nivel es el primero cuyo piso queda ARRIBA de tus
+// puntos. Antes comparaba contra puntosMax y devolvia el nivel en
+// el que ya estabas: con 340 pts decia "Proximo nivel: Plata".
 function siguienteNivel(puntos) {
-  return niveles.find(n => puntos < n.puntosMax) || niveles[niveles.length - 1]
+  return niveles.find(n => puntos < n.puntosMin) || null
 }
 
 function RecompensaCard({ r, puntos }) {
@@ -165,25 +168,27 @@ function RecompensaCard({ r, puntos }) {
   )
 }
 
-function CarouselAnunciosNegocios() {
-  const negociosVIP = [
-    { nombre: 'Ferretería Don Chico', icono: 'tool', color: C.navy800, pts: 50, desc: 'Materiales de construcción y ferretería en general' },
-    { nombre: 'Pulpería La Esquina', icono: 'coffee', color: C.orange, pts: 30, desc: 'Productos básicos, abarrotes y más' },
-    { nombre: 'Agroservicios El Campo', icono: 'package', color: C.teal, pts: 40, desc: 'Insumos agropecuarios para tu negocio' },
-    { nombre: 'Café del Barrio', icono: 'coffee', color: C.gold, pts: 25, desc: 'Café artesanal nicaragüense' },
-    { nombre: 'Boutique Alma', icono: 'shirt', color: '#8b5cf6', pts: 35, desc: 'Moda femenina y accesorios' },
-  ]
+// Fijo y sin dependencia de props/estado: vive fuera del componente
+// para no recrear el arreglo (ni sus objetos) en cada render.
+const NEGOCIOS_VIP = [
+  { nombre: 'Ferretería Don Chico', icono: 'tool', color: C.navy800, pts: 50, desc: 'Materiales de construcción y ferretería en general' },
+  { nombre: 'Pulpería La Esquina', icono: 'coffee', color: C.orange, pts: 30, desc: 'Productos básicos, abarrotes y más' },
+  { nombre: 'Agroservicios El Campo', icono: 'package', color: C.teal, pts: 40, desc: 'Insumos agropecuarios para tu negocio' },
+  { nombre: 'Café del Barrio', icono: 'coffee', color: C.gold, pts: 25, desc: 'Café artesanal nicaragüense' },
+  { nombre: 'Boutique Alma', icono: 'shirt', color: '#8b5cf6', pts: 35, desc: 'Moda femenina y accesorios' },
+]
 
+function CarouselAnunciosNegocios() {
   const [actual, setActual] = useState(0)
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setActual((prev) => (prev + 1) % negociosVIP.length)
+      setActual((prev) => (prev + 1) % NEGOCIOS_VIP.length)
     }, 3500)
     return () => clearInterval(timer)
   }, [])
 
-  const n = negociosVIP[actual]
+  const n = NEGOCIOS_VIP[actual]
 
   return (
     <div style={{
@@ -279,7 +284,7 @@ function CarouselAnunciosNegocios() {
         position: 'relative',
         zIndex: 1,
       }}>
-        {negociosVIP.map((_, i) => (
+        {NEGOCIOS_VIP.map((_, i) => (
           <button
             key={i}
             onClick={() => setActual(i)}
@@ -304,10 +309,13 @@ export default function MisPuntos() {
   const usuario = useStore((s) => s.usuario)
   const nivel = nivelActual(usuario.puntos)
   const sigNivel = siguienteNivel(usuario.puntos)
+  // % del tramo actual: del piso de tu nivel al piso del siguiente.
+  // Es el mismo numero que muestra la tarjeta de abajo, asi las dos
+  // secciones cuentan la misma historia siempre.
   const progresoNivel = sigNivel
-    ? ((usuario.puntos - nivel.puntosMin) / (sigNivel.puntosMax - nivel.puntosMin)) * 100
+    ? ((usuario.puntos - nivel.puntosMin) / (sigNivel.puntosMin - nivel.puntosMin)) * 100
     : 100
-  const puntosProximo = sigNivel ? sigNivel.puntosMax - usuario.puntos + 1 : 0
+  const puntosProximo = sigNivel ? sigNivel.puntosMin - usuario.puntos : 0
 
   return (
     <div style={{
@@ -392,7 +400,7 @@ export default function MisPuntos() {
             zIndex: 1,
           }}>
             <div>
-              <p style={eyebrowStyle}>TU SALDO</p>
+              <p style={eyebrowStyle}>TUS PUNTOS</p>
               <div style={{
                 display: 'flex',
                 alignItems: 'baseline',
@@ -409,29 +417,23 @@ export default function MisPuntos() {
                 }}>
                   {usuario.puntos}
                 </span>
-                <span style={{
-                  fontSize: 16,
-                  fontWeight: 600,
-                  color: C.textMuted,
-                }}>
-                  puntos
-                </span>
               </div>
 
               <div style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 8,
-                backgroundColor: `${nivel.color}15`,
+                backgroundColor: `${nivel.color}20`,
                 padding: '5px 16px',
                 borderRadius: 999,
                 marginTop: 4,
+                border: `1.5px solid ${nivel.color}`,
               }}>
-                <Icon name={nivel.icono} size={14} style={{ color: nivel.color }} />
+                <Icon name={nivel.icono} size={14} style={{ fill: C.gold, color: C.goldDark }} />
                 <span style={{
                   fontSize: 13,
-                  fontWeight: 700,
-                  color: nivel.color,
+                  fontWeight: 800,
+                  color: C.ink,
                 }}>
                   Nivel {nivel.nivel}
                 </span>
@@ -687,36 +689,86 @@ export default function MisPuntos() {
           </div>
         </div>
 
-        {/* Niveles */}
+        {/* Progresión de niveles — sincronizada con la tarjeta de arriba.
+            Tu nivel actual va bordeado en dorado #fea02f (C.gold) y trae
+            la misma barra de progreso que el bloque "Próximo nivel":
+            los dos leen usuario.puntos, asi no pueden desincronizarse. */}
         <div style={cardStyle}>
-          <p style={eyebrowStyle}>PROGRESIÓN DE NIVELES</p>
           <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 8,
+          }}>
+            <p style={eyebrowStyle}>PROGRESIÓN DE NIVELES</p>
+            {sigNivel ? (
+              <p style={{
+                margin: 0,
+                fontSize: 12,
+                fontWeight: 600,
+                color: C.textBody,
+              }}>
+                Estás en <span style={{ fontWeight: 800, color: C.ink }}>{nivel.nivel}</span>
+                {' '}· {Math.round(progresoNivel)}% hacia{' '}
+                <span style={{ fontWeight: 800, color: C.orangeDark }}>{sigNivel.nivel}</span>
+              </p>
+            ) : (
+              <p style={{
+                margin: 0,
+                fontSize: 12,
+                fontWeight: 800,
+                color: C.orangeDark,
+              }}>
+                ¡Nivel máximo alcanzado!
+              </p>
+            )}
+          </div>
+
+          {/* className va como prop del div, no dentro de style:
+              igual que en las otras grillas de esta pantalla */}
+          <div className="mp-grid-4" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
             gap: 12,
             marginTop: 16,
           }}>
             {niveles.map((n) => {
-              const alcanzado = usuario.puntos >= n.puntosMin
+              const esActual = n.nivel === nivel.nivel
+              const superado = usuario.puntos > n.puntosMax
+              const futuro = !esActual && !superado
               return (
                 <div key={n.nivel} style={{
-                  backgroundColor: alcanzado ? `${n.color}10` : C.subtleBg,
+                  backgroundColor: esActual ? '#fff6e8' : superado ? `${n.color}10` : C.subtleBg,
                   borderRadius: 16,
                   padding: 16,
                   textAlign: 'center',
-                  border: `1.5px solid ${alcanzado ? n.color : C.border}`,
-                  opacity: alcanzado ? 1 : 0.5,
+                  border: esActual ? `2px solid ${C.gold}` : `1.5px solid ${superado ? n.color : C.border}`,
+                  boxShadow: esActual ? '0 6px 18px -8px rgba(254,160,47,0.55)' : 'none',
+                  opacity: futuro ? 0.55 : 1,
+                  position: 'relative',
                 }}>
+                  {superado && !esActual && (
+                    <span style={{ position: 'absolute', top: 10, right: 10 }}>
+                      <Icon name="check-circle" size={16} style={{ color: C.teal }} />
+                    </span>
+                  )}
                   <Icon
                     name={n.icono}
                     size={24}
-                    style={{ color: alcanzado ? n.color : C.textMuted }}
+                    // El relleno dorado va por style inline: gana sobre el
+                    // fill="none" que el Icon pone como atributo del svg.
+                    style={
+                      esActual
+                        ? { fill: C.gold, color: C.goldDark }
+                        : { color: superado ? n.color : C.textMuted }
+                    }
                   />
                   <h4 style={{
                     margin: '8px 0 2px',
-                    fontSize: 14,
-                    fontWeight: 700,
-                    color: alcanzado ? n.color : C.textMuted,
+                    fontSize: esActual ? 15 : 14,
+                    fontWeight: esActual ? 900 : 700,
+                    color: futuro ? C.textMuted : (esActual ? '#000000' : n.color),
                   }}>
                     {n.nivel}
                   </h4>
@@ -727,6 +779,53 @@ export default function MisPuntos() {
                   }}>
                     {n.puntosMin}–{n.puntosMax === Infinity ? '∞' : n.puntosMax} pts
                   </p>
+
+                  {esActual && (
+                    <>
+                      <span style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        backgroundColor: C.gold,
+                        color: '#002e43',
+                        fontSize: 9,
+                        fontWeight: 800,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.06em',
+                        padding: '3px 10px',
+                        borderRadius: 999,
+                        marginTop: 10,
+                      }}>
+                        <Icon name="star" filled size={10} style={{ color: '#002e43' }} />
+                        Tu nivel actual
+                      </span>
+                      {sigNivel && (
+                        <div style={{ marginTop: 12 }}>
+                          <div style={{
+                            height: 6,
+                            borderRadius: 999,
+                            backgroundColor: '#e8ecf0',
+                            overflow: 'hidden',
+                          }}>
+                            <div style={{
+                              width: `${Math.min(progresoNivel, 100)}%`,
+                              height: '100%',
+                              borderRadius: 999,
+                              background: `linear-gradient(90deg, ${C.gold}, ${C.orange})`,
+                            }} />
+                          </div>
+                          <p style={{
+                            margin: '6px 0 0',
+                            fontSize: 11,
+                            fontWeight: 600,
+                            color: C.textBody,
+                          }}>
+                            {Math.round(progresoNivel)}% hacia {sigNivel.nivel}
+                          </p>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               )
             })}

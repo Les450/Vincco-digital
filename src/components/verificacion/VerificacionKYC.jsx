@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useStore from '../../store/puntos_usestore'
 import Icon from '../icons/Icon'
-import RoleSelector from './kyc/RoleSelector'
 import ProgressBar from './kyc/ProgressBar'
 import FormStep from './kyc/FormStep'
 import ValidationInput from './kyc/ValidationInput'
@@ -23,8 +22,10 @@ import {
 // Verificación de identidad (KYC / debida diligencia, Ley 977).
 // Se monta desde AppRouter por encima de todo: aparece en el
 // registro, en el perfil cuando el rol no está aprobado y desde
-// cualquier acción bloqueada. Es un wizard de 5 pantallas: selector
-// de rol, 4 pasos de expediente y la confirmación de envío.
+// cualquier acción bloqueada. El rol (cliente/negocio/proveedor) ya
+// viene decidido de quien lo abre — el wizard no lo vuelve a
+// preguntar ni deja cambiarlo, va directo a los 4 pasos del
+// expediente y termina con la confirmación de envío.
 //
 // El borrador se guarda en el store (vincco:kyc) al vuelo, por lo
 // que cerrar a mitad de camino no pierde nada: al volver a abrir,
@@ -35,6 +36,8 @@ const MENSAJES_CAMPO = {
   telefono: 'Usá +505 y 8 dígitos',
   fecha: 'Debés ser mayor de 18 años',
 }
+
+const NOMBRES_ROL = { usuario: 'Cliente', negocio: 'Negocio', proveedor: 'Proveedor' }
 
 function validarCampo(campo, valor, nacionalidad) {
   if (campo.tipo === 'archivo') {
@@ -65,20 +68,19 @@ export default function VerificacionKYC() {
   const cerrarKYC = useStore((s) => s.cerrarKYC)
   const guardarKYC = useStore((s) => s.guardarKYC)
   const guardarPasoKYC = useStore((s) => s.guardarPasoKYC)
-  const cambiarRolKYC = useStore((s) => s.cambiarRolKYC)
   const enviarKYC = useStore((s) => s.enviarKYC)
 
-  // etapa: 0 selector de rol · 1-4 pasos del expediente · 5 éxito
-  const [etapa, setEtapa] = useState(0)
+  // etapa: 1-4 pasos del expediente · 5 éxito
+  const [etapa, setEtapa] = useState(1)
   const [rol, setRol] = useState(null)
   const [form, setForm] = useState({})
   const [errores, setErrores] = useState({})
   const [acepta, setAcepta] = useState(false)
   const [enviando, setEnviando] = useState(false)
 
-  // Al abrir: retoma el borrador del rol que corresponda. Si hay
-  // datos guardados, entra directo al paso donde quedó; si es un
-  // rol nuevo, muestra el selector de rol.
+  // Al abrir: el rol ya viene decidido por quien llamó a abrirKYC, así
+  // que entra directo al paso donde quedó el borrador (o al 1 si es
+  // un expediente nuevo).
   useEffect(() => {
     if (!kyc.abierto) return
     setForm({ ...kyc.formulario })
@@ -86,8 +88,7 @@ export default function VerificacionKYC() {
     setErrores({})
     setAcepta(false)
     setEnviando(false)
-    const hayBorrador = kyc.rol && Object.keys(kyc.formulario).length > 0
-    setEtapa(hayBorrador && kyc.rol ? Math.min(Math.max(kyc.paso || 1, 1), 4) : 0)
+    setEtapa(Math.min(Math.max(kyc.paso || 1, 1), 4))
     // Solo se corre al abrir o cerrar el wizard, a propósito:
     // dentro no queremos re-sincronizar el formulario local.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -135,11 +136,10 @@ export default function VerificacionKYC() {
   }
 
   const retroceder = () => {
-    setEtapa((prev) => {
-      const siguiente = prev - 1
-      guardarPasoKYC(Math.max(siguiente, 1))
-      return siguiente
-    })
+    if (etapa <= 1) return
+    const siguiente = etapa - 1
+    guardarPasoKYC(siguiente)
+    setEtapa(siguiente)
   }
 
   const enviar = () => {
@@ -158,11 +158,6 @@ export default function VerificacionKYC() {
     if (kyc.desde === 'registro') navigate('/')
   }
 
-  const volverAlSelector = () => {
-    if (etapa > 0 && etapa < 5) setErrores({})
-    setEtapa(0)
-  }
-
   return (
     <div className={`kyc kyc--${rol || 'nuevo'}`} role="dialog" aria-modal="true" aria-label="Verificación de identidad (Ley 977)">
       <div className="kyc-fondo" />
@@ -170,8 +165,15 @@ export default function VerificacionKYC() {
       <div className="kyc-modal">
         <header className="kyc-cabecera">
           <div className="kyc-marca">
+            {/* Isotipo oficial recortado del lockup de marca. alt vacío a
+                propósito: "VINCCO" ya va como texto justo al lado y el lector
+                de pantalla no tiene que decirlo dos veces. */}
             <span className="kyc-marca-logo">
-              <Icon name="shield" size={16} />
+              <img
+                src={`${process.env.PUBLIC_URL}/assets/logos/vincco-isotipo.png`}
+                alt=""
+                className="kyc-marca-logo-img"
+              />
             </span>
             <div>
               <strong>VINCCO</strong>
@@ -179,10 +181,10 @@ export default function VerificacionKYC() {
             </div>
           </div>
           <div className="kyc-cabecera-der">
-            {rol && etapa > 0 && etapa < 5 && (
-              <button type="button" className="kyc-link" onClick={volverAlSelector}>
-                <Icon name="user" size={12} /> {rol}
-              </button>
+            {rol && etapa < 5 && (
+              <span className="kyc-rol-actual">
+                <Icon name="user" size={12} /> {NOMBRES_ROL[rol] || rol}
+              </span>
             )}
             <button
               type="button"
@@ -194,22 +196,6 @@ export default function VerificacionKYC() {
             </button>
           </div>
         </header>
-
-        {etapa === 0 && (
-          <div className="kyc-contenido">
-            <RoleSelector
-              actual={rol}
-              onChange={setRol}
-              onContinuar={() => {
-                if (!rol) return
-                cambiarRolKYC(rol)
-                setForm({})
-                setErrores({})
-                setEtapa(1)
-              }}
-            />
-          </div>
-        )}
 
         {etapa >= 1 && etapa <= 4 && (
           <div className="kyc-contenido">
@@ -276,7 +262,7 @@ export default function VerificacionKYC() {
                 type="button"
                 className="kyc-btn kyc-btn--texto"
                 onClick={retroceder}
-                disabled={enviando}
+                disabled={enviando || etapa === 1}
               >
                 <Icon name="arrow-left" size={15} /> Anterior
               </button>

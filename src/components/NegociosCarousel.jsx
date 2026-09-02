@@ -46,7 +46,7 @@ function MediaNegocio({ negocio, activa }) {
   const claseInactiva = activa ? '' : 'ncar-card-img--inactiva'
 
   if (negocio.imagen) {
-    return <img src={negocio.imagen} alt={negocio.nombre} className={`ncar-card-img ${claseInactiva}`} />
+    return <img src={negocio.imagen} alt={negocio.nombre} className={`ncar-card-img ${claseInactiva}`} loading="lazy" />
   }
   return (
     <div

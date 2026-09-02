@@ -98,7 +98,7 @@ export default function Header({ seccion, onCambiarSeccion, totalSolicitudes, mo
           >
             <span className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-vincco-navy-800 text-xs font-bold text-white shadow-sm ring-1 ring-vincco-line">
               {perfil?.foto ? (
-                <img src={perfil.foto} alt="" className="h-full w-full object-cover" />
+                <img src={perfil.foto} alt="" className="h-full w-full object-cover" loading="lazy" />
               ) : (
                 iniciales
               )}

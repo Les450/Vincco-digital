@@ -35,7 +35,7 @@ function ImagenUpload({ form, setForm, fileInputRef, handleImage, icon, texto, s
       <label className="panel-form-label">{texto}</label>
       {form.imagen ? (
         <div className="panel-image-preview-container">
-          <img src={form.imagen} alt="Preview" className="panel-image-preview" />
+          <img src={form.imagen} alt="Preview" className="panel-image-preview" loading="lazy" />
           <button type="button" className="panel-image-remove" onClick={() => setForm({ ...form, imagen: null })}><Icon name="x" size={14} /></button>
         </div>
       ) : (
@@ -385,7 +385,7 @@ export default function PublicacionesPanel() {
             <div key={item.id} className="panel-pub-card" style={{ '--card-accent': tipoInfo.color }}>
               <div className="panel-pub-card-imagen">
                 {item.imagen ? (
-                  <img src={item.imagen} alt={item.titulo} />
+                  <img src={item.imagen} alt={item.titulo} loading="lazy" />
                 ) : (
                   <div className="panel-pub-card-placeholder" style={{ background: `${tipoInfo.color}10` }}>
                     <Icon name={tipoInfo.icon} size={36} style={{ color: `${tipoInfo.color}40` }} />
@@ -441,7 +441,7 @@ export default function PublicacionesPanel() {
             <div className="panel-modal-body">
               {detallePub.imagen && (
                 <div className="panel-pub-detail-img">
-                  <img src={detallePub.imagen} alt={detallePub.titulo} />
+                  <img src={detallePub.imagen} alt={detallePub.titulo} loading="lazy" />
                 </div>
               )}
               <div className="panel-pub-detail-info">

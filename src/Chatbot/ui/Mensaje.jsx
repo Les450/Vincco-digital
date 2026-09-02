@@ -34,7 +34,7 @@ export default function Mensaje({ mensaje, onSugerencia, onOpcion }) {
   return (
     <div className="chat-msg chat-msg--bot">
       <span className="chat-avatar" aria-hidden="true">
-        <img src={RUTA_KIARA_IMG} alt="" className="chat-avatar-img" />
+        <img src={RUTA_KIARA_IMG} alt="" className="chat-avatar-img" loading="lazy" />
       </span>
 
       <div className="chat-cuerpo">

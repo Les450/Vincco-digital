@@ -5,7 +5,6 @@ import Sidebar from './Sidebar'
 import Icon from './icons/Icon'
 import useStore from '../store/puntos_usestore'
 
-const VINCCO_LOGO = `${process.env.PUBLIC_URL}/assets/logos/vincco-logo.png`
 // Mismo logo, recortado del aire transparente que traía el original (48% del alto).
 // Sirve para barras y navbars, donde el logo debe medir lo que dice medir.
 const VINCCO_LOGO_NAV = `${process.env.PUBLIC_URL}/assets/logos/vincco-logo-nav.png`

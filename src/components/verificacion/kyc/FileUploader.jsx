@@ -88,7 +88,7 @@ export default function FileUploader({ campo, valor, onChange, error, rol }) {
         ) : valor ? (
           <div className="kyc-drop-preview">
             {esImagen ? (
-              <img src={valor.dataURL} alt={`Vista previa de ${valor.nombre}`} className="kyc-drop-thumb" />
+              <img src={valor.dataURL} alt={`Vista previa de ${valor.nombre}`} className="kyc-drop-thumb" loading="lazy" />
             ) : (
               <span className="kyc-drop-pdf">
                 <Icon name="file-text" size={22} />

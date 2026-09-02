@@ -7,7 +7,7 @@
    Cualquier cambio hecho acá se pierde en la próxima compilación.
    Para cambiar lo que sabe Kiara, editá src/Chatbot/guiausuario.md.
 
-   Generado: 2026-08-21
+   Generado: 2026-09-02
    46 entradas · 10 secciones
    ══════════════════════════════════════════════════════════════ */
 

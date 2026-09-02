@@ -1228,18 +1228,20 @@ const useStore = create((set) => ({
      documentos, datos tributarios y datos según el rol). El
      borrador se guarda por paso en "vincco:kyc" para retomarlo;
      al enviar, se apoya en solicitarVerificacion y el rol queda
-     "pendiente" (24-48 horas hábiles de revisión). */
-  abrirKYC: (rol, desde = 'perfil') => set((state) => ({
-    kyc: {
-      ...state.kyc,
-      abierto: true,
-      rol,
-      desde,
-      // Si ya hay un borrador para este rol, se retoma en el paso
-      // donde quedó; si es otro rol, se arranca de cero.
-      paso: state.kyc.rol === rol ? state.kyc.paso : 1,
-    },
-  })),
+     "pendiente" (24-48 horas hábiles de revisión).
+
+     El rol ya viene decidido de antes (Socio Vincco, el registro
+     o el panel): el wizard ya no lo pregunta, arranca directo en
+     el paso 1. Si el rol es otro distinto al del último borrador,
+     el expediente (formulario) se arranca de cero. */
+  abrirKYC: (rol, desde = 'perfil') => set((state) => {
+    if (state.kyc.rol === rol) {
+      return { kyc: { ...state.kyc, abierto: true, desde } }
+    }
+    const kyc = { ...state.kyc, abierto: true, rol, desde, paso: 1, formulario: {} }
+    escribirKYC(kyc)
+    return { kyc }
+  }),
   cerrarKYC: () => set((state) => ({ kyc: { ...state.kyc, abierto: false } })),
   // Guarda los campos del expediente al cambiar de paso o de
   // campo: el wizard la llama en cada cambio para no perder nada.
@@ -1253,14 +1255,6 @@ const useStore = create((set) => ({
   }),
   guardarPasoKYC: (paso) => set((state) => {
     const kyc = { ...state.kyc, paso }
-    escribirKYC(kyc)
-    return { kyc }
-  }),
-  // Cambió de rol dentro del wizard: el expediente es por rol
-  // (cada uno pide datos distintos), así que se arranca de cero.
-  cambiarRolKYC: (rol) => set((state) => {
-    if (state.kyc.rol === rol) return {}
-    const kyc = { ...state.kyc, rol, paso: 1, formulario: {} }
     escribirKYC(kyc)
     return { kyc }
   }),

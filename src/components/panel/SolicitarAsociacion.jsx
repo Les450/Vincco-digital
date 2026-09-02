@@ -149,7 +149,7 @@ export default function SolicitarAsociacion({
                     onClick={() => abrirPerfil(entry)}
                   >
                     <span className="na-dir-card-media" style={{ background: entry.color }}>
-                      {entry.imagen ? <img src={entry.imagen} alt="" /> : iniciales(entry.nombre)}
+                      {entry.imagen ? <img src={entry.imagen} alt="" loading="lazy" /> : iniciales(entry.nombre)}
                     </span>
                     <span className="na-dir-card-body">
                       <span className="na-dir-card-name">
@@ -183,7 +183,7 @@ export default function SolicitarAsociacion({
             </button>
             <div className="na-dir-profile-banner" style={{ background: `linear-gradient(135deg, ${viendo.color} 0%, ${viendo.color}bb 100%)` }}>
               <span className="na-dir-profile-avatar">
-                {viendo.imagen ? <img src={viendo.imagen} alt="" /> : iniciales(viendo.nombre)}
+                {viendo.imagen ? <img src={viendo.imagen} alt="" loading="lazy" /> : iniciales(viendo.nombre)}
               </span>
               <div>
                 <h2>{viendo.nombre}</h2>
@@ -227,7 +227,7 @@ export default function SolicitarAsociacion({
 
             <div className="na-dir-target">
               <span className="na-dir-target-avatar" style={{ background: elegido.color }}>
-                {elegido.imagen ? <img src={elegido.imagen} alt="" /> : iniciales(elegido.nombre)}
+                {elegido.imagen ? <img src={elegido.imagen} alt="" loading="lazy" /> : iniciales(elegido.nombre)}
               </span>
               <div>
                 <strong>{elegido.nombre}</strong>

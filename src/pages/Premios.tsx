@@ -55,7 +55,10 @@ export default function Premios() {
       <main className="mx-auto max-w-6xl px-4 pb-16 pt-6 sm:px-6 sm:pt-8">
         <div className="space-y-12 sm:space-y-16">
           <MisPremios usuario={usuario} ocultarSaldo={ocultarSaldo} />
-          <SubirNivel />
+          {/* Los mismos puntos que pinta el hero: la progresion de
+              niveles de abajo queda siempre en sintonia con el badge
+              "Nivel X" de arriba. */}
+          <SubirNivel puntos={saldo} />
           <CanjeaPuntos puntos={saldo} />
           <DondeGanas />
           <ActividadReciente />

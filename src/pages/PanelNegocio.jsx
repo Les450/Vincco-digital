@@ -325,7 +325,7 @@ function InventarioSection() {
               <div key={item.id} className={`panel-inv-item ${status.itemClass}`}>
                 <div className="panel-inv-item-icono">
                   {item.imagen ? (
-                    <img src={item.imagen} alt={item.nombre} className="panel-inv-item-img" />
+                    <img src={item.imagen} alt={item.nombre} className="panel-inv-item-img" loading="lazy" />
                   ) : (
                     <Icon name={getItemIcono(item.categoria)} size={20} />
                   )}
@@ -372,7 +372,7 @@ function InventarioSection() {
             <div className="panel-modal-body">
               {detalleItem.imagen && (
                 <div className="panel-inv-detail-img">
-                  <img src={detalleItem.imagen} alt={detalleItem.nombre} />
+                  <img src={detalleItem.imagen} alt={detalleItem.nombre} loading="lazy" />
                 </div>
               )}
               {getEtiquetaPublicacion(detalleItem) && (

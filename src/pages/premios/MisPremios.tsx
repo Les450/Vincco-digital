@@ -1,28 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Medal, Award, Crown, Gem, Star, Check, Eye, EyeOff } from 'lucide-react'
-import { NIVELES, type Nivel, type UsuarioPremios } from '../../data/premios'
+import { Star, Check, Eye, EyeOff } from 'lucide-react'
+import type { UsuarioPremios } from '../../data/premios'
+import { META_NIVEL, nivelActual, siguienteNivel, estadoNivel, NIVELES } from './nivelesUI'
 import { cn } from '../../lib/utils'
-
-// Icono y acento de cada nivel. Los acentos usan tintes de la paleta
-// de marca: bronce = naranja claro, plata = gris azulado (tinta-200),
-// oro = dorado, VIP = naranja de marca.
-const META_NIVEL: Record<
-  Nivel['id'],
-  { icono: typeof Medal; acento: string; badge: string }
-> = {
-  bronce: { icono: Medal, acento: 'text-naranja-300', badge: 'bg-hueso-300 text-tinta-900' },
-  plata: { icono: Award, acento: 'text-tinta-200', badge: 'bg-tinta-200 text-tinta-900' },
-  oro: { icono: Crown, acento: 'text-dorado-400', badge: 'bg-dorado-500 text-tinta-900' },
-  vip: { icono: Gem, acento: 'text-naranja-400', badge: 'bg-naranja-500 text-hueso-50' },
-}
-
-function nivelActual(puntos: number): Nivel {
-  return [...NIVELES].reverse().find((n) => puntos >= n.puntosMin) ?? NIVELES[0]
-}
-
-function siguienteNivel(puntos: number): Nivel | null {
-  return NIVELES.find((n) => puntos < n.puntosMin) ?? null
-}
 
 export default function MisPremios({
   usuario,
@@ -61,12 +41,6 @@ export default function MisPremios({
     return () => cancelAnimationFrame(id)
   }, [progreso])
 
-  const estadoNivel = (n: Nivel): string | null => {
-    if (n.puntosMax < usuario.puntos) return 'Superado'
-    if (n.id === nivel.id) return 'Tu nivel actual'
-    return `Desde ${n.puntosMin.toLocaleString('es')} pts`
-  }
-
   return (
     <section aria-label="Mis premios" className="relative">
       <div className="relative overflow-hidden rounded-3xl bg-tinta-800 shadow-[0_18px_50px_-18px_rgba(0,63,90,0.55)] ring-1 ring-tinta-700">
@@ -87,7 +61,7 @@ export default function MisPremios({
                   className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-dorado-500 shadow-lg shadow-dorado-500/20 ring-2 ring-dorado-400/40"
                 >
                   {usuario.foto ? (
-                    <img src={usuario.foto} alt="" className="h-full w-full object-cover" />
+                    <img src={usuario.foto} alt="" className="h-full w-full object-cover" loading="lazy" />
                   ) : (
                     <span className="font-display text-2xl font-black text-tinta-900">
                       {usuario.iniciales}
@@ -196,7 +170,7 @@ export default function MisPremios({
               const m = META_NIVEL[n.id]
               const Icono = m.icono
               const esActual = n.id === nivel.id
-              const estado = estadoNivel(n)
+              const estado = estadoNivel(n, usuario.puntos)
               return (
                 <div
                   key={n.id}

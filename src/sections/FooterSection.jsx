@@ -11,6 +11,7 @@ export default function FooterSection() {
                 src={`${process.env.PUBLIC_URL}/assets/logos/vincco-logo.png`}
                 alt="Vincco"
                 className="vc-footer-logo-img"
+                loading="lazy"
               />
               <span className="vc-footer-logo-text">Vincco</span>
             </div>

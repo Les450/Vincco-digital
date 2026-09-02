@@ -47,7 +47,7 @@ function TarjetaNegocio({ negocio, asociado }) {
     <div className="vc-promo__negocio">
       <div className="vc-promo__negocio-avatar" aria-hidden="true">
         {negocio.foto
-          ? <img src={negocio.foto} alt="" />
+          ? <img src={negocio.foto} alt="" loading="lazy" />
           : <span>{iniciales(negocio.nombre)}</span>}
       </div>
 
@@ -239,7 +239,7 @@ export default function DetallePromocion({ promo, variante = 'hoja', onVerTodo, 
     <div className={`vc-promo vc-promo--${variante} vc-promo--${promo.tipo}`}>
       <div className="vc-promo__media" style={{ background: `linear-gradient(135deg, ${promo.color} 0%, ${promo.color}cc 100%)` }}>
         {promo.imagen
-          ? <img src={promo.imagen} alt={promo.titulo} className="vc-promo__img" />
+          ? <img src={promo.imagen} alt={promo.titulo} className="vc-promo__img" loading="lazy" />
           : (
             <span className="vc-promo__media-icono" aria-hidden="true">
               <Icon name={promo.icono || 'flame'} size={44} />

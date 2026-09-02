@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude plugin *)",
+      "Bash(pip install *)",
+      "Bash(python3 -c \"import PIL; print\\(PIL.__version__\\)\")",
+      "Bash(python3 -)",
+      "Bash(python3 -c \"import numpy, scipy; print\\(numpy.__version__, scipy.__version__\\)\")",
+      "Bash(python3 \"/c/Users/Lesbi/AppData/Local/Temp/claude/C--Users-Lesbi-vincco-digital/e28fb0bf-8dc7-4f9d-9df3-55aca86680c0/scratchpad/quitar_fondo_kiara.py\")",
+      "Bash(python3 -c ' *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:4321/)",
+      "Bash(pkill -f \"serve\")",
+      "Bash(rm -rf /tmp/staticroot)",
+      "Bash(grep -n \"export default function\\\\|'+ Nueva'\\\\|Nueva</\\\\|mostrarForm\\\\|setMostrarForm\\\\|abrirForm\" \"/c/Users/Lesbi/vincco-digital/src/components/panel/PublicacionesPanel.jsx\")",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(find \"/c/Users/Lesbi/AppData/Local/Temp/claude\" -iname \"*.tsx\" -o -iname \"*reference*\" -o -iname \"*TimelineAnimation*\" 2>/dev/null | head -20 *)",
+      "Bash(powershell -Command \"Test-Path 'C:\\\\Users\\\\Lesbi\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\f8c28170-7e3d-4c96-a118-8974a2ff8aa9\\\\bc71f2de-319e-4d0d-8145-bd92144502c8\\\\agent\\\\local_ditto_bc71f2de-319e-4d0d-8145-bd92144502c8\\\\outputs'\")"
+    ]
+  }
+}

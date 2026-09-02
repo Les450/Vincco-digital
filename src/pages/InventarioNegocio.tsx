@@ -478,7 +478,7 @@ export default function InventarioNegocio() {
             <>
               {detalleItem.imagen && (
                 <div className="aspect-[4/3] w-full overflow-hidden rounded-t-2xl">
-                  <img src={detalleItem.imagen} alt={detalleItem.nombre} className="h-full w-full object-cover" />
+                  <img src={detalleItem.imagen} alt={detalleItem.nombre} className="h-full w-full object-cover" loading="lazy" />
                 </div>
               )}
               <div className="p-6">
